@@ -1,0 +1,25 @@
+class Game
+{
+public:
+	enum GameMode
+	{
+		GM_HOST,
+		GM_CLIENT
+	};
+
+	struct GameVars
+	{
+		GameMode		m_GameMode;
+		CEGUI::String	m_PlayerName;
+		std::string		m_HostIP;
+	};
+
+	GameVars m_GameVars;
+
+public:
+	static Game&	getSingleton(void);
+	void			Quit(void);
+
+	void			StartServer();
+	void			JoinGame(const std::string &hostIP);
+};

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DefaultWindow" Name="Root" >
+        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Window Type="OgreTray/StaticText" Name="Root/StaticText" >
+            <Property Name="UnifiedAreaRect" Value="{{0.21625,0},{0.536667,0},{0.31625,0},{0.62,0}}" />
+            <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                <AutoWindow NameSuffix="__auto_incbtn__" >
+                    <Property Name="Visible" Value="False" />
+                </AutoWindow>
+                <AutoWindow NameSuffix="__auto_decbtn__" >
+                    <Property Name="Visible" Value="False" />
+                </AutoWindow>
+                <AutoWindow NameSuffix="__auto_thumb__" />
+            </AutoWindow>
+            <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                <AutoWindow NameSuffix="__auto_incbtn__" >
+                    <Property Name="Visible" Value="False" />
+                </AutoWindow>
+                <AutoWindow NameSuffix="__auto_decbtn__" >
+                    <Property Name="Visible" Value="False" />
+                </AutoWindow>
+                <AutoWindow NameSuffix="__auto_thumb__" />
+            </AutoWindow>
+        </Window>
+    </Window>
+</GUILayout>

@@ -1,0 +1,1 @@
+tolua++cegui.exe -H LuaInterface.h -o LuaInterface.cpp LuaInterface.pkg

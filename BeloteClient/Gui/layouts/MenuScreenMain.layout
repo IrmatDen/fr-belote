@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DefaultWindow" Name="Root" >
+        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Window Type="DefaultWindow" Name="MenuScreenMain" >
+            <Property Name="Visible" Value="False" />
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+            <Window Type="OgreTray/Button" Name="MenuScreenMain/ButtonQuit" >
+                <Property Name="Text" Value="Quitter" />
+                <Property Name="UnifiedAreaRect" Value="{{0.7,0},{0.89,0},{0.9,0},{0.965,0}}" />
+            </Window>
+            <Window Type="OgreTray/Button" Name="MenuScreenMain/ButtonCreateRoom" >
+                <Property Name="Text" Value="Créer une partie" />
+                <Property Name="UnifiedAreaRect" Value="{{0.1,0},{0.89,0},{0.3,0},{0.965,0}}" />
+            </Window>
+            <Window Type="OgreTray/Button" Name="MenuScreenMain/ButtonJoinRoom" >
+                <Property Name="Text" Value="Rejoindre une partie" />
+                <Property Name="UnifiedAreaRect" Value="{{0.4,0},{0.89,0},{0.6,0},{0.965,0}}" />
+            </Window>
+        </Window>
+        <Window Type="DefaultWindow" Name="MenuScreenRules" >
+            <Property Name="Visible" Value="False" />
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+            <Window Type="OgreTray/Button" Name="MenuScreenRules/ButtonRulesBack" >
+                <Property Name="Text" Value="Retour" />
+                <Property Name="UnifiedAreaRect" Value="{{0.7,0},{0.89,0},{0.9,0},{0.965,0}}" />
+            </Window>
+            <Window Type="OgreTray/Button" Name="MenuScreenRules/ButtonRulesStart" >
+                <Property Name="Text" Value="Jouer" />
+                <Property Name="UnifiedAreaRect" Value="{{0.1,0},{0.89,0},{0.3,0},{0.965,0}}" />
+            </Window>
+            <Window Type="OgreTray/StaticImage" Name="MenuScreenRules/StaticImage" >
+                <Property Name="UnifiedAreaRect" Value="{{0.1775,0},{0.231667,0},{0.8275,0},{0.831667,0}}" />
+                <Window Type="OgreTray/StaticText" Name="MenuScreenRules/StaticImage/StaticText" >
+                    <Property Name="Text" Value="Sens de jeu" />
+                    <Property Name="FrameEnabled" Value="False" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.15,0},{0.225,0},{0.530769,0},{0.3,0}}" />
+                    <Property Name="BackgroundEnabled" Value="False" />
+                    <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                </Window>
+                <Window Type="OgreTray/Combobox" Name="MenuScreenRules/GameRotation" >
+                    <Property Name="ReadOnly" Value="True" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.21,0},{0.845,0},{0.451666,0}}" />
+                    <Property Name="MaxEditTextLength" Value="1073741823" />
+                    <AutoWindow NameSuffix="__auto_editbox__" >
+                        <Property Name="Font" Value="DejaVuSans-10" />
+                        <Property Name="ReadOnly" Value="True" />
+                        <Property Name="MaxTextLength" Value="1073741823" />
+                        <Property Name="TextParsingEnabled" Value="False" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_droplist__" >
+                        <Property Name="Font" Value="DejaVuSans-10" />
+                        <Property Name="Visible" Value="False" />
+                        <Property Name="DistributeCapturedInputs" Value="True" />
+                        <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                            <Property Name="RestoreOldCapture" Value="True" />
+                            <AutoWindow NameSuffix="__auto_incbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_decbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_thumb__" >
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                            <Property Name="RestoreOldCapture" Value="True" />
+                            <AutoWindow NameSuffix="__auto_incbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_decbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_thumb__" >
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_button__" />
+                </Window>
+                <Window Type="OgreTray/StaticText" Name="MenuScreenRules/StaticImage/StaticText2" >
+                    <Property Name="Text" Value="La belote sauve" />
+                    <Property Name="FrameEnabled" Value="False" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.15,0},{0.34,0},{0.530769,0},{0.415,0}}" />
+                    <Property Name="BackgroundEnabled" Value="False" />
+                    <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                </Window>
+                <Window Type="OgreTray/Combobox" Name="MenuScreenRules/BeloteSave" >
+                    <Property Name="ReadOnly" Value="True" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.32,0},{0.845,0},{0.561666,0}}" />
+                    <Property Name="MaxEditTextLength" Value="1073741823" />
+                    <AutoWindow NameSuffix="__auto_editbox__" >
+                        <Property Name="Font" Value="DejaVuSans-10" />
+                        <Property Name="ReadOnly" Value="True" />
+                        <Property Name="MaxTextLength" Value="1073741823" />
+                        <Property Name="TextParsingEnabled" Value="False" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_droplist__" >
+                        <Property Name="Font" Value="DejaVuSans-10" />
+                        <Property Name="Visible" Value="False" />
+                        <Property Name="DistributeCapturedInputs" Value="True" />
+                        <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                            <Property Name="RestoreOldCapture" Value="True" />
+                            <AutoWindow NameSuffix="__auto_incbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_decbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_thumb__" >
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                            <Property Name="RestoreOldCapture" Value="True" />
+                            <AutoWindow NameSuffix="__auto_incbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_decbtn__" >
+                                <Property Name="Visible" Value="False" />
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                            <AutoWindow NameSuffix="__auto_thumb__" >
+                                <Property Name="RestoreOldCapture" Value="True" />
+                            </AutoWindow>
+                        </AutoWindow>
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_button__" />
+                </Window>
+                <Window Type="OgreTray/StaticText" Name="MenuScreenRules/StaticImage/StaticText3" >
+                    <Property Name="Text" Value="Votre nom" />
+                    <Property Name="FrameEnabled" Value="False" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.15,0},{0.11,0},{0.530769,0},{0.185,0}}" />
+                    <Property Name="BackgroundEnabled" Value="False" />
+                    <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                </Window>
+                <Window Type="OgreTray/Editbox" Name="MenuScreenRules/PlayerName" >
+                    <Property Name="MaxTextLength" Value="1073741823" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.1,0},{0.845,0},{0.17,0}}" />
+                    <Property Name="TextParsingEnabled" Value="False" />
+                </Window>
+            </Window>
+        </Window>
+        <Window Type="DefaultWindow" Name="MenuScreenJoinGame" >
+            <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+            <Window Type="OgreTray/Button" Name="MenuScreenJoinGame/ButtonJoinBack" >
+                <Property Name="Text" Value="Retour" />
+                <Property Name="UnifiedAreaRect" Value="{{0.7,0},{0.89,0},{0.9,0},{0.965,0}}" />
+            </Window>
+            <Window Type="OgreTray/Button" Name="MenuScreenJoinGame/ButtonJoinDo" >
+                <Property Name="Text" Value="Rejoindre" />
+                <Property Name="Disabled" Value="True" />
+                <Property Name="UnifiedAreaRect" Value="{{0.1,0},{0.89,0},{0.3,0},{0.965,0}}" />
+            </Window>
+            <Window Type="OgreTray/StaticImage" Name="MenuScreenJoinGame/StaticImage2" >
+                <Property Name="UnifiedAreaRect" Value="{{0.1775,0},{0.231667,0},{0.8275,0},{0.831667,0}}" />
+                <Window Type="OgreTray/StaticText" Name="MenuScreenJoinGame/StaticImage/StaticText4" >
+                    <Property Name="Text" Value="Se connecter à (IP)" />
+                    <Property Name="FrameEnabled" Value="False" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.15,0},{0.225,0},{0.530769,0},{0.3,0}}" />
+                    <Property Name="BackgroundEnabled" Value="False" />
+                    <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                </Window>
+                <Window Type="OgreTray/StaticText" Name="MenuScreenJoinGame/StaticImage/StaticText32" >
+                    <Property Name="Text" Value="Votre nom" />
+                    <Property Name="FrameEnabled" Value="False" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.15,0},{0.11,0},{0.530769,0},{0.185,0}}" />
+                    <Property Name="BackgroundEnabled" Value="False" />
+                    <AutoWindow NameSuffix="__auto_hscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                    <AutoWindow NameSuffix="__auto_vscrollbar__" >
+                        <AutoWindow NameSuffix="__auto_incbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_decbtn__" >
+                            <Property Name="Visible" Value="False" />
+                        </AutoWindow>
+                        <AutoWindow NameSuffix="__auto_thumb__" />
+                    </AutoWindow>
+                </Window>
+                <Window Type="OgreTray/Editbox" Name="MenuScreenJoinGame/PlayerNameClient" >
+                    <Property Name="MaxTextLength" Value="1073741823" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.1,0},{0.845,0},{0.17,0}}" />
+                    <Property Name="TextParsingEnabled" Value="False" />
+                </Window>
+                <Window Type="OgreTray/Editbox" Name="MenuScreenJoinGame/HostIP" >
+                    <Property Name="MaxTextLength" Value="1073741823" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.215,0},{0.845,0},{0.285,0}}" />
+                    <Property Name="ValidationString" Value="" />
+                    <Property Name="TextParsingEnabled" Value="False" />
+                </Window>
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>

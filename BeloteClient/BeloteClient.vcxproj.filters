@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Tools">
+      <UniqueIdentifier>{ea0bec73-9ad8-4071-96db-410e69878b79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Lua">
+      <UniqueIdentifier>{2e34ac3a-0dfa-4741-971e-e629a7b4fd6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\LuaPackage">
+      <UniqueIdentifier>{59b6b911-2f62-4655-a45a-c19525d5f10e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Tools\Singleton.h">
+      <Filter>Header Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaInterface.h">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUIManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoundManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StateMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LuaInterface.cpp">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUIManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoundManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClientSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StateMachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Gui\lua_scripts\MenuScreenMain.lua">
+      <Filter>Resource Files\Lua</Filter>
+    </None>
+    <None Include="src\LuaInterface.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
+    <None Include="src\Game.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
+    <None Include="src\SoundManager.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
+    <None Include="src\GUIManager.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
+  </ItemGroup>
+</Project>

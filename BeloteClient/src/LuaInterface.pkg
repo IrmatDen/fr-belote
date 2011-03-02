@@ -1,0 +1,7 @@
+$#include "Game.h"
+$#include "SoundManager.h"
+$#include "GUIManager.h"
+
+$pfile "Game.pkg"
+$pfile "SoundManager.pkg"
+$pfile "GUIManager.pkg"

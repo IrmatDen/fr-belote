@@ -1,0 +1,14 @@
+class SoundManager
+{
+public:
+	enum SoundFX
+	{
+		FX_CLICK,
+
+		_SoundFXCount
+	};
+
+public:
+	static SoundManager&	getSingleton(void);
+	void					PlayFX(SoundFX fx);
+};

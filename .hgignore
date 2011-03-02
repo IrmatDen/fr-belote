@@ -3,3 +3,16 @@ syntax: glob
 *sdf
 *user
 *.log
+*.manifest
+*.lastbuildstate
+*.rc
+*.res
+*.tlog
+*.obj
+*.pdb
+*.idb
+*.lib
+*Belote*.exe
+*.ilk
+bordel*
+*.ipch

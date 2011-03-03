@@ -16,7 +16,6 @@
     <ClInclude Include="src\GUIManager.h" />
     <ClInclude Include="src\LuaInterface.h" />
     <ClInclude Include="src\SoundManager.h" />
-    <ClInclude Include="src\StateMachine.h" />
     <ClInclude Include="src\Tools\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
@@ -26,7 +25,6 @@
     <ClCompile Include="src\LuaInterface.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SoundManager.cpp" />
-    <ClCompile Include="src\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Gui\lua_scripts\MenuScreenMain.lua" />
@@ -68,9 +66,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <OutDir>$(SolutionDir)bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,14 +80,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NOMINMAX ;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\BeloteServer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BeloteServer_d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-graphics-d.lib;sfml-audio-d.lib;sfml-network-d.lib;CEGUIBase_d.lib;CEGUIOpenGLRenderer_d.lib;CEGUILuaScriptModule_d.lib;CEGUItolua++_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\BeloteServer\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Common_d.lib;BeloteServer_d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-graphics-d.lib;sfml-audio-d.lib;sfml-network-d.lib;CEGUIBase_d.lib;CEGUIOpenGLRenderer_d.lib;CEGUILuaScriptModule_d.lib;CEGUItolua++_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>cd src &amp;&amp; buildLuaInterfaces.bat</Command>
@@ -101,15 +102,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NOMINMAX ;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\BeloteServer\include;F:\libs\CEGUI-SDK-0.7.5-vc10\cegui\include\ScriptingModules\LuaScriptModule\support\tolua++;F:\libs\CEGUI-SDK-0.7.5-vc10\cegui\include;F:\libs\CEGUI-SDK-0.7.5-vc10\dependencies\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>BeloteServer.lib;sfml-main.lib;sfml-window.lib;sfml-system.lib;sfml-graphics.lib;sfml-audio.lib;sfml-network.lib;CEGUIBase.lib;CEGUIOpenGLRenderer.lib;CEGUILuaScriptModule.lib;tolua++.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\BeloteServer\lib;F:\libs\CEGUI-SDK-0.7.5-vc10\lib;F:\libs\CEGUI-SDK-0.7.5-vc10\dependencies\lib\dynamic;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Common.lib;BeloteServer.lib;sfml-main.lib;sfml-window.lib;sfml-system.lib;sfml-graphics.lib;sfml-audio.lib;sfml-network.lib;CEGUIBase.lib;CEGUIOpenGLRenderer.lib;CEGUILuaScriptModule.lib;CEGUItolua++.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

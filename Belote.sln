@@ -4,9 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BeloteClient", "BeloteClient\BeloteClient.vcxproj", "{8DC74B7F-5C3D-4E58-9237-37CEDC67DFE2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C25B160B-5EF9-429D-9A6A-EA251AE63AB1} = {C25B160B-5EF9-429D-9A6A-EA251AE63AB1}
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4} = {3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BeloteServer", "BeloteServer\BeloteServer.vcxproj", "{C25B160B-5EF9-429D-9A6A-EA251AE63AB1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4} = {3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,6 +28,10 @@ Global
 		{C25B160B-5EF9-429D-9A6A-EA251AE63AB1}.Debug|Win32.Build.0 = Debug|Win32
 		{C25B160B-5EF9-429D-9A6A-EA251AE63AB1}.Release|Win32.ActiveCfg = Release|Win32
 		{C25B160B-5EF9-429D-9A6A-EA251AE63AB1}.Release|Win32.Build.0 = Release|Win32
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.Debug|Win32.Build.0 = Debug|Win32
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.Release|Win32.ActiveCfg = Release|Win32
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

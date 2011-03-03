@@ -16,3 +16,5 @@ syntax: glob
 *.ilk
 bordel*
 *.ipch
+./include
+./lib

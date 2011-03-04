@@ -3,7 +3,7 @@
 
 #include <SFML/Audio.hpp>
 
-#include "Tools/Singleton.h"
+#include "Singleton.h"
 
 class SoundManager : public Singleton<SoundManager>
 {

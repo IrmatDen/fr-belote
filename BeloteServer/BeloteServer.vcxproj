@@ -75,8 +75,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\Server.h" />
+    <ClInclude Include="src\Client.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Client.cpp" />
     <ClCompile Include="src\Server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

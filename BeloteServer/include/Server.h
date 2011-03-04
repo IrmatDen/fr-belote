@@ -1,7 +1,9 @@
-#ifndef BELOTE_SERVER_H
-#define BELOTE_SERVER_H
+#ifndef BELOTESERVER_SERVER_H
+#define BELOTESERVER_SERVER_H
 
-#include <SFML/Network/TcpListener.hpp>
+#include <SFML/Network.hpp>
+
+class Client;
 
 class Server
 {
@@ -15,7 +17,11 @@ public:
 	void	Stop();
 
 private:
+	static const unsigned int	MAX_CLIENTS = 4;
+
+private:
 	sf::TcpListener		m_Listener;
+	Client *			m_Clients[MAX_CLIENTS];
 };
 
 #endif

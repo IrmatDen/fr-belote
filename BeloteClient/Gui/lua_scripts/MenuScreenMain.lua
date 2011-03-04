@@ -69,6 +69,16 @@ function onRulesStart(args)
 end
 
 	-- Join game screen
+
+function onIPValid(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):setEnabled(true)
+end
+
+function onIPInvalid(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):setEnabled(false)
+end
 	
 function onDoJoinGame(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
@@ -123,7 +133,7 @@ beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
 beloteSaveCB:setItemSelectState(0, true)
 
 local hostIpBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/HostIP"))
-hostIpBox:setValidationString("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+hostIpBox:setValidationString("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
 
 -- subscribe required events
 	-- Main menu
@@ -136,3 +146,6 @@ winMgr:getWindow("MenuScreenRules/ButtonRulesBack"):subscribeEvent("Clicked", "o
 	-- Join game menu
 winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):subscribeEvent("Clicked", "onDoJoinGame")
 winMgr:getWindow("MenuScreenJoinGame/ButtonJoinBack"):subscribeEvent("Clicked", "onBack")
+hostIpBox:subscribeEvent("ValidEntry", "onIPValid")
+hostIpBox:subscribeEvent("TextInvalidated", "onIPInvalid")
+hostIpBox:subscribeEvent("InvalidEntryAttempted", "onIPInvalid")

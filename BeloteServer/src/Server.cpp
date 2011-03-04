@@ -4,9 +4,12 @@
 #include <SFML/Network/IpAddress.hpp>
 
 #include "../include/Server.h"
+#include "Client.h"
 
 Server::Server()
 {
+	for (int i = 0; i != MAX_CLIENTS; i++)
+		m_Clients[i] = new Client;
 }
 
 void Server::Start()
@@ -15,10 +18,12 @@ void Server::Start()
 
 	while(true)
 	{
-		sf::TcpSocket socket;
-		if (m_Listener.Accept(socket) == sf::Socket::Done)
+		for (int i = 0; i != MAX_CLIENTS; i++)
 		{
-			std::cout << "New client, yay! {" << socket.GetRemoteAddress().ToString() << "}" << std::endl;
+			if (m_Clients[i]->IsConnected())
+				continue;
+
+			m_Clients[i]->CheckConnection(m_Listener);
 		}
 	}
 }

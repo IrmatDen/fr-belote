@@ -9,7 +9,7 @@
 
 #include "GUIManager.h"
 #include "ClientSocket.h"
-#include "Tools/Singleton.h"
+#include "Singleton.h"
 
 class Game : public Singleton<Game>
 {

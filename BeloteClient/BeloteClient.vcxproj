@@ -16,7 +16,6 @@
     <ClInclude Include="src\GUIManager.h" />
     <ClInclude Include="src\LuaInterface.h" />
     <ClInclude Include="src\SoundManager.h" />
-    <ClInclude Include="src\Tools\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ClientSocket.cpp" />

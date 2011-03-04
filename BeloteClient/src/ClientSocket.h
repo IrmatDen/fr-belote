@@ -1,10 +1,7 @@
 #ifndef BELOTE_CLIENTSOCKET_H
 #define BELOTE_CLIENTSOCKET_H
 
-#include <SFML/System.hpp>
-#include <SFML/Network.hpp>
-
-#include "StateMachine.h"
+#include <string>
 
 class ClientSocketPrivate;
 

@@ -18,3 +18,4 @@ bordel*
 *.ipch
 ./include
 ./lib
+glob:*.suo

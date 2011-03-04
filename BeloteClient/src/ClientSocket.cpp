@@ -68,9 +68,22 @@ namespace States
 
 	struct Connected : public State
 	{
-		Connected(StateMachine *sm) : State(sm)	{ ; }
+		Connected(StateMachine *sm, sf::TcpSocket &socket)
+			: State(sm), m_Socket(socket)
+		{ ; }
 
-		virtual void	Enter()		{ m_StateMachine->Notify(NEC_DisconnectionRequest); }
+		virtual void	Enter()
+		{
+			sf::Packet p;
+			p << PT_ClientName << "Toto";
+			sf::Socket::Status s = m_Socket.Send(p);
+
+			// Error checking
+			if (s != sf::Socket::Done)
+				std::cout << "[Client] Error sending name in State::Connected::Enter. Error code: " << s << std::endl;
+		}
+
+		sf::TcpSocket &m_Socket;
 	};
 
 	struct Disconnected : public State
@@ -129,7 +142,7 @@ public:
 
 		m_StateWfc			= new States::WaitingForConnection(m_StateMachine);
 		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
-		m_StateConnected	= new States::Connected(m_StateMachine);
+		m_StateConnected	= new States::Connected(m_StateMachine, m_Socket);
 		m_StateDisconnected	= new States::Disconnected(m_StateMachine);
 
 		m_ActionConnect		= new Actions::Connect(m_Socket);

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <vector>
 
 #include "StateMachine.h"
 
@@ -9,15 +11,22 @@
 // Define network state machine stuff...
 enum NetworkEventCodes
 {
-	NEC_ConnectionRequest,
 	NEC_ConnectionAccepted,
+	NEC_NameReceived,
 };
 
 namespace States
 {
-	struct ConnectionRequest : public State
+	struct Base : public State
 	{
-		ConnectionRequest(StateMachine *sm) : State(sm), m_Socket(0)	{ ; }
+		Base(StateMachine *sm) : State(sm), m_Socket(0)		{ ; }
+		
+		sf::TcpSocket	*m_Socket;
+	};
+
+	struct ConnectionRequest : public Base
+	{
+		ConnectionRequest(StateMachine *sm) : Base(sm)	{ ; }
 
 		virtual void	Enter()
 		{
@@ -26,9 +35,36 @@ namespace States
 			sf::Packet p;
 			p << PT_ConnectionAccepted;
 			m_Socket->Send(p);
+
+			m_StateMachine->Notify(NEC_ConnectionAccepted);
 		}
-		
-		sf::TcpSocket	*m_Socket;
+	};
+
+	struct WaitingName : public Base
+	{
+		WaitingName(StateMachine *sm) : Base(sm)	{ ; }
+
+		virtual void	Update()
+		{
+			sf::Packet p;
+			sf::Socket::Status s = m_Socket->Receive(p);
+
+			if (s == sf::Socket::Done)
+			{
+				PacketType pt;
+				p >> pt;
+
+				if (pt == PT_ClientName)
+				{
+					std::string n;
+					p >> n;
+					std::cout << "[Server] Everybody say welcome to " << n << std::endl;
+					m_StateMachine->Notify(NEC_NameReceived);
+				}
+				else
+					std::cout << "[Server] Unexpected packet received in State::WaitingName::Update. Packet type is: " << pt << std::endl;
+			}
+		}
 	};
 }
 
@@ -66,7 +102,15 @@ public:
 		// State machine definition
 		m_StateMachine	= new StateMachine;
 
-		m_StateConnectionRequest	= new States::ConnectionRequest(m_StateMachine);
+		// States
+		m_StateConnectionRequest = new States::ConnectionRequest(m_StateMachine);
+		m_StatesWithSocket.push_back((States::Base*)m_StateConnectionRequest);
+
+		m_WaitingName = new States::WaitingName(m_StateMachine);
+		m_StatesWithSocket.push_back((States::Base*)m_WaitingName);
+
+		// Transitions
+		m_StateConnectionRequest->AddTransition(NEC_ConnectionAccepted, m_WaitingName);
 	}
 
 	~ServerSocketPrivate()
@@ -74,7 +118,12 @@ public:
 		delete m_StateMachine;
 	}
 
-	void	SetSocket(sf::TcpSocket *socket)	{ m_Socket = socket; m_StateConnectionRequest->m_Socket = socket; }
+	void	SetSocket(sf::TcpSocket *socket)
+	{
+		m_Socket = socket;
+		std::for_each(m_StatesWithSocket.begin(), m_StatesWithSocket.end(),
+				[this](States::Base *sb) { sb->m_Socket = m_Socket; });
+	}
 
 	void	Start()								{ m_StateMachine->Start(m_StateConnectionRequest); }
 	void	Update()							{ if (!m_StateMachine->IsStopped()) m_StateMachine->Update(); }
@@ -84,7 +133,9 @@ private:
 
 	StateMachine	* m_StateMachine;
 
-	States::ConnectionRequest	* m_StateConnectionRequest;
+	std::vector<States::Base*>	m_StatesWithSocket;
+	State	* m_StateConnectionRequest,
+			* m_WaitingName;
 };
 
 ServerSocket::ServerSocket()

@@ -43,6 +43,7 @@ public:
 
 	// Runtime
 	virtual void	Enter()						{ ; }
+	virtual void	Update()					{ ; }
 	virtual void	Leave()						{ ; }
 
 protected:

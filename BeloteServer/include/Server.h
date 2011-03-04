@@ -3,7 +3,7 @@
 
 #include <SFML/Network.hpp>
 
-class Client;
+class ServerSocket;
 
 class Server
 {
@@ -21,7 +21,7 @@ private:
 
 private:
 	sf::TcpListener		m_Listener;
-	Client *			m_Clients[MAX_CLIENTS];
+	ServerSocket *		m_Clients[MAX_CLIENTS];
 };
 
 #endif

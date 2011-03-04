@@ -4,16 +4,17 @@
 #include <SFML/Network/IpAddress.hpp>
 
 #include "../include/Server.h"
-#include "Client.h"
+#include "ServerSocket.h"
 
 Server::Server()
 {
 	for (int i = 0; i != MAX_CLIENTS; i++)
-		m_Clients[i] = new Client;
+		m_Clients[i] = new ServerSocket;
 }
 
 void Server::Start()
 {
+	m_Listener.SetBlocking(false);
 	m_Listener.Listen(PORT);
 
 	while(true)
@@ -21,7 +22,10 @@ void Server::Start()
 		for (int i = 0; i != MAX_CLIENTS; i++)
 		{
 			if (m_Clients[i]->IsConnected())
+			{
+				m_Clients[i]->Update();
 				continue;
+			}
 
 			m_Clients[i]->CheckConnection(m_Listener);
 		}

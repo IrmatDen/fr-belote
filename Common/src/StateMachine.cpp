@@ -27,4 +27,6 @@ void StateMachine::Update()
 
 		m_CurrentState = t.m_Target;
 	}
+	
+	m_CurrentState->Update();
 }

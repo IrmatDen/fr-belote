@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
+#include "Packets.h"
 #include "Server.h"
 
 #include "ClientSocket.h"
@@ -35,9 +36,31 @@ namespace States
 		virtual void	Enter()
 		{
 			if (m_Socket.GetRemoteAddress() == sf::IpAddress::None)
+			{
 				m_StateMachine->Notify(NEC_CantConnect);
-			else
-				m_StateMachine->Notify(NEC_Connected);
+				return;
+			}
+			// If the connection is made, we'll just have to wait for feedback from the server before continuing.
+		}
+
+		virtual void	Update()
+		{
+			sf::Packet p;
+			sf::Socket::Status s = m_Socket.Receive(p);
+
+			if (s == sf::Socket::Done)
+			{
+				PacketType pt;
+				p >> pt;
+
+				if (pt == PT_ConnectionAccepted)
+				{
+					std::cout << "[Client] Connection accepted, yay!" << std::endl;
+					m_StateMachine->Notify(NEC_Connected);
+				}
+				else
+					std::cout << "[Client] Unexpected packet received in State::Connecting::Update. Packet type is: " << pt << std::endl;
+			}
 		}
 
 		sf::TcpSocket &m_Socket;
@@ -47,7 +70,7 @@ namespace States
 	{
 		Connected(StateMachine *sm) : State(sm)	{ ; }
 
-		virtual void	Enter()		{ /*m_StateMachine->Notify(NEC_DisconnectionRequest);*/ }
+		virtual void	Enter()		{ m_StateMachine->Notify(NEC_DisconnectionRequest); }
 	};
 
 	struct Disconnected : public State
@@ -93,7 +116,6 @@ namespace Actions
 }
 
 // ClientSocket implementation
-
 class ClientSocketPrivate
 {
 public:

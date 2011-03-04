@@ -18,7 +18,10 @@
     <ClInclude Include="include\Server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Client.h">
+    <ClInclude Include="src\ServerSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Packets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -26,7 +29,7 @@
     <ClCompile Include="src\Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Client.cpp">
+    <ClCompile Include="src\ServerSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

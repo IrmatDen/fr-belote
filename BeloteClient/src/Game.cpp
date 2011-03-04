@@ -89,5 +89,5 @@ void Game::Quit()
 
 void Game::JoinGame(const std::string &hostIP)
 {
-	m_ClientSocket.Connect(hostIP);
+	m_ClientSocket.Connect(hostIP, m_GameVars.m_PlayerName.c_str());
 }

@@ -10,7 +10,7 @@ class ClientSocket
 public:
 	ClientSocket();
 
-	void	Connect(const std::string &hostIP);
+	void	Connect(const std::string &hostIP, const char *utf8EncodedName);
 
 private:
 	ClientSocketPrivate *	m_priv;

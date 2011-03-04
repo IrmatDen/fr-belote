@@ -75,7 +75,7 @@ namespace States
 		virtual void	Enter()
 		{
 			sf::Packet p;
-			p << PT_ClientName << "Toto";
+			p << PT_ClientName << m_Utf8EncodedName;
 			sf::Socket::Status s = m_Socket.Send(p);
 
 			// Error checking
@@ -83,7 +83,8 @@ namespace States
 				std::cout << "[Client] Error sending name in State::Connected::Enter. Error code: " << s << std::endl;
 		}
 
-		sf::TcpSocket &m_Socket;
+		sf::TcpSocket	&m_Socket;
+		const char		*m_Utf8EncodedName;
 	};
 
 	struct Disconnected : public State
@@ -154,9 +155,10 @@ public:
 		m_StateConnected->AddTransition	(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
-	void	Connect(const std::string &hostIP)
+	void	Connect(const std::string &hostIP, const char *utf8EncodedName)
 	{
-		m_ActionConnect->m_HostIP = sf::IpAddress(hostIP);
+		m_ActionConnect->m_HostIP									= sf::IpAddress(hostIP);
+		((States::Connected*)m_StateConnected)->m_Utf8EncodedName	= utf8EncodedName;
 		m_Thread->Launch();
 	}
 
@@ -192,7 +194,7 @@ ClientSocket::ClientSocket()
 {
 }
 
-void ClientSocket::Connect(const std::string &hostIP)
+void ClientSocket::Connect(const std::string &hostIP, const char *utf8EncodedName)
 {
-	m_priv->Connect(hostIP);
+	m_priv->Connect(hostIP, utf8EncodedName);
 }

@@ -14,6 +14,7 @@ enum NetworkEventCodes
 {
 	NEC_ConnectionRequest,
 	NEC_Connected,
+	NEC_SendName,
 	NEC_CantConnect,
 	NEC_DisconnectionRequest
 };
@@ -68,23 +69,26 @@ namespace States
 
 	struct Connected : public State
 	{
-		Connected(StateMachine *sm, sf::TcpSocket &socket)
-			: State(sm), m_Socket(socket)
+		Connected(StateMachine *sm)
+			: State(sm)
 		{ ; }
 
 		virtual void	Enter()
 		{
-			sf::Packet p;
-			p << PT_ClientName << m_Utf8EncodedName;
-			sf::Socket::Status s = m_Socket.Send(p);
-
-			// Error checking
-			if (s != sf::Socket::Done)
-				std::cout << "[Client] Error sending name in State::Connected::Enter. Error code: " << s << std::endl;
+			m_StateMachine->Notify(NEC_SendName);
 		}
+	};
 
-		sf::TcpSocket	&m_Socket;
-		const char		*m_Utf8EncodedName;
+	struct NameSent : public State
+	{
+		NameSent(StateMachine *sm)
+			: State(sm)
+		{ ; }
+
+		virtual void	Enter()
+		{
+			m_StateMachine->Notify(NEC_DisconnectionRequest);
+		}
 	};
 
 	struct Disconnected : public State
@@ -118,11 +122,35 @@ namespace Actions
 		sf::IpAddress m_HostIP;
 	};
 
+	struct SendName : public ActionBase
+	{
+		SendName(sf::TcpSocket &socket)
+			: ActionBase(socket)
+		{ ; }
+
+		virtual void operator()()
+		{
+			sf::Packet p;
+			p << PT_ClientName << m_Utf8EncodedName;
+			sf::Socket::Status s = m_Socket.Send(p);
+
+			// Error checking
+			if (s != sf::Socket::Done)
+				std::cout << "[Client] Error sending name in Actions::SendName. Error code: " << s << std::endl;
+		}
+
+		const char		*m_Utf8EncodedName;
+	};
+
 	struct Disconnect : public ActionBase
 	{
 		Disconnect(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
 		virtual void operator()()
 		{
+			sf::Packet p;
+			p << PT_ClientLeave;
+			m_Socket.Send(p);
+			
 			m_Socket.Disconnect();
 			std::cout << "Disconnected" << std::endl;
 		}
@@ -140,25 +168,31 @@ public:
 
 		// State machine definition
 		m_StateMachine = new StateMachine();
-
+		
+		// States
 		m_StateWfc			= new States::WaitingForConnection(m_StateMachine);
 		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
-		m_StateConnected	= new States::Connected(m_StateMachine, m_Socket);
+		m_StateConnected	= new States::Connected(m_StateMachine);
+		m_StateNameSent		= new States::NameSent(m_StateMachine);
 		m_StateDisconnected	= new States::Disconnected(m_StateMachine);
 
+		// Actions
 		m_ActionConnect		= new Actions::Connect(m_Socket);
+		m_ActionSendName	= new Actions::SendName(m_Socket);
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
-
+		
+		// Transitions
 		m_StateWfc->AddTransition		(NEC_ConnectionRequest,		m_StateConnecting,		m_ActionConnect		);
 		m_StateConnecting->AddTransition(NEC_Connected,				m_StateConnected							);
 		m_StateConnecting->AddTransition(NEC_CantConnect,			m_StateDisconnected							);
-		m_StateConnected->AddTransition	(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
+		m_StateConnected->AddTransition	(NEC_SendName,				m_StateNameSent,		m_ActionSendName	);
+		m_StateNameSent->AddTransition	(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
 	void	Connect(const std::string &hostIP, const char *utf8EncodedName)
 	{
-		m_ActionConnect->m_HostIP									= sf::IpAddress(hostIP);
-		((States::Connected*)m_StateConnected)->m_Utf8EncodedName	= utf8EncodedName;
+		m_ActionConnect->m_HostIP			= sf::IpAddress(hostIP);
+		m_ActionSendName->m_Utf8EncodedName	= utf8EncodedName;
 		m_Thread->Launch();
 	}
 
@@ -183,9 +217,11 @@ private:
 	State		* m_StateWfc,
 				* m_StateConnecting,
 				* m_StateConnected,
+				* m_StateNameSent,
 				* m_StateDisconnected;
 	
 	Actions::Connect	* m_ActionConnect;
+	Actions::SendName	* m_ActionSendName;
 	Action				* m_ActionDisconnect;
 };
 

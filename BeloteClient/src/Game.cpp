@@ -20,9 +20,9 @@ Game::Game()
 
 
 	///////// TEMP
-	CEGUI::System::getSingleton().executeScriptFile("MenuScreenMain.lua");
+	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
 
-	bgImage.LoadFromFile("Gui/MenuScreenMain.png");
+	bgImage.LoadFromFile("Gui/ScreenMenu.png");
 	bgSprite.SetImage(bgImage);
 }
 

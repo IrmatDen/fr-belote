@@ -106,7 +106,7 @@ local schemeMgr = CEGUI.SchemeManager:getSingleton()
 local winMgr = CEGUI.WindowManager:getSingleton()
 
 schemeMgr:create("OgreTray.scheme");
-local root = winMgr:loadWindowLayout("MenuScreenMain.layout")
+local root = winMgr:loadWindowLayout("ScreenMenu.layout")
 guiSystem:setGUISheet(root)
 
 -- set default mouse cursor

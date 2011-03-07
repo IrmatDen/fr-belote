@@ -14,7 +14,7 @@ public:
 
 	bool	Initialize(sf::RenderWindow* win);
 	bool	HandleEvent(sf::Event& event);
-	void	Draw();
+	void	UpdateAndDraw(float elapsedSeconds);
 
 	void	SetRootWindow(CEGUI::Window* win)	{ CEGUI::System::getSingleton().setGUISheet(win); }
 

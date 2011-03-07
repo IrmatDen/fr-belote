@@ -38,6 +38,7 @@ void Game::Init()
 
 void Game::Run()
 {
+	sf::Clock clock;
 	sf::Event event;
 	while (m_RenderWindow->IsOpened())
 	{
@@ -78,7 +79,8 @@ void Game::Run()
 		}
 
 		m_RenderWindow->Draw(bgSprite);
-		m_GuiManager.Draw();
+		m_GuiManager.UpdateAndDraw(clock.GetElapsedTime());
+		clock.Reset();
 		m_RenderWindow->Display();
 	}
 }

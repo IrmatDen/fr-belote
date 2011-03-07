@@ -117,8 +117,9 @@ bool GUIManager::HandleEvent(sf::Event& event)
 	return false;
 }
 
-void GUIManager::Draw()
+void GUIManager::UpdateAndDraw(float elapsedSeconds)
 {
+	CEGUI::System::getSingleton().injectTimePulse(elapsedSeconds);
 	CEGUI::System::getSingleton().renderGUI();
 }
 

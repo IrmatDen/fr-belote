@@ -20,6 +20,7 @@ private:
 	static const unsigned int	MAX_CLIENTS = 4;
 
 private:
+	bool				m_Running;
 	sf::TcpListener		m_Listener;
 	ServerSocket *		m_Clients[MAX_CLIENTS];
 };

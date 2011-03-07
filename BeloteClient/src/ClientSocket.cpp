@@ -204,6 +204,7 @@ private:
 		while (!m_StateMachine->IsStopped())
 		{
 			m_StateMachine->Update();
+			sf::Sleep(0.05f);
 		}
 	}
 

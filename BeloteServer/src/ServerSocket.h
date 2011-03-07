@@ -14,6 +14,7 @@ public:
 	bool	CheckConnection(sf::TcpListener &listener);
 	bool	IsConnected() const								{ return m_Socket.GetRemoteAddress() != sf::IpAddress::None; }
 	void	Update();
+	void	CloseConnection();
 
 private:
 	ServerSocketPrivate *	m_priv;

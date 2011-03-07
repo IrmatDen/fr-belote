@@ -163,6 +163,7 @@ public:
 		else // free the slot
 			m_Socket->Disconnect();
 	}
+	void	Abort()								{ /* do something, one day. */ }
 
 private:
 	sf::TcpSocket	* m_Socket;
@@ -203,4 +204,10 @@ bool ServerSocket::CheckConnection(sf::TcpListener &listener)
 void ServerSocket::Update()
 {
 	m_priv->Update();
+}
+
+void ServerSocket::CloseConnection()
+{
+	m_priv->Abort();
+	m_Socket.Disconnect();
 }

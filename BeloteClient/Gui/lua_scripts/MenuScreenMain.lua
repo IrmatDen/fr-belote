@@ -34,7 +34,6 @@ function onHostGame(args)
 	
 	local g = Game:getSingleton()
 	g.m_GameVars.m_GameMode = Game.GM_HOST
-	g:StartServer()
 	
 	displayScreen("MenuScreenRules")
 end
@@ -55,7 +54,7 @@ end
 	
 function onRulesStart(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
-	
+
 	-- Save player's name
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local g = Game:getSingleton()
@@ -63,6 +62,7 @@ function onRulesStart(args)
 	GUIManager:LuaStringToCEGUIString(pnameBox:getText(), g.m_GameVars.m_PlayerName)
 	
 	-- No worries about joining another host, since only the host gets to the rules def screen
+	g:StartServer()
 	g:JoinGame("127.0.0.1")
 	
 	print "save game vars & start game"

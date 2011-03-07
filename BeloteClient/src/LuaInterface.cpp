@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/07/11 12:25:56.
+** Generated automatically by tolua++-1.0.92 on 03/07/11 15:01:52.
 */
 
 #ifndef __cplusplus
@@ -237,6 +237,37 @@ static int tolua_LuaInterface_Game_StartServer00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: StopServer of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_StopServer00
+static int tolua_LuaInterface_Game_StopServer00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"Game",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'StopServer'",NULL);
+#endif
+ {
+  self->StopServer();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'StopServer'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: JoinGame of class  Game */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_JoinGame00
 static int tolua_LuaInterface_Game_JoinGame00(lua_State* tolua_S)
@@ -385,6 +416,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"getSingleton",tolua_LuaInterface_Game_getSingleton00);
   tolua_function(tolua_S,"Quit",tolua_LuaInterface_Game_Quit00);
   tolua_function(tolua_S,"StartServer",tolua_LuaInterface_Game_StartServer00);
+  tolua_function(tolua_S,"StopServer",tolua_LuaInterface_Game_StopServer00);
   tolua_function(tolua_S,"JoinGame",tolua_LuaInterface_Game_JoinGame00);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"SoundManager","SoundManager","",NULL);

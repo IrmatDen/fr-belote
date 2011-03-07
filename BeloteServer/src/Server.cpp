@@ -14,10 +14,12 @@ Server::Server()
 
 void Server::Start()
 {
+	m_Running = true;
+
 	m_Listener.SetBlocking(false);
 	m_Listener.Listen(PORT);
 
-	while(true)
+	while(m_Running)
 	{
 		for (int i = 0; i != MAX_CLIENTS; i++)
 		{
@@ -29,10 +31,15 @@ void Server::Start()
 
 			m_Clients[i]->CheckConnection(m_Listener);
 		}
+
+		// FIXME srsly...
+		sf::Sleep(0.005f);
 	}
+
+	m_Listener.Close();
 }
 
 void Server::Stop()
 {
-	m_Listener.Close();
+	m_Running = false;
 }

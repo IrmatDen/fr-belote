@@ -13,6 +13,7 @@ Game::Game()
 	: m_RenderWindow(0), m_QuitPending(false), m_ServerThread(&Server::Start, &m_Server)
 {
 	m_RenderWindow = new sf::RenderWindow(sf::VideoMode(800, 600, 32), "Belote");
+	m_RenderWindow->SetFramerateLimit(60);
 	m_RenderWindow->ShowMouseCursor(false);
 
 	m_GuiManager.Initialize(m_RenderWindow);

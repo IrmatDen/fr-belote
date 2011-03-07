@@ -11,6 +11,7 @@ public:
 	ClientSocket();
 
 	void	Connect(const std::string &hostIP, const char *utf8EncodedName);
+	void	Disconnect();
 
 private:
 	ClientSocketPrivate *	m_priv;

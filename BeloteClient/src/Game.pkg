@@ -20,7 +20,11 @@ public:
 	static Game&	getSingleton(void);
 	void			Quit(void);
 
+	void			LoadMenu();
+	void			LoadGame();
+
 	void			StartServer();
 	void			StopServer();
 	void			JoinGame(const std::string &hostIP);
+	void			LeaveGame();
 };

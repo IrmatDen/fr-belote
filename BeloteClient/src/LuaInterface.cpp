@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/07/11 15:58:27.
+** Generated automatically by tolua++-1.0.92 on 03/07/11 19:01:12.
 */
 
 #ifndef __cplusplus
@@ -206,6 +206,68 @@ static int tolua_LuaInterface_Game_Quit00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: LoadMenu of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_LoadMenu00
+static int tolua_LuaInterface_Game_LoadMenu00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"Game",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'LoadMenu'",NULL);
+#endif
+ {
+  self->LoadMenu();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'LoadMenu'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: LoadGame of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_LoadGame00
+static int tolua_LuaInterface_Game_LoadGame00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"Game",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'LoadGame'",NULL);
+#endif
+ {
+  self->LoadGame();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'LoadGame'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: StartServer of class  Game */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_StartServer00
 static int tolua_LuaInterface_Game_StartServer00(lua_State* tolua_S)
@@ -297,6 +359,37 @@ static int tolua_LuaInterface_Game_JoinGame00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'JoinGame'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: LeaveGame of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_LeaveGame00
+static int tolua_LuaInterface_Game_LeaveGame00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"Game",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'LeaveGame'",NULL);
+#endif
+ {
+  self->LeaveGame();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'LeaveGame'.",&tolua_err);
  return 0;
 #endif
 }
@@ -415,9 +508,12 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_variable(tolua_S,"m_GameVars",tolua_get_Game_m_GameVars,tolua_set_Game_m_GameVars);
   tolua_function(tolua_S,"getSingleton",tolua_LuaInterface_Game_getSingleton00);
   tolua_function(tolua_S,"Quit",tolua_LuaInterface_Game_Quit00);
+  tolua_function(tolua_S,"LoadMenu",tolua_LuaInterface_Game_LoadMenu00);
+  tolua_function(tolua_S,"LoadGame",tolua_LuaInterface_Game_LoadGame00);
   tolua_function(tolua_S,"StartServer",tolua_LuaInterface_Game_StartServer00);
   tolua_function(tolua_S,"StopServer",tolua_LuaInterface_Game_StopServer00);
   tolua_function(tolua_S,"JoinGame",tolua_LuaInterface_Game_JoinGame00);
+  tolua_function(tolua_S,"LeaveGame",tolua_LuaInterface_Game_LeaveGame00);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"SoundManager","SoundManager","",NULL);
  tolua_beginmodule(tolua_S,"SoundManager");

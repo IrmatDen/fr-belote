@@ -32,9 +32,15 @@ public:
 	void			Run();
 	void			Quit();
 
+	// UI related
+	void			LoadMenu();
+	void			LoadGame();
+
+	// Network related
 	void			StartServer()							{ m_ServerThread.Launch(); }
 	void			StopServer()							{ m_Server.Stop(); }
 	void			JoinGame(const std::string &hostIP);
+	void			LeaveGame()								{ m_ClientSocket.Disconnect(); }
 
 private:
 	Game();
@@ -52,7 +58,6 @@ private:
 	sf::Thread			m_ServerThread;
 	Server				m_Server;
 	
-	//////////////// TEMP
 	sf::Sprite bgSprite;
 	sf::Image bgImage;
 };

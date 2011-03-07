@@ -87,7 +87,7 @@ namespace States
 
 		virtual void	Enter()
 		{
-			m_StateMachine->Notify(NEC_DisconnectionRequest);
+			//m_StateMachine->Notify(NEC_DisconnectionRequest);
 		}
 	};
 
@@ -152,7 +152,7 @@ namespace Actions
 			m_Socket.Send(p);
 			
 			m_Socket.Disconnect();
-			std::cout << "Disconnected" << std::endl;
+			std::cout << "[Client] Disconnected" << std::endl;
 		}
 	};
 }
@@ -191,9 +191,16 @@ public:
 
 	void	Connect(const std::string &hostIP, const char *utf8EncodedName)
 	{
+		m_DisconnectRequested				= false;
 		m_ActionConnect->m_HostIP			= sf::IpAddress(hostIP);
 		m_ActionSendName->m_Utf8EncodedName	= utf8EncodedName;
+
 		m_Thread->Launch();
+	}
+
+	void	Disconnect()
+	{
+		m_DisconnectRequested = true;
 	}
 
 private:
@@ -204,6 +211,10 @@ private:
 		while (!m_StateMachine->IsStopped())
 		{
 			m_StateMachine->Update();
+
+			if (m_DisconnectRequested)
+				m_StateMachine->Notify(NEC_DisconnectionRequest);
+
 			sf::Sleep(0.05f);
 		}
 	}
@@ -213,6 +224,10 @@ private:
 	sf::TcpSocket	m_Socket;
 	sf::Thread *	m_Thread;
 
+	// Flags
+	bool			m_DisconnectRequested;
+
+	// State machine
 	StateMachine	* m_StateMachine;
 
 	State		* m_StateWfc,
@@ -234,4 +249,9 @@ ClientSocket::ClientSocket()
 void ClientSocket::Connect(const std::string &hostIP, const char *utf8EncodedName)
 {
 	m_priv->Connect(hostIP, utf8EncodedName);
+}
+
+void ClientSocket::Disconnect()
+{
+	m_priv->Disconnect();
 }

@@ -18,12 +18,7 @@ Game::Game()
 
 	m_GuiManager.Initialize(m_RenderWindow);
 
-
-	///////// TEMP
-	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
-
-	bgImage.LoadFromFile("Gui/ScreenMenu.png");
-	bgSprite.SetImage(bgImage);
+	LoadMenu();
 }
 
 Game::~Game()
@@ -88,6 +83,24 @@ void Game::Run()
 void Game::Quit()
 {
 	m_QuitPending = true;
+}
+
+void Game::LoadMenu()
+{
+	CEGUI::WindowManager::getSingleton().destroyAllWindows();
+	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
+
+	bgImage.LoadFromFile("Gui/ScreenMenu.png");
+	bgSprite.SetImage(bgImage);
+}
+
+void Game::LoadGame()
+{
+	CEGUI::WindowManager::getSingleton().destroyAllWindows();
+	CEGUI::System::getSingleton().executeScriptFile("ScreenGame.lua");
+
+	bgImage.LoadFromFile("Gui/ScreenGame.png");
+	bgSprite.SetImage(bgImage);
 }
 
 void Game::JoinGame(const std::string &hostIP)

@@ -18,6 +18,7 @@ namespace
 		NEC_Connected,
 		NEC_SendName,
 		NEC_CantConnect,
+		NEC_SendTextMessage,
 		NEC_DisconnectionRequest,
 	};
 
@@ -89,8 +90,10 @@ namespace
 
 			virtual void	Update()
 			{
+				m_Socket.SetBlocking(false);
 				sf::Packet p;
 				sf::Socket::Status s = m_Socket.Receive(p);
+				m_Socket.SetBlocking(true);
 
 				if (s == sf::Socket::Done)
 				{
@@ -161,6 +164,26 @@ namespace
 			const char		*m_Utf8EncodedName;
 		};
 
+		struct SendTextMessage : public ActionBase
+		{
+			SendTextMessage(sf::TcpSocket &socket)
+				: ActionBase(socket)
+			{ ; }
+
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_ClientTextMessage << m_Utf8EncodedText.c_str();
+				sf::Socket::Status s = m_Socket.Send(p);
+
+				// Error checking
+				if (s != sf::Socket::Done)
+					std::cout << "[Client] Error sending name in Actions::SendTextMessage. Error code: " << s << std::endl;
+			}
+
+			std::string		m_Utf8EncodedText;
+		};
+
 		struct Disconnect : public ActionBase
 		{
 			Disconnect(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
@@ -199,6 +222,7 @@ public:
 		// Actions
 		m_ActionConnect		= new Actions::Connect(m_Socket);
 		m_ActionSendName	= new Actions::SendName(m_Socket);
+		m_ActionSendTxtMsg	= new Actions::SendTextMessage(m_Socket);
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
 		
 		// Transitions
@@ -206,6 +230,7 @@ public:
 		m_StateConnecting->AddTransition(NEC_Connected,				m_StateConnected							);
 		m_StateConnecting->AddTransition(NEC_CantConnect,			m_StateDisconnected							);
 		m_StateConnected->AddTransition	(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
+		m_StateIdle->AddTransition		(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
 		m_StateIdle->AddTransition		(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
@@ -223,6 +248,12 @@ public:
 		m_DisconnectRequested = true;
 	}
 
+	void	SendChatMessage(const std::string &utf8EncodedMessage)
+	{
+		m_ActionSendTxtMsg->m_Utf8EncodedText = utf8EncodedMessage;
+		m_StateMachine->Notify(NEC_SendTextMessage);
+	}
+
 private:
 	void	ThreadEP()
 	{
@@ -238,6 +269,8 @@ private:
 
 			sf::Sleep(0.05f);
 		}
+
+		int n = 42;
 	}
 
 private:
@@ -257,9 +290,10 @@ private:
 				* m_StateIdle,
 				* m_StateDisconnected;
 	
-	Actions::Connect	* m_ActionConnect;
-	Actions::SendName	* m_ActionSendName;
-	Action				* m_ActionDisconnect;
+	Actions::Connect			* m_ActionConnect;
+	Actions::SendName			* m_ActionSendName;
+	Actions::SendTextMessage	* m_ActionSendTxtMsg;
+	Action						* m_ActionDisconnect;
 };
 
 ClientSocket::ClientSocket()
@@ -284,4 +318,5 @@ void ClientSocket::Disconnect()
 
 void ClientSocket::SendChatMessage(const std::string &utf8EncodedMessage)
 {
+	m_priv->SendChatMessage(utf8EncodedMessage);
 }

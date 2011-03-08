@@ -76,21 +76,34 @@ namespace
 
 			virtual void	Update()
 			{
-				sf::Packet p;
-				sf::Socket::Status s = m_Socket->Receive(p);
+				sf::Packet packet;
+				sf::Socket::Status s = m_Socket->Receive(packet);
 
 				if (s == sf::Socket::Done)
 				{
 					PacketType pt;
-					p >> pt;
+					packet >> pt;
 
-					if (pt == PT_ClientLeave)
+					switch (pt)
 					{
+					case PT_ClientLeave:
 						std::cout << "[Server] Everybody say byebye to <someone>" << std::endl;
 						m_StateMachine->Stop();
-					}
-					else
+						break;
+						
+					case PT_ClientTextMessage:
+						{
+							std::string uft8EncodedMsg;
+							packet >> uft8EncodedMsg;
+							std::cout << "[Server] <someone> says " << uft8EncodedMsg << std::endl;
+							m_StateMachine->Stop();
+						}
+						break;
+
+					default:
 						std::cout << "[Server] Unexpected packet received in State::Idle::Update. Packet type is: " << pt << std::endl;
+						break;
+					};
 				}
 			}
 		};

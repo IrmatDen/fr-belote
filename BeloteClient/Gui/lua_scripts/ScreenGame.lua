@@ -5,6 +5,14 @@
 -----------------------------------------
 -- Start of handler functions
 -----------------------------------------
+
+function onSendChatText(args)
+	local we = CEGUI.toWindowEventArgs(args)
+	local game = Game:getSingleton()
+	local client = game:GetClientSocket()
+	
+	client:SendChatMessage(we.window:getText())
+end
 	
 function onQuitTable(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
@@ -37,4 +45,6 @@ guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
 -- subscribe required events
+local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
+chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
 winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")

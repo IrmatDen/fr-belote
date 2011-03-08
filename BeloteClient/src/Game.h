@@ -24,7 +24,6 @@ public:
 	{
 		GameMode		m_GameMode;
 		CEGUI::String	m_PlayerName;
-		std::string		m_HostIP;		//!< Only used if the player tries to join a distant game.
 	} m_GameVars;
 
 public:
@@ -37,10 +36,9 @@ public:
 	void			LoadGame();
 
 	// Network related
+	ClientSocket&	GetClientSocket()						{ return m_ClientSocket; }
 	void			StartServer()							{ m_ServerThread.Launch(); }
 	void			StopServer()							{ m_Server.Stop(); }
-	void			JoinGame(const std::string &hostIP);
-	void			LeaveGame()								{ m_ClientSocket.Disconnect(); }
 
 private:
 	Game();

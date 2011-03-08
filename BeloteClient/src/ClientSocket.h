@@ -11,7 +11,8 @@ public:
 	ClientSocket();
 	~ClientSocket();
 
-	void	Connect(const std::string &hostIP, const char *utf8EncodedName);
+	void	Connect(const std::string &hostIP, const  char *utf8EncodedName);
+	void	SendChatMessage(const std::string &utf8EncodedMessage);
 	void	Disconnect();
 
 private:

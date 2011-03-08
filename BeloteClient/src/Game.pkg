@@ -11,7 +11,6 @@ public:
 	{
 		GameMode		m_GameMode;
 		CEGUI::String	m_PlayerName;
-		std::string		m_HostIP;
 	};
 
 	GameVars m_GameVars;
@@ -23,8 +22,7 @@ public:
 	void			LoadMenu();
 	void			LoadGame();
 
+	ClientSocket&	GetClientSocket();
 	void			StartServer();
 	void			StopServer();
-	void			JoinGame(const std::string &hostIP);
-	void			LeaveGame();
 };

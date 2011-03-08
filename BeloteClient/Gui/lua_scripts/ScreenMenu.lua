@@ -32,8 +32,7 @@ end
 function onHostGame(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
 	
-	local g = Game:getSingleton()
-	g.m_GameVars.m_GameMode = Game.GM_HOST
+	Game:getSingleton().m_GameVars.m_GameMode = Game.GM_HOST
 	
 	displayScreen("MenuScreenRules")
 end
@@ -57,14 +56,15 @@ function onRulesStart(args)
 
 	-- Save player's name
 	local winMgr = CEGUI.WindowManager:getSingleton()
-	local g = Game:getSingleton()
+	local game = Game:getSingleton()
+	local client = game:GetClientSocket()
 	local pnameBox = winMgr:getWindow("MenuScreenRules/PlayerName")
-	GUIManager:LuaStringToCEGUIString(pnameBox:getText(), g.m_GameVars.m_PlayerName)
+	GUIManager:LuaStringToCEGUIString(pnameBox:getText(), game.m_GameVars.m_PlayerName)
 	
 	-- No worries about joining another host, since only the host gets to the rules def screen
-	g:StartServer()
-	g:JoinGame("127.0.0.1")
-	g:LoadGame()
+	game:StartServer()
+	client:Connect("127.0.0.1", game.m_GameVars.m_PlayerName:c_str())
+	game:LoadGame()
 end
 
 	-- Join game screen
@@ -84,16 +84,16 @@ function onDoJoinGame(args)
 	
 	-- Save game vars
 	local winMgr = CEGUI.WindowManager:getSingleton()
-	local g = Game:getSingleton()
+	local game = Game:getSingleton()
+	local client = game:GetClientSocket()
 	
 	local pnameBox = winMgr:getWindow("MenuScreenJoinGame/PlayerNameClient")
-	GUIManager:LuaStringToCEGUIString(pnameBox:getText(), g.m_GameVars.m_PlayerName)
+	--GUIManager:LuaStringToCEGUIString(pnameBox:getText(), game.m_GameVars.m_PlayerName)
 	
 	local hostIpBox = winMgr:getWindow("MenuScreenJoinGame/HostIP")
-	g.m_GameVars.m_HostIP = hostIpBox:getText()
 	
-	g:JoinGame(g.m_GameVars.m_HostIP)
-	g:LoadGame()
+	client:Connect(hostIpBox:getText(), pnameBox:getText())
+	game:LoadGame()
 end
 
 -----------------------------------------

@@ -1,7 +1,9 @@
 $#include "Game.h"
 $#include "SoundManager.h"
 $#include "GUIManager.h"
+$#include "ClientSocket.h"
 
 $pfile "Game.pkg"
 $pfile "SoundManager.pkg"
 $pfile "GUIManager.pkg"
+$pfile "ClientSocket.pkg"

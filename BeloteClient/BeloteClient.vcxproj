@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Gui\lua_scripts\ScreenMenu.lua" />
+    <None Include="src\ClientSocket.pkg" />
     <None Include="src\Game.pkg" />
     <None Include="src\GUIManager.pkg" />
     <None Include="src\LuaInterface.pkg" />

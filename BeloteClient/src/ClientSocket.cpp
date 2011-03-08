@@ -272,7 +272,7 @@ ClientSocket::~ClientSocket()
 	delete m_priv;
 }
 
-void ClientSocket::Connect(const std::string &hostIP, const char *utf8EncodedName)
+void ClientSocket::Connect(const std::string &hostIP, const  char *utf8EncodedName)
 {
 	m_priv->Connect(hostIP, utf8EncodedName);
 }
@@ -280,4 +280,8 @@ void ClientSocket::Connect(const std::string &hostIP, const char *utf8EncodedNam
 void ClientSocket::Disconnect()
 {
 	m_priv->Disconnect();
+}
+
+void ClientSocket::SendChatMessage(const std::string &utf8EncodedMessage)
+{
 }

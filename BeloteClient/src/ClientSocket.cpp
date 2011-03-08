@@ -238,8 +238,6 @@ private:
 
 			sf::Sleep(0.05f);
 		}
-
-		int n = 42;
 	}
 
 private:

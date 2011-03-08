@@ -1,4 +1,11 @@
-class ClientSocket
+class TextBroadcastedEventArgs : public CEGUI::EventArgs
+{
+public:
+	std::string	m_Teller,
+				m_Message;
+};
+
+class ClientSocket : public CEGUI::EventSet
 {
 public:
 	void	Connect(const std::string &hostIP, const char *utf8EncodedName);

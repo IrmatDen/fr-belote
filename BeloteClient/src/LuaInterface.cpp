@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/08/11 14:43:16.
+** Generated automatically by tolua++-1.0.92 on 03/08/11 16:54:06.
 */
 
 #ifndef __cplusplus
@@ -21,12 +21,15 @@ int tolua_LuaInterface_open (lua_State* tolua_S);
 /* function to register type */
 static void tolua_reg_types (lua_State* tolua_S)
 {
- tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"Game::GameVars");
+ tolua_usertype(tolua_S,"GUIManager");
  tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"SoundManager");
+ tolua_usertype(tolua_S,"CEGUI::EventArgs");
+ tolua_usertype(tolua_S,"CEGUI::String");
  tolua_usertype(tolua_S,"Game");
- tolua_usertype(tolua_S,"GUIManager");
- tolua_usertype(tolua_S,"Game::GameVars");
+ tolua_usertype(tolua_S,"TextBroadcastedEventArgs");
+ tolua_usertype(tolua_S,"CEGUI::EventSet");
 }
 
 /* get function: m_GameMode of class  GameVars */
@@ -427,6 +430,66 @@ static int tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00(lua_State* tol
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_Teller of class  TextBroadcastedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_get_TextBroadcastedEventArgs_m_Teller
+static int tolua_get_TextBroadcastedEventArgs_m_Teller(lua_State* tolua_S)
+{
+  TextBroadcastedEventArgs* self = (TextBroadcastedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Teller'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_Teller);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Teller of class  TextBroadcastedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_set_TextBroadcastedEventArgs_m_Teller
+static int tolua_set_TextBroadcastedEventArgs_m_Teller(lua_State* tolua_S)
+{
+  TextBroadcastedEventArgs* self = (TextBroadcastedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Teller'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Teller = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_Message of class  TextBroadcastedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_get_TextBroadcastedEventArgs_m_Message
+static int tolua_get_TextBroadcastedEventArgs_m_Message(lua_State* tolua_S)
+{
+  TextBroadcastedEventArgs* self = (TextBroadcastedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Message'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_Message);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Message of class  TextBroadcastedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_set_TextBroadcastedEventArgs_m_Message
+static int tolua_set_TextBroadcastedEventArgs_m_Message(lua_State* tolua_S)
+{
+  TextBroadcastedEventArgs* self = (TextBroadcastedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Message'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Message = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -564,7 +627,12 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"GUIManager");
   tolua_function(tolua_S,"LuaStringToCEGUIString",tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00);
  tolua_endmodule(tolua_S);
- tolua_cclass(tolua_S,"ClientSocket","ClientSocket","",NULL);
+ tolua_cclass(tolua_S,"TextBroadcastedEventArgs","TextBroadcastedEventArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"TextBroadcastedEventArgs");
+  tolua_variable(tolua_S,"m_Teller",tolua_get_TextBroadcastedEventArgs_m_Teller,tolua_set_TextBroadcastedEventArgs_m_Teller);
+  tolua_variable(tolua_S,"m_Message",tolua_get_TextBroadcastedEventArgs_m_Message,tolua_set_TextBroadcastedEventArgs_m_Message);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");
   tolua_function(tolua_S,"Connect",tolua_LuaInterface_ClientSocket_Connect00);
   tolua_function(tolua_S,"SendChatMessage",tolua_LuaInterface_ClientSocket_SendChatMessage00);

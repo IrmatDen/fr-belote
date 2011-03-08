@@ -201,10 +201,10 @@ public:
 		m_ActionsWithSocket.push_back(m_ActionBroadcastText);
 
 		// Transitions
-		m_StateConnectionRequest->AddTransition	(NEC_WaitingName,			m_StateWaitingName,		m_ActionAcceptConnection);
-		m_StateWaitingName->AddTransition		(NEC_NameReceived,			m_StateIdle										);
-		m_StateIdle->AddTransition				(NEC_BroadcastTextRequest,	m_StateIdle,			m_ActionBroadcastText	);
-		m_StateIdle->AddTransition				(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect		);
+		m_StateConnectionRequest->AddTransition(NEC_WaitingName,			m_StateWaitingName,		m_ActionAcceptConnection);
+		m_StateWaitingName		->AddTransition(NEC_NameReceived,			m_StateIdle										);
+		m_StateIdle				->AddTransition(NEC_BroadcastTextRequest,	m_StateIdle,			m_ActionBroadcastText	);
+		m_StateIdle				->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect		);
 	}
 
 	~ServerSocketPrivate()

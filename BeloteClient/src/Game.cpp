@@ -34,37 +34,9 @@ void Game::Init()
 void Game::Run()
 {
 	sf::Clock clock;
-	sf::Event event;
 	while (m_RenderWindow->IsOpened())
 	{
-		while (!m_QuitPending && m_RenderWindow->GetEvent(event))
-		{
-			if (m_GuiManager.HandleEvent(event))
-				continue;
-
-			switch (event.Type)
-			{
-			case sf::Event::Closed:
-				Quit();
-				break;
-
-			case sf::Event::KeyPressed:
-				{
-					switch (event.Key.Code)
-					{
-					case sf::Key::Escape:
-						Quit();
-						break;
-
-					default:
-						break;
-					}
-				}
-				
-			default:
-				break;
-			}
-		}
+		HandleEvents();
 
 		if (m_QuitPending)
 		{
@@ -73,10 +45,46 @@ void Game::Run()
 				m_RenderWindow->Close();
 		}
 
-		m_RenderWindow->Draw(bgSprite);
+		m_ClientSocket.Update();
+
+		m_RenderWindow->Draw(m_BgSprite);
 		m_GuiManager.UpdateAndDraw(clock.GetElapsedTime());
 		clock.Reset();
 		m_RenderWindow->Display();
+	}
+}
+
+void Game::HandleEvents()
+{
+	sf::Event event;
+
+	while (!m_QuitPending && m_RenderWindow->GetEvent(event))
+	{
+		if (m_GuiManager.HandleEvent(event))
+			continue;
+
+		switch (event.Type)
+		{
+		case sf::Event::Closed:
+			Quit();
+			break;
+
+		case sf::Event::KeyPressed:
+			{
+				switch (event.Key.Code)
+				{
+				case sf::Key::Escape:
+					Quit();
+					break;
+
+				default:
+					break;
+				}
+			}
+				
+		default:
+			break;
+		}
 	}
 }
 
@@ -90,8 +98,8 @@ void Game::LoadMenu()
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
 	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
 
-	bgImage.LoadFromFile("Gui/ScreenMenu.png");
-	bgSprite.SetImage(bgImage);
+	m_BgImage.LoadFromFile("Gui/ScreenMenu.png");
+	m_BgSprite.SetImage(m_BgImage);
 }
 
 void Game::LoadGame()
@@ -99,6 +107,6 @@ void Game::LoadGame()
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
 	CEGUI::System::getSingleton().executeScriptFile("ScreenGame.lua");
 
-	bgImage.LoadFromFile("Gui/ScreenGame.png");
-	bgSprite.SetImage(bgImage);
+	m_BgImage.LoadFromFile("Gui/ScreenGame.png");
+	m_BgSprite.SetImage(m_BgImage);
 }

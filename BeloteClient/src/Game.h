@@ -43,7 +43,10 @@ public:
 private:
 	Game();
 	~Game();
+
+	void	HandleEvents();
 	
+private:
 	sf::RenderWindow *	m_RenderWindow;
 	GUIManager			m_GuiManager;
 
@@ -56,8 +59,8 @@ private:
 	sf::Thread			m_ServerThread;
 	Server				m_Server;
 	
-	sf::Sprite bgSprite;
-	sf::Image bgImage;
+	sf::Sprite			m_BgSprite;
+	sf::Image			m_BgImage;
 };
 
 #endif

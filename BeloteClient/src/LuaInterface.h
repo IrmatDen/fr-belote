@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/08/11 14:43:16.
+** Generated automatically by tolua++-1.0.92 on 03/08/11 16:54:06.
 */
 
 /* Exported function */

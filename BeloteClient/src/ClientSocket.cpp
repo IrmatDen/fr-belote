@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
 #include "Packets.h"
@@ -8,6 +7,9 @@
 
 #include "ClientSocket.h"
 #include "StateMachine.h"
+
+const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
+const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 
 // Define network state machine stuff...
 namespace
@@ -84,8 +86,8 @@ namespace
 
 		struct Idle : public State
 		{
-			Idle(StateMachine *sm, sf::TcpSocket &socket)
-				: State(sm), m_Socket(socket)
+			Idle(StateMachine *sm, sf::TcpSocket &socket, ClientSocket *self)
+				: State(sm), m_Socket(socket), m_Self(self)
 			{ ; }
 
 			virtual void	Update()
@@ -109,10 +111,9 @@ namespace
 
 					case PT_ServerBroadcastTextMessage:
 						{
-							std::string uft8EncodedSayer, uft8EncodedMsg;
-							packet >> uft8EncodedSayer >> uft8EncodedMsg;
-							std::cout << "[Client] Server broadcast msg from " << uft8EncodedSayer << " saying: " << uft8EncodedMsg << std::endl;
-							//m_StateMachine->Notify(NEC_DisconnectionRequest);
+							TextBroadcastedEventArgs args;
+							packet >> args.m_Teller >> args.m_Message;
+							m_Self->EnqueueBroadcastedText(args);
 						}
 						break;
 
@@ -123,7 +124,8 @@ namespace
 				}
 			}
 
-			sf::TcpSocket &m_Socket;
+			sf::TcpSocket	& m_Socket;
+			ClientSocket	* m_Self;
 		};
 
 		struct Disconnected : public State
@@ -217,8 +219,8 @@ namespace
 class ClientSocketPrivate
 {
 public:
-	ClientSocketPrivate()
-		: m_Thread(0)
+	ClientSocketPrivate(ClientSocket *self)
+		: m_Thread(0), m_Self(self)
 	{
 		m_Thread = new sf::Thread(&ClientSocketPrivate::ThreadEP, this);
 
@@ -229,7 +231,7 @@ public:
 		m_StateWfc			= new States::WaitingForConnection(m_StateMachine);
 		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
 		m_StateConnected	= new States::Connected(m_StateMachine);
-		m_StateIdle			= new States::Idle(m_StateMachine, m_Socket);
+		m_StateIdle			= new States::Idle(m_StateMachine, m_Socket, m_Self);
 		m_StateDisconnected	= new States::Disconnected(m_StateMachine);
 
 		// Actions
@@ -239,12 +241,12 @@ public:
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
 		
 		// Transitions
-		m_StateWfc->AddTransition		(NEC_ConnectionRequest,		m_StateConnecting,		m_ActionConnect		);
-		m_StateConnecting->AddTransition(NEC_Connected,				m_StateConnected							);
-		m_StateConnecting->AddTransition(NEC_CantConnect,			m_StateDisconnected							);
-		m_StateConnected->AddTransition	(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
-		m_StateIdle->AddTransition		(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
-		m_StateIdle->AddTransition		(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
+		m_StateWfc			->AddTransition(NEC_ConnectionRequest,		m_StateConnecting,		m_ActionConnect		);
+		m_StateConnecting	->AddTransition(NEC_Connected,				m_StateConnected							);
+		m_StateConnecting	->AddTransition(NEC_CantConnect,			m_StateDisconnected							);
+		m_StateConnected	->AddTransition(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
+		m_StateIdle			->AddTransition(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
+		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
 	void	Connect(const std::string &hostIP, const char *utf8EncodedName)
@@ -289,7 +291,8 @@ private:
 private:
 	sf::IpAddress	m_HostIP;
 	sf::TcpSocket	m_Socket;
-	sf::Thread *	m_Thread;
+	sf::Thread		* m_Thread;
+	ClientSocket	* m_Self;
 
 	// Flags
 	bool			m_DisconnectRequested;
@@ -310,8 +313,8 @@ private:
 };
 
 ClientSocket::ClientSocket()
-	: m_priv(new ClientSocketPrivate)
 {
+	m_priv = new ClientSocketPrivate(this);
 }
 
 ClientSocket::~ClientSocket()
@@ -332,4 +335,22 @@ void ClientSocket::Disconnect()
 void ClientSocket::SendChatMessage(const std::string &utf8EncodedMessage)
 {
 	m_priv->SendChatMessage(utf8EncodedMessage);
+}
+
+void ClientSocket::EnqueueBroadcastedText(const TextBroadcastedEventArgs &args)
+{
+	sf::Lock lock(m_TextBroadcastedQueueMutex);
+	m_TextBroadcastedQueue.push(args);
+}
+
+void ClientSocket::Update()
+{
+	sf::Lock lock(m_TextBroadcastedQueueMutex);
+	while (!m_TextBroadcastedQueue.empty())
+	{
+		TextBroadcastedEventArgs args = m_TextBroadcastedQueue.front();
+		m_TextBroadcastedQueue.pop();
+
+		fireEvent(EventTextBroadcasted, args, EventNamespace);
+	}
 }

@@ -39,7 +39,7 @@ public:
 			parseTextString();
 
 		CEGUI::Sizef parentsi = getOwnerWindow()->getInnerRectClipper().getSize();
-		parentsi.d_width -= 20; // TODO - change constant by the real value of the scrollbar
+		parentsi.d_width -= 30; // TODO - change constant by the real value of the scrollbar
       
 		d_formattedRenderedString->format(parentsi);
 		return CEGUI::Sizef(parentsi.d_width, d_formattedRenderedString->getVerticalExtent());
@@ -57,9 +57,7 @@ public:
 
 		const ColourRect final_colours(getModulateAlphaColourRect(ColourRect(0xFFFFFFFF), alpha));
 
-		d_formattedRenderedString->draw(buffer,
-			targetRect.getPosition(),
-			&final_colours, clipper);
+		d_formattedRenderedString->draw(buffer, targetRect.getPosition(), &final_colours, clipper);
 	}
 };
 

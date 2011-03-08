@@ -88,8 +88,6 @@ function onDoJoinGame(args)
 	local client = game:GetClientSocket()
 	
 	local pnameBox = winMgr:getWindow("MenuScreenJoinGame/PlayerNameClient")
-	--GUIManager:LuaStringToCEGUIString(pnameBox:getText(), game.m_GameVars.m_PlayerName)
-	
 	local hostIpBox = winMgr:getWindow("MenuScreenJoinGame/HostIP")
 	
 	client:Connect(hostIpBox:getText(), pnameBox:getText())

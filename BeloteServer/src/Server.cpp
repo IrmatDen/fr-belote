@@ -35,6 +35,10 @@ void Server::Start()
 		// FIXME srsly...
 		sf::Sleep(0.005f);
 	}
+	
+	// Notify clients that the server is shutting down
+	for (int i = 0; i != MAX_CLIENTS; i++)
+		m_Clients[i]->CloseConnection();
 
 	m_Listener.Close();
 }

@@ -9,108 +9,131 @@
 #include "Packets.h"
 
 // Define network state machine stuff...
-enum NetworkEventCodes
+namespace
 {
-	NEC_WaitingName,
-	NEC_NameReceived,
-};
-
-namespace States
-{
-	struct Base : public State
+	enum NetworkEventCodes
 	{
-		Base(StateMachine *sm) : State(sm), m_Socket(0)		{ ; }
+		NEC_WaitingName,
+		NEC_NameReceived,
+		NEC_DisconnectionRequest,
+	};
+
+	namespace States
+	{
+		struct Base : public State
+		{
+			Base(StateMachine *sm) : State(sm), m_Socket(0)		{ ; }
 		
-		sf::TcpSocket	*m_Socket;
-	};
+			sf::TcpSocket	*m_Socket;
+		};
 
-	struct ConnectionRequest : public Base
-	{
-		ConnectionRequest(StateMachine *sm) : Base(sm)	{ ; }
-
-		virtual void	Enter()
+		struct ConnectionRequest : public Base
 		{
-			std::cout << "[Server] Accepting connection" << std::endl;
-			m_StateMachine->Notify(NEC_WaitingName);
-		}
-	};
+			ConnectionRequest(StateMachine *sm) : Base(sm)	{ ; }
 
-	struct WaitingName : public Base
-	{
-		WaitingName(StateMachine *sm) : Base(sm)	{ ; }
-
-		virtual void	Update()
-		{
-			sf::Packet p;
-			sf::Socket::Status s = m_Socket->Receive(p);
-
-			if (s == sf::Socket::Done)
+			virtual void	Enter()
 			{
-				PacketType pt;
-				p >> pt;
-
-				if (pt == PT_ClientName)
-				{
-					std::string n;
-					p >> n;
-					std::cout << "[Server] Everybody say welcome to " << n << std::endl;
-					m_StateMachine->Notify(NEC_NameReceived);
-				}
-				else
-					std::cout << "[Server] Unexpected packet received in State::WaitingName::Update. Packet type is: " << pt << std::endl;
+				std::cout << "[Server] Accepting connection" << std::endl;
+				m_StateMachine->Notify(NEC_WaitingName);
 			}
-		}
-	};
+		};
 
-	struct Idle : public Base
-	{
-		Idle(StateMachine *sm) : Base(sm)	{ ; }
-
-		virtual void	Enter()
+		struct WaitingName : public Base
 		{
-			std::cout << "[Server] Start procastinating" << std::endl;
-		}
+			WaitingName(StateMachine *sm) : Base(sm)	{ ; }
 
-		virtual void	Update()
-		{
-			sf::Packet p;
-			sf::Socket::Status s = m_Socket->Receive(p);
-
-			if (s == sf::Socket::Done)
+			virtual void	Update()
 			{
-				PacketType pt;
-				p >> pt;
+				sf::Packet p;
+				sf::Socket::Status s = m_Socket->Receive(p);
 
-				if (pt == PT_ClientLeave)
+				if (s == sf::Socket::Done)
 				{
-					std::cout << "[Server] Everybody say byebye to <someone>" << std::endl;
-					m_StateMachine->Stop();
+					PacketType pt;
+					p >> pt;
+
+					if (pt == PT_ClientName)
+					{
+						std::string n;
+						p >> n;
+						std::cout << "[Server] Everybody say welcome to " << n << std::endl;
+						m_StateMachine->Notify(NEC_NameReceived);
+					}
+					else
+						std::cout << "[Server] Unexpected packet received in State::WaitingName::Update. Packet type is: " << pt << std::endl;
 				}
-				else
-					std::cout << "[Server] Unexpected packet received in State::Idle::Update. Packet type is: " << pt << std::endl;
 			}
-		}
-	};
-}
+		};
 
-namespace Actions
-{
-	struct Base : public Action
-	{
-		Base() : m_Socket(0)	{ ; }
-
-		sf::TcpSocket *	m_Socket;
-	};
-
-	struct AcceptConnection : public Base
-	{
-		virtual void operator()()
+		struct Idle : public Base
 		{
-			sf::Packet p;
-			p << PT_ConnectionAccepted;
-			m_Socket->Send(p);
-		}
-	};
+			Idle(StateMachine *sm) : Base(sm)	{ ; }
+
+			virtual void	Enter()
+			{
+				std::cout << "[Server] Start procastinating" << std::endl;
+			}
+
+			virtual void	Update()
+			{
+				sf::Packet p;
+				sf::Socket::Status s = m_Socket->Receive(p);
+
+				if (s == sf::Socket::Done)
+				{
+					PacketType pt;
+					p >> pt;
+
+					if (pt == PT_ClientLeave)
+					{
+						std::cout << "[Server] Everybody say byebye to <someone>" << std::endl;
+						m_StateMachine->Stop();
+					}
+					else
+						std::cout << "[Server] Unexpected packet received in State::Idle::Update. Packet type is: " << pt << std::endl;
+				}
+			}
+		};
+
+		struct Disconnected : public State
+		{
+			Disconnected(StateMachine *sm) : State(sm)	{ ; }
+
+			virtual void	Enter()		{ m_StateMachine->Stop(); }
+		};
+	}
+
+	namespace Actions
+	{
+		struct Base : public Action
+		{
+			Base() : m_Socket(0)	{ ; }
+
+			sf::TcpSocket *	m_Socket;
+		};
+
+		struct AcceptConnection : public Base
+		{
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_ConnectionAccepted;
+				m_Socket->Send(p);
+			}
+		};
+
+		struct Disconnect : public Base
+		{
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_ServerShuttingDown;
+				m_Socket->Send(p);
+
+				std::cout << "[Server] Disconnected <someone>" << std::endl;
+			}
+		};
+	}
 }
 
 // ServerSocket implementation
@@ -127,18 +150,22 @@ public:
 		m_StateConnectionRequest	= new States::ConnectionRequest(m_StateMachine);
 		m_StateWaitingName			= new States::WaitingName(m_StateMachine);
 		m_StateIdle					= new States::Idle(m_StateMachine);
+		m_StateDisconnected			= new States::Disconnected(m_StateMachine);
 
 		m_StatesWithSocket.push_back((States::Base*)m_StateWaitingName);
 		m_StatesWithSocket.push_back((States::Base*)m_StateIdle);
 
 		// Actions
 		m_ActionAcceptConnection	= new Actions::AcceptConnection();
+		m_ActionDisconnect			= new Actions::Disconnect();
 
 		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionAcceptConnection);
+		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionDisconnect);
 
 		// Transitions
-		m_StateConnectionRequest->AddTransition	(NEC_WaitingName,		m_StateWaitingName,		m_ActionAcceptConnection);
-		m_StateWaitingName->AddTransition		(NEC_NameReceived,		m_StateIdle										);
+		m_StateConnectionRequest->AddTransition	(NEC_WaitingName,			m_StateWaitingName,		m_ActionAcceptConnection);
+		m_StateWaitingName->AddTransition		(NEC_NameReceived,			m_StateIdle										);
+		m_StateIdle->AddTransition				(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect		);
 	}
 
 	~ServerSocketPrivate()
@@ -146,7 +173,7 @@ public:
 		delete m_StateMachine;
 	}
 
-	void	SetSocket(sf::TcpSocket *socket)
+	void SetSocket(sf::TcpSocket *socket)
 	{
 		m_Socket = socket;
 		std::for_each(m_StatesWithSocket.begin(), m_StatesWithSocket.end(),
@@ -155,15 +182,33 @@ public:
 				[this](Actions::Base *ab) { ab->m_Socket = m_Socket; });
 	}
 
-	void	Start()								{ m_StateMachine->Start(m_StateConnectionRequest); }
-	void	Update()
+	void Start()
+	{
+		m_StateMachine->Start(m_StateConnectionRequest);
+	}
+
+	void Update()
 	{
 		if (!m_StateMachine->IsStopped())
 			m_StateMachine->Update();
 		else // free the slot
 			m_Socket->Disconnect();
 	}
-	void	Abort()								{ /* do something, one day. */ }
+
+	void Abort()
+	{
+		if (!m_Socket)
+			return;
+
+		if (!m_StateMachine->IsStopped())
+		{
+			m_StateMachine->Notify(NEC_DisconnectionRequest);
+			m_StateMachine->Update();
+		}
+
+		m_Socket->Disconnect();
+		m_Socket = 0;
+	}
 
 private:
 	sf::TcpSocket	* m_Socket;
@@ -173,10 +218,12 @@ private:
 	std::vector<States::Base*>	m_StatesWithSocket;
 	State		* m_StateConnectionRequest,
 				* m_StateWaitingName,
-				* m_StateIdle;
+				* m_StateIdle,
+				* m_StateDisconnected;
 	
 	std::vector<Actions::Base*>	m_ActionsWithSocket;
-	Action		* m_ActionAcceptConnection;
+	Action		* m_ActionAcceptConnection,
+				* m_ActionDisconnect;
 };
 
 ServerSocket::ServerSocket()
@@ -208,6 +255,7 @@ void ServerSocket::Update()
 
 void ServerSocket::CloseConnection()
 {
+	// We want to be sure that the clients will get his disconnection message.
+	m_Socket.SetBlocking(true);
 	m_priv->Abort();
-	m_Socket.Disconnect();
 }

@@ -11,8 +11,13 @@ function onQuitTable(args)
 
 	-- Save player's name
 	local g = Game:getSingleton()
-	g:StopServer() -- Is a no-op if the client is not the server.
-	g:LeaveGame()
+	if g.m_GameVars.m_GameMode == Game.GM_HOST then
+		g:StopServer()
+		-- Client's disconnection is implied by the server shutting down; no need to repeat.
+	else
+		g:LeaveGame()
+	end
+	
 	g:LoadMenu()
 end
 	
@@ -42,4 +47,4 @@ guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 -- Misc. setup
 
 -- subscribe required events
-winMgr:getWindow("GameScreen/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
+winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")

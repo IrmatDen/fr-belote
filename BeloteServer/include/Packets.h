@@ -7,7 +7,8 @@ enum PacketType
 {
 	PT_ConnectionAccepted,
 	PT_ClientName,
-	PT_ClientLeave
+	PT_ClientLeave,
+	PT_ServerShuttingDown,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

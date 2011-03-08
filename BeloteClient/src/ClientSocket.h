@@ -9,6 +9,7 @@ class ClientSocket
 {
 public:
 	ClientSocket();
+	~ClientSocket();
 
 	void	Connect(const std::string &hostIP, const char *utf8EncodedName);
 	void	Disconnect();

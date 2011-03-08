@@ -105,6 +105,8 @@ void Game::LoadMenu()
 void Game::LoadGame()
 {
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
+	m_ClientSocket.removeAllEvents();
+
 	CEGUI::System::getSingleton().executeScriptFile("ScreenGame.lua");
 
 	m_BgImage.LoadFromFile("Gui/ScreenGame.png");

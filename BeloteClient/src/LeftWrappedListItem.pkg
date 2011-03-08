@@ -1,0 +1,5 @@
+class LeftWrappedListItem : public CEGUI::ListboxTextItem
+{
+public:
+	LeftWrappedListItem (const std::string& text);
+};

@@ -14,6 +14,7 @@
     <ClInclude Include="src\ClientSocket.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\GUIManager.h" />
+    <ClInclude Include="src\LeftWrappedListItem.h" />
     <ClInclude Include="src\LuaInterface.h" />
     <ClInclude Include="src\SoundManager.h" />
   </ItemGroup>
@@ -30,6 +31,7 @@
     <None Include="src\ClientSocket.pkg" />
     <None Include="src\Game.pkg" />
     <None Include="src\GUIManager.pkg" />
+    <None Include="src\LeftWrappedListItem.pkg" />
     <None Include="src\LuaInterface.pkg" />
     <None Include="src\SoundManager.pkg" />
   </ItemGroup>

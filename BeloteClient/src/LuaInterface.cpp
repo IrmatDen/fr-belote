@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/08/11 16:54:06.
+** Generated automatically by tolua++-1.0.92 on 03/08/11 17:46:19.
 */
 
 #ifndef __cplusplus
@@ -16,17 +16,32 @@ int tolua_LuaInterface_open (lua_State* tolua_S);
 #include "Game.h"
 #include "SoundManager.h"
 #include "GUIManager.h"
+#include "LeftWrappedListItem.h"
 #include "ClientSocket.h"
+
+/* function to release collected object via destructor */
+#ifdef __cplusplus
+
+static int tolua_collect_LeftWrappedListItem (lua_State* tolua_S)
+{
+ LeftWrappedListItem* self = (LeftWrappedListItem*) tolua_tousertype(tolua_S,1,0);
+ delete self;
+ return 0;
+}
+#endif
+
 
 /* function to register type */
 static void tolua_reg_types (lua_State* tolua_S)
 {
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"GUIManager");
+ tolua_usertype(tolua_S,"CEGUI::String");
  tolua_usertype(tolua_S,"ClientSocket");
+ tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
- tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
  tolua_usertype(tolua_S,"Game");
  tolua_usertype(tolua_S,"TextBroadcastedEventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventSet");
@@ -430,6 +445,68 @@ static int tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00(lua_State* tol
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: new of class  LeftWrappedListItem */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_LeftWrappedListItem_new00
+static int tolua_LuaInterface_LeftWrappedListItem_new00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertable(tolua_S,1,"LeftWrappedListItem",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  const std::string text = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+ {
+  LeftWrappedListItem* tolua_ret = (LeftWrappedListItem*)  new LeftWrappedListItem(text);
+ tolua_pushusertype(tolua_S,(void*)tolua_ret,"LeftWrappedListItem");
+ tolua_pushcppstring(tolua_S,(const char*)text);
+ }
+ }
+ return 2;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'new'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: new_local of class  LeftWrappedListItem */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_LeftWrappedListItem_new00_local
+static int tolua_LuaInterface_LeftWrappedListItem_new00_local(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertable(tolua_S,1,"LeftWrappedListItem",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  const std::string text = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+ {
+  LeftWrappedListItem* tolua_ret = (LeftWrappedListItem*)  new LeftWrappedListItem(text);
+ tolua_pushusertype_and_takeownership(tolua_S,(void *)tolua_ret,"LeftWrappedListItem");
+ tolua_pushcppstring(tolua_S,(const char*)text);
+ }
+ }
+ return 2;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'new'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_Teller of class  TextBroadcastedEventArgs */
 #ifndef TOLUA_DISABLE_tolua_get_TextBroadcastedEventArgs_m_Teller
 static int tolua_get_TextBroadcastedEventArgs_m_Teller(lua_State* tolua_S)
@@ -626,6 +703,16 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_cclass(tolua_S,"GUIManager","GUIManager","",NULL);
  tolua_beginmodule(tolua_S,"GUIManager");
   tolua_function(tolua_S,"LuaStringToCEGUIString",tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00);
+ tolua_endmodule(tolua_S);
+ #ifdef __cplusplus
+ tolua_cclass(tolua_S,"LeftWrappedListItem","LeftWrappedListItem","CEGUI::ListboxTextItem",tolua_collect_LeftWrappedListItem);
+ #else
+ tolua_cclass(tolua_S,"LeftWrappedListItem","LeftWrappedListItem","CEGUI::ListboxTextItem",NULL);
+ #endif
+ tolua_beginmodule(tolua_S,"LeftWrappedListItem");
+  tolua_function(tolua_S,"new",tolua_LuaInterface_LeftWrappedListItem_new00);
+  tolua_function(tolua_S,"new_local",tolua_LuaInterface_LeftWrappedListItem_new00_local);
+  tolua_function(tolua_S,".call",tolua_LuaInterface_LeftWrappedListItem_new00_local);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"TextBroadcastedEventArgs","TextBroadcastedEventArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"TextBroadcastedEventArgs");

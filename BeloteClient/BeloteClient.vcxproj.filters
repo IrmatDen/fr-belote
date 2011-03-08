@@ -18,6 +18,7 @@
     </Filter>
     <Filter Include="Resource Files\LuaPackage">
       <UniqueIdentifier>{59b6b911-2f62-4655-a45a-c19525d5f10e}</UniqueIdentifier>
+      <Extensions>*.pkg</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +35,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ClientSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LeftWrappedListItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,6 +78,9 @@
       <Filter>Resource Files\Lua</Filter>
     </None>
     <None Include="src\ClientSocket.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
+    <None Include="src\LeftWrappedListItem.pkg">
       <Filter>Resource Files\LuaPackage</Filter>
     </None>
   </ItemGroup>

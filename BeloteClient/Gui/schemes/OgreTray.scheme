@@ -2,6 +2,7 @@
 <GUIScheme Name="OgreTray">
     <Imageset Filename="OgreTray.imageset" />
     <Font Filename="DejaVuSans-10.font" />
+    <Font Filename="DejaVuSans-10-Bold.font" />
     <LookNFeel Filename="OgreTray.looknfeel" />
     <WindowRendererSet Filename="CEGUIFalagardWRBase" />
     <FalagardMapping WindowType="OgreTray/Button"               TargetType="CEGUI/PushButton"       Renderer="Falagard/Button"              LookNFeel="OgreTray/PushButton" />

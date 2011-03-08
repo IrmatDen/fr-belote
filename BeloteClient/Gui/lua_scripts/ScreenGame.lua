@@ -23,8 +23,8 @@ function onTextBroadcasted(args)
 	local textArgs = toTextBroadcastedEventArgs(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local chatBox = CEGUI.toListbox(winMgr:getWindow("UIPanel/ChatBox/List"))
-	local text = textArgs.m_Teller .. ": " .. textArgs.m_Message
-	local chatItem = CEGUI.createListboxTextItem(text)
+	local text = "[font='DejaVuSans-10-Bold']" .. textArgs.m_Teller .. ": [font='DejaVuSans-10']" .. textArgs.m_Message
+	local chatItem = LeftWrappedListItem(text)
 	chatBox:addItem(chatItem);
 	chatBox:ensureItemIsVisible(chatBox:getItemCount());
 end

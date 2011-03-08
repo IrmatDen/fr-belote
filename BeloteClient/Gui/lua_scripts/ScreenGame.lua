@@ -6,6 +6,18 @@ function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
 end
 
+function toPlayerConnectedEventArgs(e)
+    return tolua.cast(e,"const PlayerConnectedEventArgs")
+end
+
+function appendTextToChatBox(text)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local chatBox = CEGUI.toListbox(winMgr:getWindow("UIPanel/ChatBox/List"))
+	local chatItem = LeftWrappedListItem(text)
+	chatBox:addItem(chatItem);
+	chatBox:ensureItemIsVisible(chatBox:getItemCount());
+end
+
 -----------------------------------------
 -- Start of handler functions
 -----------------------------------------
@@ -19,14 +31,16 @@ function onSendChatText(args)
 	we.window:setText("")
 end
 
+function onPlayerConnected(args)
+	local playerCoArgs = toPlayerConnectedEventArgs(args)
+	local text = "[font='DejaVuSans-10-Bold']" .. playerCoArgs.m_PlayerName .. " s'est connecté"
+	appendTextToChatBox(text)
+end
+
 function onTextBroadcasted(args)
 	local textArgs = toTextBroadcastedEventArgs(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local chatBox = CEGUI.toListbox(winMgr:getWindow("UIPanel/ChatBox/List"))
 	local text = "[font='DejaVuSans-10-Bold']" .. textArgs.m_Teller .. ": [font='DejaVuSans-10']" .. textArgs.m_Message
-	local chatItem = LeftWrappedListItem(text)
-	chatBox:addItem(chatItem);
-	chatBox:ensureItemIsVisible(chatBox:getItemCount());
+	appendTextToChatBox(text)
 end
 	
 function onQuitTable(args)
@@ -65,4 +79,5 @@ guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
 winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
+client:subscribeEvent("PlayerConnected", "onPlayerConnected")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")

@@ -14,6 +14,7 @@ public:
 	Server();
 
 	void	Start();
+	void	ClientConnected(const std::string &clientName);
 	void	BroadcastText(const std::string &clientName, const std::string &msg);
 	void	Stop();
 

@@ -17,6 +17,7 @@ namespace
 		NEC_NameReceived,
 		NEC_DisconnectionRequest,
 		NEC_BroadcastTextRequest,
+		NEC_BroadcastClientConnected,
 	};
 
 	namespace States
@@ -58,7 +59,6 @@ namespace
 						std::string name;
 						packet >> name;
 						m_ServerSocket->SetClientName(name);
-						std::cout << "[Server] Everybody say welcome to " << name << std::endl;
 						m_StateMachine->Notify(NEC_NameReceived);
 					}
 					else
@@ -74,11 +74,6 @@ namespace
 			Idle(StateMachine *sm, Server *server, ServerSocket *ss)
 				: Base(sm), m_Server(server), m_ServerSocket(ss)
 			{ ; }
-
-			virtual void	Enter()
-			{
-				std::cout << "[Server] Start procastinating" << std::endl;
-			}
 
 			virtual void	Update()
 			{
@@ -142,6 +137,31 @@ namespace
 				m_Socket->Send(p);
 			}
 		};
+		
+		struct NotifyClientConnected : public Base
+		{
+			NotifyClientConnected(Server *server, ServerSocket *ss) : m_Server(server), m_ServerSocket(ss) { ; }
+
+			virtual void operator()()
+			{
+				m_Server->ClientConnected(m_ServerSocket->GetClientName());
+			}
+			
+			Server			* m_Server;
+			ServerSocket	* m_ServerSocket;
+		};
+
+		struct BroadcastClientConnected : public Base
+		{
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_ClientConnected << m_ClientName.c_str();
+				m_Socket->Send(p);
+			}
+
+			std::string		m_ClientName;
+		};
 
 		struct BroadcastTextMessage : public Base
 		{
@@ -192,19 +212,23 @@ public:
 		m_StatesWithSocket.push_back((States::Base*)m_StateIdle);
 
 		// Actions
-		m_ActionAcceptConnection	= new Actions::AcceptConnection();
-		m_ActionDisconnect			= new Actions::Disconnect();
-		m_ActionBroadcastText		= new Actions::BroadcastTextMessage();
+		m_ActionAcceptConnection			= new Actions::AcceptConnection();
+		m_ActionDisconnect					= new Actions::Disconnect();
+		m_ActionNotifyClientConnected		= new Actions::NotifyClientConnected(m_Server, m_ServerSocket);
+		m_ActionBroadcastClientConnected	= new Actions::BroadcastClientConnected();
+		m_ActionBroadcastText				= new Actions::BroadcastTextMessage();
 
 		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionAcceptConnection);
 		m_ActionsWithSocket.push_back(m_ActionDisconnect);
+		m_ActionsWithSocket.push_back(m_ActionBroadcastClientConnected);
 		m_ActionsWithSocket.push_back(m_ActionBroadcastText);
 
 		// Transitions
-		m_StateConnectionRequest->AddTransition(NEC_WaitingName,			m_StateWaitingName,		m_ActionAcceptConnection);
-		m_StateWaitingName		->AddTransition(NEC_NameReceived,			m_StateIdle										);
-		m_StateIdle				->AddTransition(NEC_BroadcastTextRequest,	m_StateIdle,			m_ActionBroadcastText	);
-		m_StateIdle				->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect		);
+		m_StateConnectionRequest->AddTransition(NEC_WaitingName,				m_StateWaitingName,		m_ActionAcceptConnection		);
+		m_StateWaitingName		->AddTransition(NEC_NameReceived,				m_StateIdle,			m_ActionNotifyClientConnected	);
+		m_StateIdle				->AddTransition(NEC_BroadcastClientConnected,	m_StateIdle,			m_ActionBroadcastClientConnected);
+		m_StateIdle				->AddTransition(NEC_BroadcastTextRequest,		m_StateIdle,			m_ActionBroadcastText			);
+		m_StateIdle				->AddTransition(NEC_DisconnectionRequest,		m_StateDisconnected,	m_ActionDisconnect				);
 	}
 
 	~ServerSocketPrivate()
@@ -241,6 +265,12 @@ public:
 		m_StateMachine->Notify(NEC_BroadcastTextRequest);
 	}
 
+	void ClientConnected(const std::string &clientName)
+	{
+		m_ActionBroadcastClientConnected->m_ClientName = clientName;
+		m_StateMachine->Notify(NEC_BroadcastClientConnected);
+	}
+
 	void Abort()
 	{
 		if (!m_Socket)
@@ -270,10 +300,12 @@ private:
 				* m_StateIdle,
 				* m_StateDisconnected;
 	
-	std::vector<Actions::Base*>		m_ActionsWithSocket;
-	Action							* m_ActionAcceptConnection;
-	Actions::Disconnect				* m_ActionDisconnect;
-	Actions::BroadcastTextMessage	* m_ActionBroadcastText;
+	std::vector<Actions::Base*>			m_ActionsWithSocket;
+	Action								* m_ActionAcceptConnection;
+	Actions::Disconnect					* m_ActionDisconnect;
+	Action								* m_ActionNotifyClientConnected;
+	Actions::BroadcastClientConnected	* m_ActionBroadcastClientConnected;
+	Actions::BroadcastTextMessage		* m_ActionBroadcastText;
 };
 
 ServerSocket::ServerSocket(Server *server)
@@ -301,6 +333,11 @@ bool ServerSocket::CheckConnection(sf::TcpListener &listener)
 void ServerSocket::Update()
 {
 	m_priv->Update();
+}
+
+void ServerSocket::ClientConnected(const std::string &clientName)
+{
+	m_priv->ClientConnected(clientName);
 }
 
 void ServerSocket::SendText(const std::string &clientName, const std::string &msg)

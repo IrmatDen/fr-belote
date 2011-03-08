@@ -9,6 +9,7 @@ enum PacketType
 	PT_ClientName,
 	PT_ClientLeave,
 	PT_ServerShuttingDown,
+	PT_ClientConnected,
 	PT_ClientTextMessage,
 	PT_ServerBroadcastTextMessage,
 };

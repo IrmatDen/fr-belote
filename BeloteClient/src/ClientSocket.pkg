@@ -1,3 +1,9 @@
+class PlayerConnectedEventArgs : public CEGUI::EventArgs
+{
+public:
+	std::string	m_PlayerName;
+};
+
 class TextBroadcastedEventArgs : public CEGUI::EventArgs
 {
 public:

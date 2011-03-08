@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/08/11 18:43:33.
+** Generated automatically by tolua++-1.0.92 on 03/08/11 20:16:09.
 */
 
 #ifndef __cplusplus
@@ -36,8 +36,9 @@ static void tolua_reg_types (lua_State* tolua_S)
 {
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"GUIManager");
- tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
  tolua_usertype(tolua_S,"ClientSocket");
+ tolua_usertype(tolua_S,"CEGUI::String");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
@@ -475,6 +476,36 @@ static int tolua_LuaInterface_LeftWrappedListItem_new00_local(lua_State* tolua_S
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_PlayerName of class  PlayerConnectedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerConnectedEventArgs_m_PlayerName
+static int tolua_get_PlayerConnectedEventArgs_m_PlayerName(lua_State* tolua_S)
+{
+  PlayerConnectedEventArgs* self = (PlayerConnectedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_PlayerName'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_PlayerName);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_PlayerName of class  PlayerConnectedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerConnectedEventArgs_m_PlayerName
+static int tolua_set_PlayerConnectedEventArgs_m_PlayerName(lua_State* tolua_S)
+{
+  PlayerConnectedEventArgs* self = (PlayerConnectedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_PlayerName'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_PlayerName = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_Teller of class  TextBroadcastedEventArgs */
 #ifndef TOLUA_DISABLE_tolua_get_TextBroadcastedEventArgs_m_Teller
 static int tolua_get_TextBroadcastedEventArgs_m_Teller(lua_State* tolua_S)
@@ -681,6 +712,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"new",tolua_LuaInterface_LeftWrappedListItem_new00);
   tolua_function(tolua_S,"new_local",tolua_LuaInterface_LeftWrappedListItem_new00_local);
   tolua_function(tolua_S,".call",tolua_LuaInterface_LeftWrappedListItem_new00_local);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"PlayerConnectedEventArgs","PlayerConnectedEventArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"PlayerConnectedEventArgs");
+  tolua_variable(tolua_S,"m_PlayerName",tolua_get_PlayerConnectedEventArgs_m_PlayerName,tolua_set_PlayerConnectedEventArgs_m_PlayerName);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"TextBroadcastedEventArgs","TextBroadcastedEventArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"TextBroadcastedEventArgs");

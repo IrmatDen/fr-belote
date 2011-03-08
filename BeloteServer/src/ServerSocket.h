@@ -15,6 +15,7 @@ public:
 	bool	CheckConnection(sf::TcpListener &listener);
 	bool	IsConnected() const								{ return m_Socket.GetRemoteAddress() != sf::IpAddress::None; }
 	void	Update();
+	void	ClientConnected(const std::string &clientName);
 	void	SendText(const std::string &clientName, const std::string &msg);
 	void	CloseConnection();
 

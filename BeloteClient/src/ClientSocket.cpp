@@ -9,6 +9,7 @@
 #include "StateMachine.h"
 
 const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
+const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 
 // Define network state machine stuff...
@@ -104,9 +105,12 @@ namespace
 
 					switch (pt)
 					{
-					case PT_ServerShuttingDown:
-						std::cout << "[Client] Server shutting down, me too" << std::endl;
-						m_StateMachine->Notify(NEC_DisconnectionRequest);
+					case PT_ClientConnected:
+						{
+							PlayerConnectedEventArgs args;
+							packet >> args.m_PlayerName;
+							m_Self->EnqueuePlayerConnected(args);
+						}
 						break;
 
 					case PT_ServerBroadcastTextMessage:
@@ -115,6 +119,11 @@ namespace
 							packet >> args.m_Teller >> args.m_Message;
 							m_Self->EnqueueBroadcastedText(args);
 						}
+						break;
+
+					case PT_ServerShuttingDown:
+						std::cout << "[Client] Server shutting down, me too" << std::endl;
+						m_StateMachine->Notify(NEC_DisconnectionRequest);
 						break;
 
 					default:
@@ -343,14 +352,14 @@ void ClientSocket::EnqueueBroadcastedText(const TextBroadcastedEventArgs &args)
 	m_TextBroadcastedQueue.push(args);
 }
 
+void ClientSocket::EnqueuePlayerConnected(const PlayerConnectedEventArgs &args)
+{
+	sf::Lock lock(m_PlayerConnectedQueueMutex);
+	m_PlayerConnectedQueue.push(args);
+}
+
 void ClientSocket::Update()
 {
-	sf::Lock lock(m_TextBroadcastedQueueMutex);
-	while (!m_TextBroadcastedQueue.empty())
-	{
-		TextBroadcastedEventArgs args = m_TextBroadcastedQueue.front();
-		m_TextBroadcastedQueue.pop();
-
-		fireEvent(EventTextBroadcasted, args, EventNamespace);
-	}
+	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);
+	UpdateMessageQueue(m_PlayerConnectedQueue, m_PlayerConnectedQueueMutex, EventPlayerConnected);
 }

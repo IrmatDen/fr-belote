@@ -1,1 +1,0 @@
-Les clients ne sont pas décos (lancer un jeu solo, quitter, rejoindre, parler => msg reçu 2x)

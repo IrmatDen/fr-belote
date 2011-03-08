@@ -41,7 +41,7 @@ namespace
 
 		struct WaitingName : public Base
 		{
-			WaitingName(StateMachine *sm) : Base(sm)	{ ; }
+			WaitingName(StateMachine *sm, ServerSocket *ss) : Base(sm), m_ServerSocket(ss)	{ ; }
 
 			virtual void	Update()
 			{
@@ -55,20 +55,25 @@ namespace
 
 					if (pt == PT_ClientName)
 					{
-						std::string n;
-						p >> n;
-						std::cout << "[Server] Everybody say welcome to " << n << std::endl;
+						std::string name;
+						p >> name;
+						m_ServerSocket->SetClientName(name);
+						std::cout << "[Server] Everybody say welcome to " << name << std::endl;
 						m_StateMachine->Notify(NEC_NameReceived);
 					}
 					else
 						std::cout << "[Server] Unexpected packet received in State::WaitingName::Update. Packet type is: " << pt << std::endl;
 				}
 			}
+
+			ServerSocket	* m_ServerSocket;
 		};
 
 		struct Idle : public Base
 		{
-			Idle(StateMachine *sm, Server *server) : Base(sm), m_Server(server)	{ ; }
+			Idle(StateMachine *sm, Server *server, ServerSocket *ss)
+				: Base(sm), m_Server(server), m_ServerSocket(ss)
+			{ ; }
 
 			virtual void	Enter()
 			{
@@ -88,7 +93,7 @@ namespace
 					switch (pt)
 					{
 					case PT_ClientLeave:
-						std::cout << "[Server] Everybody say byebye to <someone>" << std::endl;
+						std::cout << "[Server] Everybody say byebye to " << m_ServerSocket->GetClientName() << std::endl;
 						m_StateMachine->Stop();
 						break;
 						
@@ -96,7 +101,7 @@ namespace
 						{
 							std::string uft8EncodedMsg;
 							packet >> uft8EncodedMsg;
-							m_Server->BroadcastText("<someone>", uft8EncodedMsg);
+							m_Server->BroadcastText(m_ServerSocket->GetClientName(), uft8EncodedMsg);
 						}
 						break;
 
@@ -107,7 +112,8 @@ namespace
 				}
 			}
 
-			Server	* m_Server;
+			Server			* m_Server;
+			ServerSocket	* m_ServerSocket;
 		};
 
 		struct Disconnected : public State
@@ -158,8 +164,10 @@ namespace
 				p << PT_ServerShuttingDown;
 				m_Socket->Send(p);
 
-				std::cout << "[Server] Disconnected <someone>" << std::endl;
+				std::cout << "[Server] Disconnected " << m_ClientName << std::endl;
 			}
+
+			std::string		m_ClientName;
 		};
 	}
 }
@@ -168,16 +176,16 @@ namespace
 class ServerSocketPrivate
 {
 public:
-	ServerSocketPrivate(Server *server)
-		: m_Socket(0), m_StateMachine(0), m_Server(server)
+	ServerSocketPrivate(Server *server, ServerSocket *serverSocket)
+		: m_Socket(0), m_StateMachine(0), m_Server(server), m_ServerSocket(serverSocket)
 	{
 		// State machine definition
 		m_StateMachine	= new StateMachine;
 
 		// States
 		m_StateConnectionRequest	= new States::ConnectionRequest(m_StateMachine);
-		m_StateWaitingName			= new States::WaitingName(m_StateMachine);
-		m_StateIdle					= new States::Idle(m_StateMachine, m_Server);
+		m_StateWaitingName			= new States::WaitingName(m_StateMachine, m_ServerSocket);
+		m_StateIdle					= new States::Idle(m_StateMachine, m_Server, m_ServerSocket);
 		m_StateDisconnected			= new States::Disconnected(m_StateMachine);
 
 		m_StatesWithSocket.push_back((States::Base*)m_StateWaitingName);
@@ -189,7 +197,7 @@ public:
 		m_ActionBroadcastText		= new Actions::BroadcastTextMessage();
 
 		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionAcceptConnection);
-		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionDisconnect);
+		m_ActionsWithSocket.push_back(m_ActionDisconnect);
 		m_ActionsWithSocket.push_back(m_ActionBroadcastText);
 
 		// Transitions
@@ -240,6 +248,7 @@ public:
 
 		if (!m_StateMachine->IsStopped())
 		{
+			m_ActionDisconnect->m_ClientName = m_ServerSocket->GetClientName();
 			m_StateMachine->Notify(NEC_DisconnectionRequest);
 			m_StateMachine->Update();
 		}
@@ -250,6 +259,7 @@ public:
 
 private:
 	Server			* m_Server;
+	ServerSocket	* m_ServerSocket;
 	sf::TcpSocket	* m_Socket;
 
 	StateMachine	* m_StateMachine;
@@ -261,14 +271,14 @@ private:
 				* m_StateDisconnected;
 	
 	std::vector<Actions::Base*>		m_ActionsWithSocket;
-	Action							* m_ActionAcceptConnection,
-									* m_ActionDisconnect;
+	Action							* m_ActionAcceptConnection;
+	Actions::Disconnect				* m_ActionDisconnect;
 	Actions::BroadcastTextMessage	* m_ActionBroadcastText;
 };
 
 ServerSocket::ServerSocket(Server *server)
 {
-	m_priv = new ServerSocketPrivate(server);
+	m_priv = new ServerSocketPrivate(server, this);
 }
 
 ServerSocket::~ServerSocket()

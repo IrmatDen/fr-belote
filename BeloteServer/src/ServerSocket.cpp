@@ -45,18 +45,18 @@ namespace
 
 			virtual void	Update()
 			{
-				sf::Packet p;
-				sf::Socket::Status s = m_Socket->Receive(p);
+				sf::Packet packet;
+				sf::Socket::Status s = m_Socket->Receive(packet);
 
 				if (s == sf::Socket::Done)
 				{
 					PacketType pt;
-					p >> pt;
+					packet >> pt;
 
 					if (pt == PT_ClientName)
 					{
 						std::string name;
-						p >> name;
+						packet >> name;
 						m_ServerSocket->SetClientName(name);
 						std::cout << "[Server] Everybody say welcome to " << name << std::endl;
 						m_StateMachine->Notify(NEC_NameReceived);

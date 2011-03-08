@@ -8,7 +8,7 @@ public:
 class ClientSocket : public CEGUI::EventSet
 {
 public:
-	void	Connect(const std::string &hostIP, const char *utf8EncodedName);
+	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName);
 	void	SendChatMessage(const std::string &utf8EncodedMessage);
 	void	Disconnect();
 };

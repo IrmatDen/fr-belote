@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/08/11 17:54:13.
+** Generated automatically by tolua++-1.0.92 on 03/08/11 18:32:10.
 */
 
 #ifndef __cplusplus
@@ -413,38 +413,6 @@ static int tolua_LuaInterface_SoundManager_PlayFX00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: LuaStringToCEGUIString of class  GUIManager */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00
-static int tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertable(tolua_S,1,"GUIManager",0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_isusertype(tolua_S,3,"CEGUI::String",0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,4,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  const std::string uft8EncodedStr = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-  CEGUI::String* destStr = ((CEGUI::String*)  tolua_tousertype(tolua_S,3,0));
- {
-  GUIManager::LuaStringToCEGUIString(uft8EncodedStr,*destStr);
- tolua_pushcppstring(tolua_S,(const char*)uft8EncodedStr);
- }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'LuaStringToCEGUIString'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
 /* method: new of class  LeftWrappedListItem */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_LeftWrappedListItem_new00
 static int tolua_LuaInterface_LeftWrappedListItem_new00(lua_State* tolua_S)
@@ -576,7 +544,7 @@ static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
  if (
  !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
  !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,3,0,&tolua_err) ||
  !tolua_isnoobj(tolua_S,4,&tolua_err)
  )
  goto tolua_lerror;
@@ -585,16 +553,17 @@ static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
  {
   ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
   const std::string hostIP = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-  const char* utf8EncodedName = ((const char*)  tolua_tostring(tolua_S,3,0));
+  const std::string utf8EncodedName = ((const std::string)  tolua_tocppstring(tolua_S,3,0));
 #ifndef TOLUA_RELEASE
  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Connect'",NULL);
 #endif
  {
   self->Connect(hostIP,utf8EncodedName);
  tolua_pushcppstring(tolua_S,(const char*)hostIP);
+ tolua_pushcppstring(tolua_S,(const char*)utf8EncodedName);
  }
  }
- return 1;
+ return 2;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'Connect'.",&tolua_err);
@@ -702,7 +671,6 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"GUIManager","GUIManager","",NULL);
  tolua_beginmodule(tolua_S,"GUIManager");
-  tolua_function(tolua_S,"LuaStringToCEGUIString",tolua_LuaInterface_GUIManager_LuaStringToCEGUIString00);
  tolua_endmodule(tolua_S);
  #ifdef __cplusplus
  tolua_cclass(tolua_S,"LeftWrappedListItem","LeftWrappedListItem","CEGUI::ListboxTextItem",tolua_collect_LeftWrappedListItem);

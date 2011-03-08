@@ -168,7 +168,7 @@ namespace
 			virtual void operator()()
 			{
 				sf::Packet p;
-				p << PT_ClientName << m_Utf8EncodedName;
+				p << PT_ClientName << m_Utf8EncodedName.c_str();
 				sf::Socket::Status s = m_Socket.Send(p);
 
 				// Error checking
@@ -176,7 +176,7 @@ namespace
 					std::cout << "[Client] Error sending name in Actions::SendName. Error code: " << s << std::endl;
 			}
 
-			const char		*m_Utf8EncodedName;
+			std::string		m_Utf8EncodedName;
 		};
 
 		struct SendTextMessage : public ActionBase
@@ -249,7 +249,7 @@ public:
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
-	void	Connect(const std::string &hostIP, const char *utf8EncodedName)
+	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 	{
 		m_DisconnectRequested				= false;
 		m_ActionConnect->m_HostIP			= sf::IpAddress(hostIP);
@@ -295,7 +295,7 @@ private:
 	ClientSocket	* m_Self;
 
 	// Flags
-	bool			m_DisconnectRequested;
+	bool	m_DisconnectRequested;
 
 	// State machine
 	StateMachine	* m_StateMachine;
@@ -322,7 +322,7 @@ ClientSocket::~ClientSocket()
 	delete m_priv;
 }
 
-void ClientSocket::Connect(const std::string &hostIP, const  char *utf8EncodedName)
+void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 {
 	m_priv->Connect(hostIP, utf8EncodedName);
 }

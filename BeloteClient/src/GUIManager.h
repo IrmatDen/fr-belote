@@ -19,12 +19,12 @@ public:
 	void	SetRootWindow(CEGUI::Window* win)	{ CEGUI::System::getSingleton().setGUISheet(win); }
 
 	// Helpers, mainly aimed at use from lua.
+	/* Check if needed first, heh
 	static void		LuaStringToCEGUIString(const std::string &uft8EncodedStr, CEGUI::String &destStr)
 	{
 		destStr = CEGUI::String((CEGUI::utf8*)uft8EncodedStr.c_str());
 	}
 
-	/* Check if needed first, heh
 	static void		SetWinTextUTF8(std::string winName, std::string winText)
 	{
 		CEGUI::WindowManager& winMgr = CEGUI::WindowManager::getSingleton();

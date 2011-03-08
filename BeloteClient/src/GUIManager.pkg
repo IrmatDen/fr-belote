@@ -1,5 +1,4 @@
 class GUIManager
 {
 public:
-	static void		LuaStringToCEGUIString(const std::string &uft8EncodedStr, CEGUI::String &destStr);
 };

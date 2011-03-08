@@ -14,6 +14,7 @@ public:
 	Server();
 
 	void	Start();
+	void	BroadcastText(const std::string &clientName, const std::string &msg);
 	void	Stop();
 
 private:

@@ -16,6 +16,7 @@ namespace
 		NEC_WaitingName,
 		NEC_NameReceived,
 		NEC_DisconnectionRequest,
+		NEC_BroadcastTextRequest,
 	};
 
 	namespace States
@@ -67,7 +68,7 @@ namespace
 
 		struct Idle : public Base
 		{
-			Idle(StateMachine *sm) : Base(sm)	{ ; }
+			Idle(StateMachine *sm, Server *server) : Base(sm), m_Server(server)	{ ; }
 
 			virtual void	Enter()
 			{
@@ -95,8 +96,7 @@ namespace
 						{
 							std::string uft8EncodedMsg;
 							packet >> uft8EncodedMsg;
-							std::cout << "[Server] <someone> says " << uft8EncodedMsg << std::endl;
-							m_StateMachine->Stop();
+							m_Server->BroadcastText("<someone>", uft8EncodedMsg);
 						}
 						break;
 
@@ -106,6 +106,8 @@ namespace
 					};
 				}
 			}
+
+			Server	* m_Server;
 		};
 
 		struct Disconnected : public State
@@ -135,6 +137,19 @@ namespace
 			}
 		};
 
+		struct BroadcastTextMessage : public Base
+		{
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_ServerBroadcastTextMessage << m_ClientName.c_str() << m_Message.c_str();
+				m_Socket->Send(p);
+			}
+
+			std::string		m_ClientName,
+							m_Message;
+		};
+
 		struct Disconnect : public Base
 		{
 			virtual void operator()()
@@ -153,8 +168,8 @@ namespace
 class ServerSocketPrivate
 {
 public:
-	ServerSocketPrivate()
-		: m_Socket(0), m_StateMachine(0)
+	ServerSocketPrivate(Server *server)
+		: m_Socket(0), m_StateMachine(0), m_Server(server)
 	{
 		// State machine definition
 		m_StateMachine	= new StateMachine;
@@ -162,7 +177,7 @@ public:
 		// States
 		m_StateConnectionRequest	= new States::ConnectionRequest(m_StateMachine);
 		m_StateWaitingName			= new States::WaitingName(m_StateMachine);
-		m_StateIdle					= new States::Idle(m_StateMachine);
+		m_StateIdle					= new States::Idle(m_StateMachine, m_Server);
 		m_StateDisconnected			= new States::Disconnected(m_StateMachine);
 
 		m_StatesWithSocket.push_back((States::Base*)m_StateWaitingName);
@@ -171,13 +186,16 @@ public:
 		// Actions
 		m_ActionAcceptConnection	= new Actions::AcceptConnection();
 		m_ActionDisconnect			= new Actions::Disconnect();
+		m_ActionBroadcastText		= new Actions::BroadcastTextMessage();
 
 		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionAcceptConnection);
 		m_ActionsWithSocket.push_back((Actions::Base*)m_ActionDisconnect);
+		m_ActionsWithSocket.push_back(m_ActionBroadcastText);
 
 		// Transitions
 		m_StateConnectionRequest->AddTransition	(NEC_WaitingName,			m_StateWaitingName,		m_ActionAcceptConnection);
 		m_StateWaitingName->AddTransition		(NEC_NameReceived,			m_StateIdle										);
+		m_StateIdle->AddTransition				(NEC_BroadcastTextRequest,	m_StateIdle,			m_ActionBroadcastText	);
 		m_StateIdle->AddTransition				(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect		);
 	}
 
@@ -208,6 +226,13 @@ public:
 			m_Socket->Disconnect();
 	}
 
+	void SendText(const std::string &clientName, const std::string &msg)
+	{
+		m_ActionBroadcastText->m_ClientName = clientName;
+		m_ActionBroadcastText->m_Message = msg;
+		m_StateMachine->Notify(NEC_BroadcastTextRequest);
+	}
+
 	void Abort()
 	{
 		if (!m_Socket)
@@ -224,6 +249,7 @@ public:
 	}
 
 private:
+	Server			* m_Server;
 	sf::TcpSocket	* m_Socket;
 
 	StateMachine	* m_StateMachine;
@@ -234,14 +260,15 @@ private:
 				* m_StateIdle,
 				* m_StateDisconnected;
 	
-	std::vector<Actions::Base*>	m_ActionsWithSocket;
-	Action		* m_ActionAcceptConnection,
-				* m_ActionDisconnect;
+	std::vector<Actions::Base*>		m_ActionsWithSocket;
+	Action							* m_ActionAcceptConnection,
+									* m_ActionDisconnect;
+	Actions::BroadcastTextMessage	* m_ActionBroadcastText;
 };
 
-ServerSocket::ServerSocket()
+ServerSocket::ServerSocket(Server *server)
 {
-	m_priv = new ServerSocketPrivate();
+	m_priv = new ServerSocketPrivate(server);
 }
 
 ServerSocket::~ServerSocket()
@@ -264,6 +291,11 @@ bool ServerSocket::CheckConnection(sf::TcpListener &listener)
 void ServerSocket::Update()
 {
 	m_priv->Update();
+}
+
+void ServerSocket::SendText(const std::string &clientName, const std::string &msg)
+{
+	m_priv->SendText(clientName, msg);
 }
 
 void ServerSocket::CloseConnection()

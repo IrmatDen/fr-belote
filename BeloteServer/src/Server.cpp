@@ -9,7 +9,7 @@
 Server::Server()
 {
 	for (int i = 0; i != MAX_CLIENTS; i++)
-		m_Clients[i] = new ServerSocket;
+		m_Clients[i] = new ServerSocket(this);
 }
 
 void Server::Start()
@@ -46,4 +46,15 @@ void Server::Start()
 void Server::Stop()
 {
 	m_Running = false;
+}
+
+void Server::BroadcastText(const std::string &clientName, const std::string &msg)
+{
+	for (int i = 0; i != MAX_CLIENTS; i++)
+	{
+		if (!m_Clients[i]->IsConnected())
+			continue;
+
+		m_Clients[i]->SendText(clientName, msg);
+	}
 }

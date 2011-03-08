@@ -10,6 +10,7 @@ enum PacketType
 	PT_ClientLeave,
 	PT_ServerShuttingDown,
 	PT_ClientTextMessage,
+	PT_ServerBroadcastTextMessage,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

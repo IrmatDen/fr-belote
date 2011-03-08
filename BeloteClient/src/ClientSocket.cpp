@@ -91,22 +91,35 @@ namespace
 			virtual void	Update()
 			{
 				m_Socket.SetBlocking(false);
-				sf::Packet p;
-				sf::Socket::Status s = m_Socket.Receive(p);
+				sf::Packet packet;
+				sf::Socket::Status s = m_Socket.Receive(packet);
 				m_Socket.SetBlocking(true);
 
 				if (s == sf::Socket::Done)
 				{
 					PacketType pt;
-					p >> pt;
+					packet >> pt;
 
-					if (pt == PT_ServerShuttingDown)
+					switch (pt)
 					{
+					case PT_ServerShuttingDown:
 						std::cout << "[Client] Server shutting down, me too" << std::endl;
 						m_StateMachine->Notify(NEC_DisconnectionRequest);
-					}
-					else
+						break;
+
+					case PT_ServerBroadcastTextMessage:
+						{
+							std::string uft8EncodedSayer, uft8EncodedMsg;
+							packet >> uft8EncodedSayer >> uft8EncodedMsg;
+							std::cout << "[Client] Server broadcast msg from " << uft8EncodedSayer << " saying: " << uft8EncodedMsg << std::endl;
+							//m_StateMachine->Notify(NEC_DisconnectionRequest);
+						}
+						break;
+
+					default:
 						std::cout << "[Client] Unexpected packet received in State::Idle::Update. Packet type is: " << pt << std::endl;
+						break;
+					}
 				}
 			}
 
@@ -178,7 +191,7 @@ namespace
 
 				// Error checking
 				if (s != sf::Socket::Done)
-					std::cout << "[Client] Error sending name in Actions::SendTextMessage. Error code: " << s << std::endl;
+					std::cout << "[Client] Error sending message in Actions::SendTextMessage. Error code: " << s << std::endl;
 			}
 
 			std::string		m_Utf8EncodedText;

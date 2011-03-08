@@ -59,6 +59,17 @@ void Server::ClientConnected(const std::string &clientName)
 	}
 }
 
+void Server::ClientDisconnected(const std::string &clientName)
+{
+	for (int i = 0; i != MAX_CLIENTS; i++)
+	{
+		if (!m_Clients[i]->IsConnected())
+			continue;
+
+		m_Clients[i]->ClientDisconnected(clientName);
+	}
+}
+
 void Server::BroadcastText(const std::string &clientName, const std::string &msg)
 {
 	for (int i = 0; i != MAX_CLIENTS; i++)

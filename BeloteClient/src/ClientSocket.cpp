@@ -10,6 +10,7 @@
 
 const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
 const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
+const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 
 // Define network state machine stuff...
@@ -109,6 +110,16 @@ namespace
 						{
 							PlayerConnectedEventArgs args;
 							packet >> args.m_PlayerName;
+							args.m_Connected = true;
+							m_Self->EnqueuePlayerConnected(args);
+						}
+						break;
+						
+					case PT_ClientDisconnected:
+						{
+							PlayerConnectedEventArgs args;
+							packet >> args.m_PlayerName;
+							args.m_Connected = false;
 							m_Self->EnqueuePlayerConnected(args);
 						}
 						break;
@@ -258,7 +269,7 @@ public:
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
-	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName)
+	void Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 	{
 		m_DisconnectRequested				= false;
 		m_ActionConnect->m_HostIP			= sf::IpAddress(hostIP);
@@ -267,15 +278,20 @@ public:
 		m_Thread->Launch();
 	}
 
-	void	Disconnect()
+	void Disconnect()
 	{
 		m_DisconnectRequested = true;
 	}
 
-	void	SendChatMessage(const std::string &utf8EncodedMessage)
+	void SendChatMessage(const std::string &utf8EncodedMessage)
 	{
 		m_ActionSendTxtMsg->m_Utf8EncodedText = utf8EncodedMessage;
 		m_StateMachine->Notify(NEC_SendTextMessage);
+	}
+
+	void Wait()
+	{
+		m_Thread->Wait();
 	}
 
 private:
@@ -362,4 +378,9 @@ void ClientSocket::Update()
 {
 	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);
 	UpdateMessageQueue(m_PlayerConnectedQueue, m_PlayerConnectedQueueMutex, EventPlayerConnected);
+}
+
+void ClientSocket::Wait()
+{
+	m_priv->Wait();
 }

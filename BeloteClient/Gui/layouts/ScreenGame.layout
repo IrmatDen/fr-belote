@@ -4,7 +4,7 @@
     <Window Type="DefaultWindow" Name="Root" >
         <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
 		<Window Type="DefaultWindow" Name="UIPanel" >
-            <Property Name="UnifiedAreaRect" Value="{{0.7,0},{0,0},{1,0},{1,0}}" />
+            <Property Name="UnifiedAreaRect" Value="{{0.625,0},{0,0},{1,0},{1,0}}" />
             <Window Type="OgreTray/Button" Name="UIPanel/ButtonQuitTable" >
                 <Property Name="Text" Value="Retour au menu" />
                 <Property Name="UnifiedAreaRect" Value="{{0,0},{0.94,0},{0.95,0},{0.99,0}}" />

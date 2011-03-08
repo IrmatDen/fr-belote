@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/08/11 20:16:09.
+** Generated automatically by tolua++-1.0.92 on 03/08/11 20:50:04.
 */
 
 #ifndef __cplusplus
@@ -476,6 +476,36 @@ static int tolua_LuaInterface_LeftWrappedListItem_new00_local(lua_State* tolua_S
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_Connected of class  PlayerConnectedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerConnectedEventArgs_m_Connected
+static int tolua_get_PlayerConnectedEventArgs_m_Connected(lua_State* tolua_S)
+{
+  PlayerConnectedEventArgs* self = (PlayerConnectedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Connected'",NULL);
+#endif
+ tolua_pushboolean(tolua_S,(bool)self->m_Connected);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Connected of class  PlayerConnectedEventArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerConnectedEventArgs_m_Connected
+static int tolua_set_PlayerConnectedEventArgs_m_Connected(lua_State* tolua_S)
+{
+  PlayerConnectedEventArgs* self = (PlayerConnectedEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Connected'",NULL);
+ if (!tolua_isboolean(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Connected = ((bool)  tolua_toboolean(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_PlayerName of class  PlayerConnectedEventArgs */
 #ifndef TOLUA_DISABLE_tolua_get_PlayerConnectedEventArgs_m_PlayerName
 static int tolua_get_PlayerConnectedEventArgs_m_PlayerName(lua_State* tolua_S)
@@ -715,6 +745,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"PlayerConnectedEventArgs","PlayerConnectedEventArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"PlayerConnectedEventArgs");
+  tolua_variable(tolua_S,"m_Connected",tolua_get_PlayerConnectedEventArgs_m_Connected,tolua_set_PlayerConnectedEventArgs_m_Connected);
   tolua_variable(tolua_S,"m_PlayerName",tolua_get_PlayerConnectedEventArgs_m_PlayerName,tolua_set_PlayerConnectedEventArgs_m_PlayerName);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"TextBroadcastedEventArgs","TextBroadcastedEventArgs","CEGUI::EventArgs",NULL);

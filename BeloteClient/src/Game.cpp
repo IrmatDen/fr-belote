@@ -68,19 +68,6 @@ void Game::HandleEvents()
 		case sf::Event::Closed:
 			Quit();
 			break;
-
-		case sf::Event::KeyPressed:
-			{
-				switch (event.Key.Code)
-				{
-				case sf::Key::Escape:
-					Quit();
-					break;
-
-				default:
-					break;
-				}
-			}
 				
 		default:
 			break;
@@ -91,6 +78,10 @@ void Game::HandleEvents()
 void Game::Quit()
 {
 	m_QuitPending = true;
+	
+	m_Server.Stop();
+	m_ClientSocket.Disconnect();
+	m_ClientSocket.Wait();
 }
 
 void Game::LoadMenu()

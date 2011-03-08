@@ -31,9 +31,14 @@ function onSendChatText(args)
 	we.window:setText("")
 end
 
-function onPlayerConnected(args)
+function onPlayerConnectedStateChange(args)
 	local playerCoArgs = toPlayerConnectedEventArgs(args)
-	local text = "[font='DejaVuSans-10-Bold']" .. playerCoArgs.m_PlayerName .. " s'est connecté"
+	local text = "[font='DejaVuSans-10-Bold']" .. playerCoArgs.m_PlayerName
+	if playerCoArgs.m_Connected then
+		text = text .. " s'est connecté"
+	else
+		text = text .. " s'est déconnecté"
+	end
 	appendTextToChatBox(text)
 end
 
@@ -79,5 +84,6 @@ guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
 winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
-client:subscribeEvent("PlayerConnected", "onPlayerConnected")
+client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
+client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")

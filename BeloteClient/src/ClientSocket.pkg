@@ -1,6 +1,7 @@
 class PlayerConnectedEventArgs : public CEGUI::EventArgs
 {
 public:
+	bool		m_Connected;
 	std::string	m_PlayerName;
 };
 

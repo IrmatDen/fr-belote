@@ -12,6 +12,7 @@
 class PlayerConnectedEventArgs : public CEGUI::EventArgs
 {
 public:
+	bool		m_Connected;
 	std::string	m_PlayerName;
 };
 
@@ -29,6 +30,7 @@ class ClientSocket : public CEGUI::EventSet
 public:
 	static const CEGUI::String EventNamespace;
 	static const CEGUI::String EventPlayerConnected;
+	static const CEGUI::String EventPlayerDisconnected;
 	static const CEGUI::String EventTextBroadcasted;
 
 public:
@@ -42,6 +44,9 @@ public:
 	void	Disconnect();
 
 	void	Update();
+
+	//! This will wait until the socket has finished running (must only be used when quitting).
+	void	Wait();
 
 private:
 	template <typename T>

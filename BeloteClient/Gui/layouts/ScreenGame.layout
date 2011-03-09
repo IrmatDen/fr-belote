@@ -2,12 +2,13 @@
 
 <GUILayout >
     <Window Type="DefaultWindow" Name="Root" >
-        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+	<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
 		<Window Type="DefaultWindow" Name="UIPanel" >
-            <Property Name="UnifiedAreaRect" Value="{{0.625,0},{0,0},{1,0},{1,0}}" />
+			<Property Name="UnifiedAreaRect" Value="{{1,-240},{0,0},{1,0},{1,0}}" />
             <Window Type="OgreTray/Button" Name="UIPanel/ButtonQuitTable" >
                 <Property Name="Text" Value="Retour au menu" />
-                <Property Name="UnifiedAreaRect" Value="{{0,0},{0.94,0},{0.95,0},{0.99,0}}" />
+                <Property Name="Font" Value="DejaVuSans-8" />
+                <Property Name="UnifiedAreaRect" Value="{{0,0},{0.94,0},{0.99,0},{0.99,0}}" />
             </Window>
 			<Window Type="OgreTray/FrameWindow" Name="UIPanel/ChatBox" >
 				<Property Name="Text" Value="Chat" />
@@ -15,12 +16,14 @@
 				<Property Name="InheritsAlpha" Value="False" />
 				<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 				<Property Name="TitlebarEnabled" Value="True" />
-				<Property Name="UnifiedAreaRect" Value="{{0,0},{0.5,0},{0.95,0},{0.935,0}}" />
+				<Property Name="UnifiedAreaRect" Value="{{0,0},{0.5,0},{0.99,0},{0.935,0}}" />
 				<Window Type="OgreTray/Listbox" Name="UIPanel/ChatBox/List" >
+					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 					<Property Name="UnifiedAreaRect" Value="{{0.02,0},{0,0},{0.98,0},{1,-30}}" />
 				</Window>
 				<Window Type="OgreTray/Editbox" Name="UIPanel/ChatBox/Text" >
+					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="MaxTextLength" Value="1073741823" />
 					<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 					<Property Name="UnifiedAreaRect" Value="{{0.02,0},{1,-30},{0.98,0},{1,-5}}" />

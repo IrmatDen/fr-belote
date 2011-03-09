@@ -16,6 +16,7 @@ function appendTextToChatBox(text)
 	local chatItem = LeftWrappedListItem(text)
 	chatBox:addItem(chatItem);
 	chatBox:ensureItemIsVisible(chatBox:getItemCount());
+	tolua.releaseownership(chatItem)
 end
 
 -----------------------------------------
@@ -33,7 +34,7 @@ end
 
 function onPlayerConnectedStateChange(args)
 	local playerCoArgs = toPlayerConnectedEventArgs(args)
-	local text = "[font='DejaVuSans-10-Bold']" .. playerCoArgs.m_PlayerName
+	local text = "[font='DejaVuSans-8-Bold']" .. playerCoArgs.m_PlayerName
 	if playerCoArgs.m_Connected then
 		text = text .. " s'est connecté"
 	else
@@ -44,7 +45,7 @@ end
 
 function onTextBroadcasted(args)
 	local textArgs = toTextBroadcastedEventArgs(args)
-	local text = "[font='DejaVuSans-10-Bold']" .. textArgs.m_Teller .. ": [font='DejaVuSans-10']" .. textArgs.m_Message
+	local text = "[font='DejaVuSans-8-Bold']" .. textArgs.m_Teller .. ": [font='DejaVuSans-8']" .. textArgs.m_Message
 	appendTextToChatBox(text)
 end
 	

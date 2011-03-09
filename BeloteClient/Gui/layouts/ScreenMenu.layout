@@ -58,7 +58,7 @@
                 </Window>
                 <Window Type="OgreTray/Combobox" Name="MenuScreenRules/GameRotation" >
                     <Property Name="ReadOnly" Value="True" />
-                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.21,0},{0.845,0},{0.451666,0}}" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.21,0},{0.845,0},{0.4,0}}" />
                     <Property Name="MaxEditTextLength" Value="1073741823" />
                     <AutoWindow NameSuffix="__auto_editbox__" >
                         <Property Name="Font" Value="DejaVuSans-10" />

@@ -15,7 +15,7 @@ private:
 public:
 	//! constructor
 	LeftWrappedListItem (const std::string& text)
-		: CEGUI::ListboxTextItem((CEGUI::utf8*)text.c_str())
+		: CEGUI::ListboxTextItem((CEGUI::utf8*)text.c_str()), d_formattedRenderedString(0)
 	{
 		d_formattedRenderedString = new CEGUI::RenderedStringWordWrapper
 			<CEGUI::LeftAlignedRenderedString>(d_renderedString);

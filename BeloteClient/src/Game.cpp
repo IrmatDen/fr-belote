@@ -17,6 +17,7 @@ Game::Game()
 	m_RenderWindow->ShowMouseCursor(false);
 
 	m_GuiManager.Initialize(m_RenderWindow);
+	CEGUI::ImageManager::getSingleton().loadImageset("PlayingCards.imageset");
 
 	LoadMenu();
 }
@@ -87,6 +88,7 @@ void Game::Quit()
 void Game::LoadMenu()
 {
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
+
 	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
 
 	m_BgImage.LoadFromFile("Gui/ScreenMenu.png");

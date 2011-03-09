@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Imageset Name="PlayingCards" Imagefile="PlayingCards.png" NativeHorzRes="800" NativeVertRes="600" AutoScaled="false" >
+    <Image Name="C1" XPos="0" YPos="0" Width="128" Height="178" />
+    <Image Name="C7" XPos="128" YPos="0" Width="128" Height="178" />
+    <Image Name="C8" XPos="256" YPos="0" Width="128" Height="178" />
+    <Image Name="C9" XPos="384" YPos="0" Width="128" Height="178" />
+    <Image Name="C10" XPos="512" YPos="0" Width="128" Height="178" />
+    <Image Name="CJ" XPos="640" YPos="0" Width="128" Height="178" />
+    <Image Name="CQ" XPos="768" YPos="0" Width="128" Height="178" />
+    <Image Name="CK" XPos="896" YPos="0" Width="128" Height="178" />
+    <Image Name="D1" XPos="0" YPos="178" Width="128" Height="178" />
+    <Image Name="D7" XPos="128" YPos="178" Width="128" Height="178" />
+    <Image Name="D8" XPos="256" YPos="178" Width="128" Height="178" />
+    <Image Name="D9" XPos="384" YPos="178" Width="128" Height="178" />
+    <Image Name="D10" XPos="512" YPos="178" Width="128" Height="178" />
+    <Image Name="DJ" XPos="640" YPos="178" Width="128" Height="178" />
+    <Image Name="DQ" XPos="768" YPos="178" Width="128" Height="178" />
+    <Image Name="DK" XPos="896" YPos="178" Width="128" Height="178" />
+    <Image Name="H1" XPos="0" YPos="356" Width="128" Height="356" />
+    <Image Name="H7" XPos="128" YPos="356" Width="128" Height="356" />
+    <Image Name="H8" XPos="256" YPos="356" Width="128" Height="356" />
+    <Image Name="H9" XPos="384" YPos="356" Width="128" Height="356" />
+    <Image Name="H10" XPos="512" YPos="356" Width="128" Height="356" />
+    <Image Name="HJ" XPos="640" YPos="356" Width="128" Height="356" />
+    <Image Name="HQ" XPos="768" YPos="356" Width="128" Height="356" />
+    <Image Name="HK" XPos="896" YPos="356" Width="128" Height="178" />
+    <Image Name="S1" XPos="0" YPos="534" Width="128" Height="534" />
+    <Image Name="S7" XPos="128" YPos="534" Width="128" Height="534" />
+    <Image Name="S8" XPos="256" YPos="534" Width="128" Height="534" />
+    <Image Name="S9" XPos="384" YPos="534" Width="128" Height="534" />
+    <Image Name="S10" XPos="512" YPos="534" Width="128" Height="534" />
+    <Image Name="SJ" XPos="640" YPos="534" Width="128" Height="534" />
+    <Image Name="SQ" XPos="768" YPos="534" Width="128" Height="534" />
+    <Image Name="SK" XPos="896" YPos="534" Width="128" Height="178" />
+</Imageset>

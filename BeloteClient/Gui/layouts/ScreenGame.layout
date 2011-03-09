@@ -30,5 +30,16 @@
 				</Window>
 			</Window>
         </Window>
+		<Window Type="DefaultWindow" Name="GameArea" >
+			<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,-240},{1,0}}" />
+			<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
+				<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-200},{0.5,256},{1,0}}" />
+				<Window Type="OgreTray/StaticImage" Name="GameArea/PlayerCards/SampleCard">
+					<Property Name="UnifiedSize" Value="{{0,128},{0,178}}" />
+					<Property Name="FrameEnabled" Value="False" />
+					<Property Name="Image" Value="PlayingCards/CJ" />
+				</Window>
+			</Window>
+		</Window>
     </Window>
 </GUILayout>

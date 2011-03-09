@@ -4348,5 +4348,48 @@
         <StateImagery name="Enabled" />
         <StateImagery name="Disabled" />
     </WidgetLook>
-
+ 
+<!--
+:::: PlayingCard (normal version)
+-->
+    <WidgetLook name="OgreTray/PlayingCard">
+        <PropertyDefinition name="ImageColours" initialValue="tl:FFFFFFFF tr:FFFFFFFF bl:FFFFFFFF br:FFFFFFFF" redrawOnWrite="true" />
+        <PropertyDefinition name="VertFormatting" initialValue="Stretched" redrawOnWrite="false" />
+        <PropertyDefinition name="HorzFormatting" initialValue="Stretched" redrawOnWrite="false" />
+        <Property name="BackgroundEnabled" value="false" />
+        <Property name="FrameEnabled" value="false" />
+		<ImagerySection name="image_noframe">
+            <ImageryComponent>
+                <Area>
+                    <Dim type="LeftEdge" ><AbsoluteDim value="0" /></Dim>
+                    <Dim type="TopEdge" ><AbsoluteDim value="0" /></Dim>
+                    <Dim type="RightEdge" ><UnifiedDim scale="1.0" type="RightEdge" /></Dim>
+                    <Dim type="BottomEdge" ><UnifiedDim scale="1.0" type="BottomEdge" /></Dim>
+                </Area>
+                <ImageProperty name="Image" />
+                <ColourRectProperty name="ImageColours" />
+                <VertFormatProperty name="VertFormatting" />
+                <HorzFormatProperty name="HorzFormatting" />
+            </ImageryComponent>
+        </ImagerySection>
+        <StateImagery name="Enabled" />
+        <StateImagery name="Disabled" />
+        <StateImagery name="NoFrameImage">
+            <Layer><Section section="image_noframe" /></Layer>
+        </StateImagery>
+		<AnimationDefinition name="HoverIn" duration="0.15" replayMode="once">
+			<Affector property="UnifiedYPosition" interpolator="UDim">
+				<KeyFrame position="0.0" value="{1,-178}" />
+				<KeyFrame position="0.15" value="{1,-238}" />
+			</Affector>
+			<Subscription event="MouseEntersArea" action="Start" />
+		</AnimationDefinition>
+		<AnimationDefinition name="HoverOut" duration="0.15" replayMode="once">
+			<Affector property="UnifiedYPosition" interpolator="UDim">
+				<KeyFrame position="0.0" value="{1,-238}" />
+				<KeyFrame position="0.15" value="{1,-178}" />
+			</Affector>
+			<Subscription event="MouseLeavesArea" action="Start" />
+		</AnimationDefinition>
+    </WidgetLook>
 </Falagard>

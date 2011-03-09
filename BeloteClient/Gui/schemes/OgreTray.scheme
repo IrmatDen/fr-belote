@@ -43,6 +43,6 @@
     <FalagardMapping WindowType="OgreTray/TabButtonPane"        TargetType="DefaultWindow"          Renderer="Falagard/Default"             LookNFeel="OgreTray/TabButtonPane" />
     <FalagardMapping WindowType="OgreTray/TabContentPane"       TargetType="DefaultWindow"          Renderer="Falagard/Default"             LookNFeel="OgreTray/TabContentPane" />
     <FalagardMapping WindowType="OgreTray/TabControl"           TargetType="CEGUI/TabControl"       Renderer="Falagard/TabControl"          LookNFeel="OgreTray/TabControl" />
-
-    <FalagardMapping WindowType="OgreTray/BG" TargetType="DefaultWindow" Renderer="Falagard/Default" LookNFeel="OgreTray/BGTest" />
+    <FalagardMapping WindowType="OgreTray/BG"					TargetType="DefaultWindow"			Renderer="Falagard/Default"				LookNFeel="OgreTray/BGTest" />
+    <FalagardMapping WindowType="OgreTray/PlayingCard"          TargetType="DefaultWindow"          Renderer="Falagard/StaticImage"         LookNFeel="OgreTray/PlayingCard" />
 </GUIScheme>

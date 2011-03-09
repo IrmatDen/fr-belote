@@ -23,6 +23,16 @@ end
 -- Start of handler functions
 -----------------------------------------
 
+-- Game zone events
+function onCardHovered(args)
+	print "selected"
+end
+
+function onCardUnHovered(args)
+	print "deselected"
+end
+
+-- UI panel events
 function onSendChatText(args)
 	local we = CEGUI.toWindowEventArgs(args)
 	local game = Game:getSingleton()
@@ -88,3 +98,6 @@ winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTab
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
+
+winMgr:getWindow("GameArea/PlayerCards/SampleCard"):subscribeEvent("MouseEntersArea", "onCardHovered")
+winMgr:getWindow("GameArea/PlayerCards/SampleCard"):subscribeEvent("MouseLeavesArea", "onCardUnHovered")

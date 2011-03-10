@@ -2,6 +2,10 @@
 -- Utilities
 -----------------------------------------
 
+function toConnectionStatusEventArgs(e)
+    return tolua.cast(e,"const ConnectionStatusEventArgs")
+end
+
 local screenHistory = {}
 function displayScreen(screenName)
 	local winMgr = CEGUI.WindowManager:getSingleton()
@@ -26,6 +30,15 @@ function onBack(args)
 	
 	table.remove(screenHistory, #screenHistory)
 	winMgr:getWindow(screenHistory[#screenHistory]):setVisible(true)
+end
+
+function onConnectionStatusUpdated(args)
+	local connStatus = toConnectionStatusEventArgs(args).m_Connected
+	if connStatus == true then
+		Game:getSingleton():LoadGame()
+	else
+		print("Connection failed! Get a real error message dude and explain yourself!")
+	end
 end
 
 	-- Main screen
@@ -63,7 +76,6 @@ function onRulesStart(args)
 	-- No worries about joining another host, since only the host gets to the rules def screen
 	game:StartServer()
 	client:Connect("127.0.0.1", pnameBox:getText())
-	game:LoadGame()
 end
 
 	-- Join game screen
@@ -90,15 +102,16 @@ function onDoJoinGame(args)
 	local hostIpBox = winMgr:getWindow("MenuScreenJoinGame/HostIP")
 	
 	client:Connect(hostIpBox:getText(), pnameBox:getText())
-	game:LoadGame()
 end
 
 -----------------------------------------
 -- Script Entry Point
 -----------------------------------------
-local guiSystem = CEGUI.System:getSingleton()
-local schemeMgr = CEGUI.SchemeManager:getSingleton()
-local winMgr = CEGUI.WindowManager:getSingleton()
+local guiSystem	= CEGUI.System:getSingleton()
+local schemeMgr	= CEGUI.SchemeManager:getSingleton()
+local winMgr	= CEGUI.WindowManager:getSingleton()
+local game		= Game:getSingleton()
+local client	= game:GetClientSocket()
 
 schemeMgr:create("OgreTray.scheme");
 local root = winMgr:loadWindowLayout("ScreenMenu.layout")
@@ -131,6 +144,8 @@ local hostIpBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/HostIP"))
 hostIpBox:setValidationString("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
 
 -- subscribe required events
+	-- Network events
+client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 	-- Main menu
 winMgr:getWindow("MenuScreenMain/ButtonCreateRoom"):subscribeEvent("Clicked", "onHostGame")
 winMgr:getWindow("MenuScreenMain/ButtonJoinRoom"):subscribeEvent("Clicked", "onJoinGame")

@@ -1,3 +1,9 @@
+class ConnectionStatusEventArgs : public CEGUI::EventArgs
+{
+public:
+	bool		m_Connected;
+};
+
 class PlayerConnectedEventArgs : public CEGUI::EventArgs
 {
 public:

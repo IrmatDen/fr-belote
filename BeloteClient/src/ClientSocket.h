@@ -9,6 +9,12 @@
 #include <CEGUIEventArgs.h>
 #include <CEGUIEventSet.h>
 
+class ConnectionStatusEventArgs : public CEGUI::EventArgs
+{
+public:
+	bool		m_Connected;
+};
+
 class PlayerConnectedEventArgs : public CEGUI::EventArgs
 {
 public:
@@ -29,6 +35,7 @@ class ClientSocket : public CEGUI::EventSet
 {
 public:
 	static const CEGUI::String EventNamespace;
+	static const CEGUI::String EventConnectionStatusUpdated;
 	static const CEGUI::String EventPlayerConnected;
 	static const CEGUI::String EventPlayerDisconnected;
 	static const CEGUI::String EventTextBroadcasted;
@@ -39,14 +46,20 @@ public:
 
 	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName);
 	void	SendChatMessage(const std::string &utf8EncodedMessage);
-	void	EnqueuePlayerConnected(const PlayerConnectedEventArgs &args);
-	void	EnqueueBroadcastedText(const TextBroadcastedEventArgs &args);
 	void	Disconnect();
 
+	//! This will fire any events queued by the socket's thread.
 	void	Update();
 
 	//! This will wait until the socket has finished running (must only be used when quitting).
 	void	Wait();
+
+	// Reserved for private use.
+	void	EnqueuePlayerConnected(const PlayerConnectedEventArgs &args);
+	// Reserved for private use.
+	void	EnqueueBroadcastedText(const TextBroadcastedEventArgs &args);
+	// Reserved for private use.
+	void	SetConnectionStatusArgs(const ConnectionStatusEventArgs &args);
 
 private:
 	template <typename T>
@@ -70,6 +83,9 @@ private:
 	
 	sf::Mutex								m_PlayerConnectedQueueMutex;
 	std::queue<PlayerConnectedEventArgs>	m_PlayerConnectedQueue;
+
+	bool									m_IsConnectionStatusReady;
+	ConnectionStatusEventArgs				m_ConnectionStateEventArgs;
 };
 
 #endif

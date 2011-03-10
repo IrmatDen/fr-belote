@@ -10,7 +10,8 @@
 Game* Singleton<Game>::ms_Singleton = 0;
 
 Game::Game()
-	: m_RenderWindow(0), m_QuitPending(false), m_ServerThread(&Server::Start, &m_Server)
+	: m_RenderWindow(0), m_QuitPending(false), m_LoadMenuPending(false), m_LoadGamePending(false),
+	m_ServerThread(&Server::Start, &m_Server)
 {
 	m_RenderWindow = new sf::RenderWindow(sf::VideoMode(800, 600, 32), "Belote");
 	m_RenderWindow->SetFramerateLimit(60);
@@ -46,6 +47,18 @@ void Game::Run()
 			// Wait until the click sound has finished playing (if the player clicked on a Quit button).
 			if (!SoundManager::getSingleton().IsFXPlaying(SoundManager::FX_CLICK))
 				m_RenderWindow->Close();
+		}
+
+		if (m_LoadMenuPending)
+		{
+			DoLoadMenu();
+			m_LoadMenuPending = false;
+		}
+
+		if (m_LoadGamePending)
+		{
+			DoLoadGame();
+			m_LoadGamePending = false;
 		}
 
 		m_ClientSocket.Update();
@@ -87,9 +100,10 @@ void Game::Quit()
 	m_ClientSocket.Wait();
 }
 
-void Game::LoadMenu()
+void Game::DoLoadMenu()
 {
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
+	m_ClientSocket.removeAllEvents();
 
 	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
 
@@ -97,7 +111,7 @@ void Game::LoadMenu()
 	m_BgSprite.SetImage(m_BgImage);
 }
 
-void Game::LoadGame()
+void Game::DoLoadGame()
 {
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
 	m_ClientSocket.removeAllEvents();

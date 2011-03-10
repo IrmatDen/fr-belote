@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/10/11 20:02:31.
+** Generated automatically by tolua++-1.0.92 on 03/10/11 23:01:25.
 */
 
 #ifndef __cplusplus
@@ -36,12 +36,13 @@ static void tolua_reg_types (lua_State* tolua_S)
 {
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"GUIManager");
- tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
- tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"ClientSocket");
+ tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
+ tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"SoundManager");
- tolua_usertype(tolua_S,"CEGUI::EventArgs");
+ tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
  tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
  tolua_usertype(tolua_S,"Game");
  tolua_usertype(tolua_S,"TextBroadcastedEventArgs");
@@ -476,6 +477,36 @@ static int tolua_LuaInterface_LeftWrappedListItem_new00_local(lua_State* tolua_S
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_Connected of class  ConnectionStatusEventArgs */
+#ifndef TOLUA_DISABLE_tolua_get_ConnectionStatusEventArgs_m_Connected
+static int tolua_get_ConnectionStatusEventArgs_m_Connected(lua_State* tolua_S)
+{
+  ConnectionStatusEventArgs* self = (ConnectionStatusEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Connected'",NULL);
+#endif
+ tolua_pushboolean(tolua_S,(bool)self->m_Connected);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Connected of class  ConnectionStatusEventArgs */
+#ifndef TOLUA_DISABLE_tolua_set_ConnectionStatusEventArgs_m_Connected
+static int tolua_set_ConnectionStatusEventArgs_m_Connected(lua_State* tolua_S)
+{
+  ConnectionStatusEventArgs* self = (ConnectionStatusEventArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Connected'",NULL);
+ if (!tolua_isboolean(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Connected = ((bool)  tolua_toboolean(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_Connected of class  PlayerConnectedEventArgs */
 #ifndef TOLUA_DISABLE_tolua_get_PlayerConnectedEventArgs_m_Connected
 static int tolua_get_PlayerConnectedEventArgs_m_Connected(lua_State* tolua_S)
@@ -742,6 +773,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"new",tolua_LuaInterface_LeftWrappedListItem_new00);
   tolua_function(tolua_S,"new_local",tolua_LuaInterface_LeftWrappedListItem_new00_local);
   tolua_function(tolua_S,".call",tolua_LuaInterface_LeftWrappedListItem_new00_local);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"ConnectionStatusEventArgs","ConnectionStatusEventArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"ConnectionStatusEventArgs");
+  tolua_variable(tolua_S,"m_Connected",tolua_get_ConnectionStatusEventArgs_m_Connected,tolua_set_ConnectionStatusEventArgs_m_Connected);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"PlayerConnectedEventArgs","PlayerConnectedEventArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"PlayerConnectedEventArgs");

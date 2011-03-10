@@ -9,6 +9,7 @@
 #include "StateMachine.h"
 
 const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
+const CEGUI::String ClientSocket::EventConnectionStatusUpdated("ConnectionStatusUpdated");
 const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
 const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
@@ -76,14 +77,19 @@ namespace
 
 		struct Connected : public State
 		{
-			Connected(StateMachine *sm)
-				: State(sm)
+			Connected(StateMachine *sm, ClientSocket *self)
+				: State(sm), m_Self(self)
 			{ ; }
 
 			virtual void	Enter()
 			{
+				ConnectionStatusEventArgs args;
+				args.m_Connected = true;
+				m_Self->SetConnectionStatusArgs(args);
 				m_StateMachine->Notify(NEC_SendName);
 			}
+
+			ClientSocket	* m_Self;
 		};
 
 		struct Idle : public State
@@ -250,7 +256,7 @@ public:
 		// States
 		m_StateWfc			= new States::WaitingForConnection(m_StateMachine);
 		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
-		m_StateConnected	= new States::Connected(m_StateMachine);
+		m_StateConnected	= new States::Connected(m_StateMachine, m_Self);
 		m_StateIdle			= new States::Idle(m_StateMachine, m_Socket, m_Self);
 		m_StateDisconnected	= new States::Disconnected(m_StateMachine);
 
@@ -338,6 +344,7 @@ private:
 };
 
 ClientSocket::ClientSocket()
+	: m_IsConnectionStatusReady(false)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -349,6 +356,7 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 {
+	m_IsConnectionStatusReady = false;
 	m_priv->Connect(hostIP, utf8EncodedName);
 }
 
@@ -374,8 +382,20 @@ void ClientSocket::EnqueuePlayerConnected(const PlayerConnectedEventArgs &args)
 	m_PlayerConnectedQueue.push(args);
 }
 
+void ClientSocket::SetConnectionStatusArgs(const ConnectionStatusEventArgs &args)
+{
+	m_ConnectionStateEventArgs = args;
+	m_IsConnectionStatusReady = true;
+}
+
 void ClientSocket::Update()
 {
+	if (m_IsConnectionStatusReady)
+	{
+		fireEvent(EventConnectionStatusUpdated, m_ConnectionStateEventArgs, EventNamespace);
+		m_IsConnectionStatusReady = false;
+	}
+
 	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);
 	UpdateMessageQueue(m_PlayerConnectedQueue, m_PlayerConnectedQueueMutex, EventPlayerConnected);
 }

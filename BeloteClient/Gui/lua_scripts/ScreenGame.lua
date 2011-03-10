@@ -10,6 +10,21 @@ function toPlayerConnectedEventArgs(e)
     return tolua.cast(e,"const PlayerConnectedEventArgs")
 end
 
+function addCard(cardName)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	
+	local card = winMgr:createWindow("OgreTray/PlayingCard", cardName)
+	card:setSize(CEGUI.UVector2(CEGUI.UDim(0, 128), CEGUI.UDim(0, 178)))
+	card:setXPosition(CEGUI.UDim(0, 0))
+	card:setYPosition(CEGUI.UDim(1, -178))
+	card:setProperty("Image", "PlayingCards/" .. cardName)
+	
+	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
+	playerHandArea:addChild(card)
+	
+	card:subscribeEvent("MouseClick", "onCardSelected")
+end
+
 function appendTextToChatBox(text)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local chatBox = CEGUI.toListbox(winMgr:getWindow("UIPanel/ChatBox/List"))
@@ -24,12 +39,8 @@ end
 -----------------------------------------
 
 -- Game zone events
-function onCardHovered(args)
+function onCardSelected(args)
 	print "selected"
-end
-
-function onCardUnHovered(args)
-	print "deselected"
 end
 
 -- UI panel events
@@ -91,6 +102,8 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
+addCard("H8")
+
 -- subscribe required events
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
@@ -98,6 +111,3 @@ winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTab
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
-
-winMgr:getWindow("GameArea/PlayerCards/SampleCard"):subscribeEvent("MouseEntersArea", "onCardHovered")
-winMgr:getWindow("GameArea/PlayerCards/SampleCard"):subscribeEvent("MouseLeavesArea", "onCardUnHovered")

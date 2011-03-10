@@ -17,7 +17,9 @@ Game::Game()
 	m_RenderWindow->ShowMouseCursor(false);
 
 	m_GuiManager.Initialize(m_RenderWindow);
+
 	CEGUI::ImageManager::getSingleton().loadImageset("PlayingCards.imageset");
+	CEGUI::AnimationManager::getSingleton().loadAnimationsFromXML("CardHovering.xml");
 
 	LoadMenu();
 }

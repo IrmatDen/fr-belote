@@ -4377,19 +4377,5 @@
         <StateImagery name="NoFrameImage">
             <Layer><Section section="image_noframe" /></Layer>
         </StateImagery>
-		<AnimationDefinition name="HoverIn" duration="0.15" replayMode="once">
-			<Affector property="UnifiedYPosition" interpolator="UDim">
-				<KeyFrame position="0.0" value="{1,-178}" />
-				<KeyFrame position="0.15" value="{1,-238}" />
-			</Affector>
-			<Subscription event="MouseEntersArea" action="Start" />
-		</AnimationDefinition>
-		<AnimationDefinition name="HoverOut" duration="0.15" replayMode="once">
-			<Affector property="UnifiedYPosition" interpolator="UDim">
-				<KeyFrame position="0.0" value="{1,-238}" />
-				<KeyFrame position="0.15" value="{1,-178}" />
-			</Affector>
-			<Subscription event="MouseLeavesArea" action="Start" />
-		</AnimationDefinition>
     </WidgetLook>
 </Falagard>

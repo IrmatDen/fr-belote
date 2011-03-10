@@ -2,8 +2,12 @@
 -- Utilities
 -----------------------------------------
 
-local CardWidth = 128
-local CardHeight = 178
+local CardWidth					= 128
+local CardHeight				= 178
+local CardPlayablePropertyName	= "Playable" -- the value can be either "1" or "0" (default)
+local CardHoverPropertyName		= "AnimInstanceIdx"
+
+local animInstances = { }
 
 function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
@@ -15,34 +19,75 @@ end
 
 -- Add a card to the player's current hand
 function addCard(cardName)
-	local winMgr = CEGUI.WindowManager:getSingleton()
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local animMgr	= CEGUI.AnimationManager:getSingleton()
 	
-	local card = winMgr:createWindow("OgreTray/PlayingCard", cardName)
-	card:setSize(CEGUI.UVector2(CEGUI.UDim(0, CardWidth), CEGUI.UDim(0, CardHeight)))
-	card:setXPosition(CEGUI.UDim(0, 0))
-	card:setYPosition(CEGUI.UDim(1, -CardHeight))
-	card:setProperty("Image", "PlayingCards/" .. cardName)
-	card:setZOrderingEnabled(false)
+	local playerHandArea		= winMgr:getWindow("GameArea/PlayerCards")
+	local playerHandAreaHeight	= playerHandArea:getHeight().offset
 	
-	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
-	playerHandArea:addChild(card)
+	-- Define new windows & animation
+	local cardArea = winMgr:createWindow("DefaultWindow", cardName)
+	cardArea:setSize(CEGUI.UVector2(CEGUI.UDim(0, CardWidth), CEGUI.UDim(0, playerHandAreaHeight)))
+	cardArea:setRiseOnClickEnabled(false)
+	cardArea:setUserString(CardPlayablePropertyName, "0")
+	cardArea:setUserString(CardHoverPropertyName, #animInstances + 1)
 	
-	card:subscribeEvent("MouseClick", "onCardSelected")
+	local cardImg = winMgr:createWindow("OgreTray/StaticImage", cardName .. "Img")
+	cardImg:setSize(CEGUI.UVector2(CEGUI.UDim(0, CardWidth), CEGUI.UDim(0, CardHeight)))
+	cardImg:setYPosition(CEGUI.UDim(1, -CardHeight))
+	cardImg:setProperty("FrameEnabled", "False")
+	cardImg:setProperty("Image", "PlayingCards/" .. cardName)
+	
+	local hoverIn	= animMgr:instantiateAnimation("HoverIn")
+	local hoverOut	= animMgr:instantiateAnimation("HoverOut")
+	hoverIn:setTargetWindow(cardImg)
+	hoverOut:setTargetWindow(cardImg)
+	table.insert(animInstances, hoverIn)
+	table.insert(animInstances, hoverOut)
+	
+	-- add them to the game area
+	cardArea:addChild(cardImg)
+	playerHandArea:addChild(cardArea)
+	
+	-- and allows player to do stuff with the card
+	cardArea:subscribeEvent("MouseEntersArea", "onCardHoverIn")
+	cardArea:subscribeEvent("MouseLeavesArea", "onCardHoverOut")
+	cardImg:subscribeEvent("MouseClick", "onCardSelected")
 end
 
 -- Reposition all cards in hand based on how many there are
 function rearrangeCards()
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
-	local cardsCount = playerHandArea:getChildCount() - 1
-	local cardVisibleWidth = CardWidth / 3
-	local startX = (playerHandArea:getWidth().offset / 2)
-	startX = startX	- (cardVisibleWidth * cardsCount)
+	local winMgr			= CEGUI.WindowManager:getSingleton()
+	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local cardsCount		= playerHandArea:getChildCount() - 1
+	local cardVisibleWidth	= CardWidth / 3
+	local startX			= (playerHandArea:getWidth().offset / 2)
+	startX					= startX	- (cardVisibleWidth * cardsCount)
+	
 	for cardIdx = 0, cardsCount do
 		local card = playerHandArea:getChildAtIdx(cardIdx)
 		card:setXPosition(CEGUI.UDim(0, startX))
+		
 		startX = startX + cardVisibleWidth
 	end
+end
+
+-- Update playable property on all player's hand's cards
+function updatePlayableCards()
+	local winMgr			= CEGUI.WindowManager:getSingleton()
+	-- local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	-- local cardsCount		= playerHandArea:getChildCount() - 1
+	
+	-- for cardIdx = 0, cardsCount do
+		-- local card = playerHandArea:getChildAtIdx(cardIdx)
+		-- card:setUserString(CardPlayablePropertyName, "1")
+	-- end
+	
+	winMgr:getWindow("HJ"):setUserString(CardPlayablePropertyName, "1")
+end
+
+function isCardPlayable(c)
+	return tonumber(c:getUserString(CardPlayablePropertyName))
 end
 
 function appendTextToChatBox(text)
@@ -59,35 +104,70 @@ end
 -----------------------------------------
 
 -- Game zone events
+function onCardHoverIn(args)
+	local window = CEGUI.toWindowEventArgs(args).window
+	
+	-- Check if card is playable before hovering
+	if isCardPlayable(window) == 0 then
+		return
+	end
+	
+	local hoverInAnimIdx = window:getUserString(CardHoverPropertyName)
+	animInstances[tonumber(hoverInAnimIdx)]:start()
+end
+
+function onCardHoverOut(args)
+	local window = CEGUI.toWindowEventArgs(args).window
+	
+	-- Check if card is playable before hovering
+	if isCardPlayable(window) == 0 then
+		return
+	end
+	
+	local hoverOutAnimIdx = window:getUserString(CardHoverPropertyName) + 1
+	animInstances[tonumber(hoverOutAnimIdx)]:start()
+end
+
 function onCardSelected(args)
-	local winArgs = CEGUI.toWindowEventArgs(args)
-	print ("Selected " .. winArgs.window:getName())
+	local window = CEGUI.toWindowEventArgs(args).window:getParent()
+	
+	-- Check if card is playable before selecting
+	if isCardPlayable(window) == 0 then
+		return
+	end
+	
+	local cardName = window:getName()
+	print ("Selected " .. cardName)
 end
 
 -- UI panel events
 function onSendChatText(args)
-	local we = CEGUI.toWindowEventArgs(args)
-	local game = Game:getSingleton()
-	local client = game:GetClientSocket()
+	local we		= CEGUI.toWindowEventArgs(args)
+	local game		= Game:getSingleton()
+	local client	= game:GetClientSocket()
 	
 	client:SendChatMessage(we.window:getText())
 	we.window:setText("")
 end
 
 function onPlayerConnectedStateChange(args)
-	local playerCoArgs = toPlayerConnectedEventArgs(args)
-	local text = "[font='DejaVuSans-8-Bold']" .. playerCoArgs.m_PlayerName
+	local playerCoArgs	= toPlayerConnectedEventArgs(args)
+	local text			= "[font='DejaVuSans-8-Bold']" .. playerCoArgs.m_PlayerName
+	
 	if playerCoArgs.m_Connected then
 		text = text .. " s'est connecté"
 	else
 		text = text .. " s'est déconnecté"
 	end
+	
 	appendTextToChatBox(text)
 end
 
 function onTextBroadcasted(args)
-	local textArgs = toTextBroadcastedEventArgs(args)
-	local text = "[font='DejaVuSans-8-Bold']" .. textArgs.m_Teller .. ": [font='DejaVuSans-8']" .. textArgs.m_Message
+	local textArgs	= toTextBroadcastedEventArgs(args)
+	local text		= "[font='DejaVuSans-8-Bold']" .. textArgs.m_Teller
+	text			= text .. ": [font='DejaVuSans-8']" .. textArgs.m_Message
+	
 	appendTextToChatBox(text)
 end
 	
@@ -95,13 +175,21 @@ function onQuitTable(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
 
 	-- Save player's name
-	local game = Game:getSingleton()
-	local client = game:GetClientSocket()
+	local game		= Game:getSingleton()
+	local client	= game:GetClientSocket()
+	
 	if game.m_GameVars.m_GameMode == Game.GM_HOST then
 		game:StopServer()
 		-- Client's disconnection is implied by the server shutting down; no need to repeat.
 	else
 		client:Disconnect()
+	end
+	
+	-- Clean up all loaded anims
+	local animMgr = CEGUI.AnimationManager:getSingleton()
+	for animIdx = 0, (animMgr:getNumAnimations() - 1) do
+		local anim = animMgr:getAnimationAtIdx(animIdx)
+		animMgr:destroyAllInstancesOfAnimation(anim)
 	end
 	
 	game:LoadMenu()
@@ -110,11 +198,11 @@ end
 -----------------------------------------
 -- Script Entry Point
 -----------------------------------------
-local guiSystem = CEGUI.System:getSingleton()
+local guiSystem	= CEGUI.System:getSingleton()
 local schemeMgr = CEGUI.SchemeManager:getSingleton()
-local winMgr = CEGUI.WindowManager:getSingleton()
-local game = Game:getSingleton()
-local client = game:GetClientSocket()
+local winMgr	= CEGUI.WindowManager:getSingleton()
+local game		= Game:getSingleton()
+local client	= game:GetClientSocket()
 
 schemeMgr:create("OgreTray.scheme");
 local root = winMgr:loadWindowLayout("ScreenGame.layout")
@@ -132,6 +220,7 @@ addCard("HQ")
 addCard("HK")
 addCard("H1")
 rearrangeCards()
+updatePlayableCards()
 
 -- subscribe required events
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))

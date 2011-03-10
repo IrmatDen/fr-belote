@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<Animations>
+	<AnimationDefinition name="HoverIn" duration="0.15" replayMode="once">
+		<Affector property="UnifiedYPosition" interpolator="UDim">
+			<KeyFrame position="0.0" value="{1,-178}" />
+			<KeyFrame position="0.15" value="{1,-238}" />
+		</Affector>
+	</AnimationDefinition>
+	<AnimationDefinition name="HoverOut" duration="0.15" replayMode="once">
+		<Affector property="UnifiedYPosition" interpolator="UDim">
+			<KeyFrame position="0.0" value="{1,-238}" />
+			<KeyFrame position="0.15" value="{1,-178}" />
+		</Affector>
+	</AnimationDefinition>
+</Animations>

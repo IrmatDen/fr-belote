@@ -34,7 +34,8 @@ bool GUIManager::Initialize(sf::RenderWindow* win)
 		// initialise the required dirs for the DefaultResourceProvider
 		DefaultResourceProvider* rp = static_cast<DefaultResourceProvider*>
 												(System::getSingleton().getResourceProvider());
-
+		
+		rp->setResourceGroupDirectory("animations",		"Gui/animations/");
 		rp->setResourceGroupDirectory("schemes",		"Gui/schemes/");
 		rp->setResourceGroupDirectory("imagesets",		"Gui/imagesets/");
 		rp->setResourceGroupDirectory("fonts",			"Gui/fonts/");
@@ -47,6 +48,7 @@ bool GUIManager::Initialize(sf::RenderWindow* win)
 		rp->setResourceGroupDirectory("schemas", "Gui/xml_schemas/");
 
 		// set the default resource groups to be used
+		AnimationManager::setDefaultResourceGroup		("animations");
 		Scheme::setDefaultResourceGroup					("schemes");
 		ImageManager::setImagesetDefaultResourceGroup	("imagesets");
 		Font::setDefaultResourceGroup					("fonts");

@@ -13,6 +13,7 @@ function toPlayerConnectedEventArgs(e)
     return tolua.cast(e,"const PlayerConnectedEventArgs")
 end
 
+-- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	
@@ -59,7 +60,8 @@ end
 
 -- Game zone events
 function onCardSelected(args)
-	print "selected"
+	local winArgs = CEGUI.toWindowEventArgs(args)
+	print ("Selected " .. winArgs.window:getName())
 end
 
 -- UI panel events

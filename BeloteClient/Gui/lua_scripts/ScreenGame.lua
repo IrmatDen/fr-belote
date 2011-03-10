@@ -2,6 +2,9 @@
 -- Utilities
 -----------------------------------------
 
+local CardWidth = 128
+local CardHeight = 178
+
 function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
 end
@@ -14,15 +17,31 @@ function addCard(cardName)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	
 	local card = winMgr:createWindow("OgreTray/PlayingCard", cardName)
-	card:setSize(CEGUI.UVector2(CEGUI.UDim(0, 128), CEGUI.UDim(0, 178)))
+	card:setSize(CEGUI.UVector2(CEGUI.UDim(0, CardWidth), CEGUI.UDim(0, CardHeight)))
 	card:setXPosition(CEGUI.UDim(0, 0))
-	card:setYPosition(CEGUI.UDim(1, -178))
+	card:setYPosition(CEGUI.UDim(1, -CardHeight))
 	card:setProperty("Image", "PlayingCards/" .. cardName)
+	card:setZOrderingEnabled(false)
 	
 	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
 	playerHandArea:addChild(card)
 	
 	card:subscribeEvent("MouseClick", "onCardSelected")
+end
+
+-- Reposition all cards in hand based on how many there are
+function rearrangeCards()
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
+	local cardsCount = playerHandArea:getChildCount() - 1
+	local cardVisibleWidth = CardWidth / 3
+	local startX = (playerHandArea:getWidth().offset / 2)
+	startX = startX	- (cardVisibleWidth * cardsCount)
+	for cardIdx = 0, cardsCount do
+		local card = playerHandArea:getChildAtIdx(cardIdx)
+		card:setXPosition(CEGUI.UDim(0, startX))
+		startX = startX + cardVisibleWidth
+	end
 end
 
 function appendTextToChatBox(text)
@@ -102,7 +121,15 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
+addCard("H7")
 addCard("H8")
+addCard("H9")
+addCard("H10")
+addCard("HJ")
+addCard("HQ")
+addCard("HK")
+addCard("H1")
+rearrangeCards()
 
 -- subscribe required events
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))

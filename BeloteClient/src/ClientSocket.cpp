@@ -42,22 +42,12 @@ namespace
 				: State(sm), m_Socket(socket)
 			{ ; }
 
-			virtual void	Enter()
-			{
-				if (m_Socket.GetRemoteAddress() == sf::IpAddress::None)
-				{
-					m_StateMachine->Notify(NEC_CantConnect);
-					return;
-				}
-				// If the connection is made, we'll just have to wait for feedback from the server before continuing.
-			}
-
 			virtual void	Update()
 			{
 				sf::Packet p;
-				sf::Socket::Status s = m_Socket.Receive(p);
+				sf::Socket::Status status = m_Socket.Receive(p);
 
-				if (s == sf::Socket::Done)
+				if (status == sf::Socket::Done)
 				{
 					PacketType pt;
 					p >> pt;
@@ -69,6 +59,10 @@ namespace
 					}
 					else
 						std::cout << "[Client] Unexpected packet received in State::Connecting::Update. Packet type is: " << pt << std::endl;
+				}
+				else if (status == sf::Socket::Disconnected)
+				{
+					m_StateMachine->Notify(NEC_CantConnect);
 				}
 			}
 
@@ -100,12 +94,12 @@ namespace
 
 			virtual void	Update()
 			{
-				m_Socket.SetBlocking(false);
 				sf::Packet packet;
-				sf::Socket::Status s = m_Socket.Receive(packet);
+				m_Socket.SetBlocking(false);
+				sf::Socket::Status status = m_Socket.Receive(packet);
 				m_Socket.SetBlocking(true);
 
-				if (s == sf::Socket::Done)
+				if (status == sf::Socket::Done)
 				{
 					PacketType pt;
 					packet >> pt;
@@ -148,6 +142,10 @@ namespace
 						break;
 					}
 				}
+				else if (status == sf::Socket::Error)
+				{
+					m_StateMachine->Notify(NEC_CantConnect);
+				}
 			}
 
 			sf::TcpSocket	& m_Socket;
@@ -156,9 +154,20 @@ namespace
 
 		struct Disconnected : public State
 		{
-			Disconnected(StateMachine *sm) : State(sm)	{ ; }
+			Disconnected(StateMachine *sm, ClientSocket *self)
+				: State(sm), m_Self(self)
+			{ ; }
 
-			virtual void	Enter()		{ m_StateMachine->Stop(); }
+			virtual void	Enter()
+			{
+				ConnectionStatusEventArgs args;
+				args.m_Connected = false;
+				m_Self->SetConnectionStatusArgs(args);
+
+				m_StateMachine->Stop();
+			}
+
+			ClientSocket	* m_Self;
 		};
 	}
 
@@ -179,7 +188,7 @@ namespace
 
 			virtual void operator()()
 			{
-				m_Socket.Connect(m_HostIP, Server::PORT);
+				m_Socket.Connect(m_HostIP, Server::PORT, 5.f);
 			}
 
 			sf::IpAddress m_HostIP;
@@ -258,7 +267,7 @@ public:
 		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
 		m_StateConnected	= new States::Connected(m_StateMachine, m_Self);
 		m_StateIdle			= new States::Idle(m_StateMachine, m_Socket, m_Self);
-		m_StateDisconnected	= new States::Disconnected(m_StateMachine);
+		m_StateDisconnected	= new States::Disconnected(m_StateMachine, m_Self);
 
 		// Actions
 		m_ActionConnect		= new Actions::Connect(m_Socket);
@@ -315,8 +324,6 @@ private:
 
 			sf::Sleep(0.05f);
 		}
-
-		int n = 42;
 	}
 
 private:
@@ -344,7 +351,7 @@ private:
 };
 
 ClientSocket::ClientSocket()
-	: m_IsConnectionStatusReady(false)
+	: m_IsConnectionStatusReady(false), m_IsDisconnecting(false)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -356,12 +363,15 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 {
-	m_IsConnectionStatusReady = false;
+	m_IsConnectionStatusReady	= false;
+	m_IsDisconnecting			= false;
+
 	m_priv->Connect(hostIP, utf8EncodedName);
 }
 
 void ClientSocket::Disconnect()
 {
+	m_IsDisconnecting = true;
 	m_priv->Disconnect();
 }
 
@@ -390,7 +400,7 @@ void ClientSocket::SetConnectionStatusArgs(const ConnectionStatusEventArgs &args
 
 void ClientSocket::Update()
 {
-	if (m_IsConnectionStatusReady)
+	if (m_IsConnectionStatusReady && !m_IsDisconnecting)
 	{
 		fireEvent(EventConnectionStatusUpdated, m_ConnectionStateEventArgs, EventNamespace);
 		m_IsConnectionStatusReady = false;

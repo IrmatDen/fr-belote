@@ -77,6 +77,8 @@ private:
 
 private:
 	ClientSocketPrivate *					m_priv;
+
+	bool									m_IsDisconnecting;
 	
 	sf::Mutex								m_TextBroadcastedQueueMutex;
 	std::queue<TextBroadcastedEventArgs>	m_TextBroadcastedQueue;

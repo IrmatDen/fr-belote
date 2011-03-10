@@ -180,10 +180,8 @@ function onQuitTable(args)
 	
 	if game.m_GameVars.m_GameMode == Game.GM_HOST then
 		game:StopServer()
-		-- Client's disconnection is implied by the server shutting down; no need to repeat.
-	else
-		client:Disconnect()
 	end
+	client:Disconnect()
 	
 	-- Clean up all loaded anims
 	local animMgr = CEGUI.AnimationManager:getSingleton()

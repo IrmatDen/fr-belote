@@ -33,10 +33,12 @@ function onBack(args)
 end
 
 function onConnectionStatusUpdated(args)
-	local connStatus = toConnectionStatusEventArgs(args).m_Connected
-	if connStatus == true then
+	local connStatus = toConnectionStatusEventArgs(args).m_ConnectionStatus
+	if connStatus == ConnectionStatusEventArgs.CS_Connected then
 		Game:getSingleton():LoadGame()
-	else
+	elseif connStatus == ConnectionStatusEventArgs.CS_LobbyFull then
+		print("Lobby full, can't join! Get a real error message dude and explain yourself!")
+	else -- Disconnected, meaning host unreachable
 		print("Connection failed! Get a real error message dude and explain yourself!")
 	end
 end
@@ -142,6 +144,7 @@ beloteSaveCB:setItemSelectState(0, true)
 
 local hostIpBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/HostIP"))
 hostIpBox:setValidationString("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+hostIpBox:setText("127.0.0.")
 
 -- subscribe required events
 	-- Network events

@@ -3,7 +3,8 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/IpAddress.hpp>
 
-#include "../include/Server.h"
+#include "Server.h"
+#include "Packets.h"
 #include "ServerSocket.h"
 
 Server::Server()
@@ -21,10 +22,12 @@ void Server::Start()
 
 	while(m_Running)
 	{
+		m_ClientsCount = 0;
 		for (int i = 0; i != MAX_CLIENTS; i++)
 		{
 			if (m_Clients[i]->IsConnected())
 			{
+				m_ClientsCount++;
 				m_Clients[i]->Update();
 				continue;
 			}
@@ -32,7 +35,6 @@ void Server::Start()
 			m_Clients[i]->CheckConnection(m_Listener);
 		}
 
-		// FIXME srsly...
 		sf::Sleep(0.005f);
 	}
 	

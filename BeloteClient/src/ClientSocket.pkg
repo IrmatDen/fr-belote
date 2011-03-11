@@ -1,7 +1,14 @@
 class ConnectionStatusEventArgs : public CEGUI::EventArgs
 {
 public:
-	bool		m_Connected;
+	enum ConnectionStatus
+	{
+		CS_Connected,
+		CS_Disconnected,
+		CS_LobbyFull
+	};
+
+	ConnectionStatus	m_ConnectionStatus;
 };
 
 class PlayerConnectedEventArgs : public CEGUI::EventArgs

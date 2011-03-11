@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <Windows.h>
+
 #include <SFML/Network.hpp>
 
 #include "Packets.h"
@@ -21,6 +23,7 @@ namespace
 	{
 		NEC_ConnectionRequest,
 		NEC_Connected,
+		NEC_LobbyFull,
 		NEC_SendName,
 		NEC_CantConnect,
 		NEC_SendTextMessage,
@@ -54,8 +57,12 @@ namespace
 
 					if (pt == PT_ConnectionAccepted)
 					{
-						std::cout << "[Client] Connection accepted, yay!" << std::endl;
 						m_StateMachine->Notify(NEC_Connected);
+					}
+					else if (pt == PT_ConnectionDeniedLobbyFull)
+					{
+						std::cout << "[Client] Lobby full, boo!" << std::endl;
+						m_StateMachine->Notify(NEC_LobbyFull);
 					}
 					else
 						std::cout << "[Client] Unexpected packet received in State::Connecting::Update. Packet type is: " << pt << std::endl;
@@ -78,7 +85,7 @@ namespace
 			virtual void	Enter()
 			{
 				ConnectionStatusEventArgs args;
-				args.m_Connected = true;
+				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_Connected;
 				m_Self->SetConnectionStatusArgs(args);
 				m_StateMachine->Notify(NEC_SendName);
 			}
@@ -152,6 +159,24 @@ namespace
 			ClientSocket	* m_Self;
 		};
 
+		struct LobbyFull : public State
+		{
+			LobbyFull(StateMachine *sm, ClientSocket *self)
+				: State(sm), m_Self(self)
+			{ ; }
+
+			virtual void	Enter()
+			{
+				ConnectionStatusEventArgs args;
+				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_LobbyFull;
+				m_Self->SetConnectionStatusArgs(args);
+
+				m_StateMachine->Notify(NEC_DisconnectionRequest);
+			}
+
+			ClientSocket	* m_Self;
+		};
+
 		struct Disconnected : public State
 		{
 			Disconnected(StateMachine *sm, ClientSocket *self)
@@ -161,7 +186,7 @@ namespace
 			virtual void	Enter()
 			{
 				ConnectionStatusEventArgs args;
-				args.m_Connected = false;
+				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_Disconnected;
 				m_Self->SetConnectionStatusArgs(args);
 
 				m_StateMachine->Stop();
@@ -265,6 +290,7 @@ public:
 		// States
 		m_StateWfc			= new States::WaitingForConnection(m_StateMachine);
 		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
+		m_StateLobbyFull	= new States::LobbyFull(m_StateMachine, m_Self);
 		m_StateConnected	= new States::Connected(m_StateMachine, m_Self);
 		m_StateIdle			= new States::Idle(m_StateMachine, m_Socket, m_Self);
 		m_StateDisconnected	= new States::Disconnected(m_StateMachine, m_Self);
@@ -279,6 +305,8 @@ public:
 		m_StateWfc			->AddTransition(NEC_ConnectionRequest,		m_StateConnecting,		m_ActionConnect		);
 		m_StateConnecting	->AddTransition(NEC_Connected,				m_StateConnected							);
 		m_StateConnecting	->AddTransition(NEC_CantConnect,			m_StateDisconnected							);
+		m_StateConnecting	->AddTransition(NEC_LobbyFull,				m_StateLobbyFull							);
+		m_StateLobbyFull	->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 		m_StateConnected	->AddTransition(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
 		m_StateIdle			->AddTransition(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
@@ -341,6 +369,7 @@ private:
 	State		* m_StateWfc,
 				* m_StateConnecting,
 				* m_StateConnected,
+				* m_StateLobbyFull,
 				* m_StateIdle,
 				* m_StateDisconnected;
 	
@@ -394,6 +423,11 @@ void ClientSocket::EnqueuePlayerConnected(const PlayerConnectedEventArgs &args)
 
 void ClientSocket::SetConnectionStatusArgs(const ConnectionStatusEventArgs &args)
 {
+	if (m_IsConnectionStatusReady && m_ConnectionStateEventArgs.m_ConnectionStatus != ConnectionStatusEventArgs::CS_Connected)
+	{
+		return;
+	}
+
 	m_ConnectionStateEventArgs = args;
 	m_IsConnectionStatusReady = true;
 }

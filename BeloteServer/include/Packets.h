@@ -6,6 +6,7 @@
 enum PacketType
 {
 	PT_ConnectionAccepted,
+	PT_ConnectionDeniedLobbyFull,
 	PT_ClientName,
 	PT_ClientLeave,
 	PT_ServerShuttingDown,

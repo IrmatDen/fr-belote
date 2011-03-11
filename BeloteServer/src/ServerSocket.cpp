@@ -5,8 +5,8 @@
 #include "StateMachine.h"
 
 #include "Server.h"
-#include "ServerSocket.h"
 #include "Packets.h"
+#include "ServerSocket.h"
 
 // Define network state machine stuff...
 namespace
@@ -131,12 +131,18 @@ namespace
 
 		struct AcceptConnection : public Base
 		{
+			AcceptConnection(Server *server) : m_Server(server)		{ ; }
 			virtual void operator()()
 			{
 				sf::Packet p;
-				p << PT_ConnectionAccepted;
+				if (m_Server->GetClientCount() < Server::MAX_CLIENTS_ON_TABLE)
+					p << PT_ConnectionAccepted;
+				else
+					p << PT_ConnectionDeniedLobbyFull;
 				m_Socket->Send(p);
 			}
+			
+			Server			* m_Server;
 		};
 		
 		struct NotifyClientConnected : public Base
@@ -223,7 +229,7 @@ public:
 		m_StatesWithSocket.push_back((States::Base*)m_StateIdle);
 
 		// Actions
-		m_ActionAcceptConnection			= new Actions::AcceptConnection();
+		m_ActionAcceptConnection			= new Actions::AcceptConnection(m_Server);
 		m_ActionDisconnect					= new Actions::Disconnect();
 		m_ActionNotifyClientConnected		= new Actions::NotifyClientConnected(m_Server, m_ServerSocket);
 		m_ActionBroadcastClientConnected	= new Actions::BroadcastClientConnected();

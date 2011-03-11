@@ -103,6 +103,19 @@ end
 -- Start of handler functions
 -----------------------------------------
 
+function onConnectionStatusUpdated(args)
+	local connStatus = toConnectionStatusEventArgs(args).m_ConnectionStatus
+	if connStatus == ConnectionStatusEventArgs.CS_Connected then
+		Game:getSingleton():LoadGame()
+	elseif connStatus == ConnectionStatusEventArgs.CS_LobbyFull then
+		print("Lobby full, can't join! This shouldn't happen in-game though, WTF?")
+	else -- Disconnected, meaning host unreachable
+		print("Connection lost! Get a real error message dude and explain yourself!")
+	end
+	
+	game:LoadMenu()
+end
+
 -- Game zone events
 function onCardHoverIn(args)
 	local window = CEGUI.toWindowEventArgs(args).window
@@ -183,13 +196,6 @@ function onQuitTable(args)
 	end
 	client:Disconnect()
 	
-	-- Clean up all loaded anims
-	local animMgr = CEGUI.AnimationManager:getSingleton()
-	for animIdx = 0, (animMgr:getNumAnimations() - 1) do
-		local anim = animMgr:getAnimationAtIdx(animIdx)
-		animMgr:destroyAllInstancesOfAnimation(anim)
-	end
-	
 	game:LoadMenu()
 end
 	
@@ -221,9 +227,12 @@ rearrangeCards()
 updatePlayableCards()
 
 -- subscribe required events
+	-- UI Panel events
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
 winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
+	-- Network events
+client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")

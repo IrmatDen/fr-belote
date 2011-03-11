@@ -105,6 +105,14 @@ void Game::DoLoadMenu()
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
 	m_ClientSocket.removeAllEvents();
 
+	// Clean up all loaded anims
+	CEGUI::AnimationManager &animMgr = CEGUI::AnimationManager::getSingleton();
+	for (size_t animIdx = 0; animIdx < animMgr.getNumAnimations(); animIdx++)
+	{
+		CEGUI::Animation *anim = animMgr.getAnimationAtIdx(animIdx);
+		animMgr.destroyAllInstancesOfAnimation(anim);
+	}
+
 	CEGUI::System::getSingleton().executeScriptFile("ScreenMenu.lua");
 
 	m_BgImage.LoadFromFile("Gui/ScreenMenu.png");

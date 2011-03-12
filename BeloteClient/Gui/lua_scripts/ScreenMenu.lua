@@ -131,20 +131,8 @@ for screen = 0, screensCount do
 end
 displayScreen("MenuScreenMain")
 
--- Misc. setup
-local gameRotCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/GameRotation"))
-gameRotCB:addItem(CEGUI.createListboxTextItem("Horaire", 0, nil, false, true))
-gameRotCB:addItem(CEGUI.createListboxTextItem("Anti-horaire", 0, nil, false, true))
-gameRotCB:setItemSelectState(0, true)
-
-local beloteSaveCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/BeloteSave"))
-beloteSaveCB:addItem(CEGUI.createListboxTextItem("Oui", 0, nil, false, true))
-beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
-beloteSaveCB:setItemSelectState(0, true)
-
 local hostIpBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/HostIP"))
 hostIpBox:setValidationString("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
-hostIpBox:setText("127.0.0.")
 
 -- subscribe required events
 	-- Network events
@@ -162,3 +150,16 @@ winMgr:getWindow("MenuScreenJoinGame/ButtonJoinBack"):subscribeEvent("Clicked", 
 hostIpBox:subscribeEvent("ValidEntry", "onIPValid")
 hostIpBox:subscribeEvent("TextInvalidated", "onIPInvalid")
 hostIpBox:subscribeEvent("InvalidEntryAttempted", "onIPInvalid")
+
+-- Misc. setup
+local gameRotCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/GameRotation"))
+gameRotCB:addItem(CEGUI.createListboxTextItem("Horaire", 0, nil, false, true))
+gameRotCB:addItem(CEGUI.createListboxTextItem("Anti-horaire", 0, nil, false, true))
+gameRotCB:setItemSelectState(0, true)
+
+local beloteSaveCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/BeloteSave"))
+beloteSaveCB:addItem(CEGUI.createListboxTextItem("Oui", 0, nil, false, true))
+beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
+beloteSaveCB:setItemSelectState(0, true)
+
+hostIpBox:setText("127.0.0.1")

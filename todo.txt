@@ -1,0 +1,1 @@
+* Message box pour signifier une connexion en cours, une impossibilité de connexion, une connexion perdue

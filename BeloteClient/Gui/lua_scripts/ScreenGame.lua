@@ -75,15 +75,22 @@ end
 -- Update playable property on all player's hand's cards
 function updatePlayableCards()
 	local winMgr			= CEGUI.WindowManager:getSingleton()
-	-- local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
-	-- local cardsCount		= playerHandArea:getChildCount() - 1
 	
-	-- for cardIdx = 0, cardsCount do
-		-- local card = playerHandArea:getChildAtIdx(cardIdx)
-		-- card:setUserString(CardPlayablePropertyName, "1")
-	-- end
-	
+	-- debug info, will be extracted from somewhere later on.
 	winMgr:getWindow("HJ"):setUserString(CardPlayablePropertyName, "1")
+	
+	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local cardsCount		= playerHandArea:getChildCount() - 1
+	
+	for cardIdx = 0, cardsCount do
+		local card = playerHandArea:getChildAtIdx(cardIdx)
+		local cardImg = card:getChildAtIdx(0)
+		if card:getUserString(CardPlayablePropertyName) == "1" then
+			cardImg:setProperty("ImageColours", "tl:FFFFFFFF tr:FFFFFFFF bl:FFFFFFFF br:FFFFFFFF")
+		else
+			cardImg:setProperty("ImageColours", "tl:FF808080 tr:FF808080 bl:FF808080 br:FF808080")
+		end
+	end
 end
 
 function isCardPlayable(c)

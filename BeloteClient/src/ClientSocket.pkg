@@ -25,11 +25,10 @@ public:
 				m_Message;
 };
 
-class FreePositionsArgs : public CEGUI::EventArgs
+class CurrentPositioningArgs : public CEGUI::EventArgs
 {
 public:
-	unsigned int	m_FreePosCount;
-	std::string		m_FreePos[4];
+	std::string		m_Pos[4];
 };
 
 class ClientSocket : public CEGUI::EventSet

@@ -18,16 +18,17 @@ public:
 		PP_West,
 		PP_North,
 		PP_East,
-		PP_Unknown,
 
-		PP_Count
+		_PP_Count
 	};
 
-	static const size_t			ValidPlayerPositionCount = PP_East;
+	static const size_t			ValidPlayerPositionCount = _PP_Count;
 	static const std::string	PlayerPositionStrings[];
 
 public:
 	BeloteContext();
+
+	void	Reset();
 
 	// Players' management
 	void	AddPlayer(ServerSocket *player);
@@ -35,26 +36,16 @@ public:
 	void	SetPlayerPos(ServerSocket *player, const std::string &posName);
 
 private:
-	void	GetAvailablePositions(std::vector<PlayerPosition> &freePos);
-	void	SendAvailablePositionsToAll();
-	void	SendAvailablePositionsTo(ServerSocket *player, const std::vector<PlayerPosition> &freePos);
+	void	SendCurrentPositioningToAll();
+	void	SendCurrentPositioningTo(ServerSocket *player);
 
 private:
-	struct PlayerDesc
-	{
-		PlayerDesc() : m_Connection(0), m_Pos(PP_Unknown)	{ ; }
-		bool	operator==(ServerSocket *socket) const		{ return socket == m_Connection; }
+	typedef std::vector<ServerSocket*>	Players;
+	typedef Players::iterator			PlayersIt;
+	typedef Players::const_iterator		PlayersConstIt;
 
-		ServerSocket	*	m_Connection;
-		PlayerPosition		m_Pos;
-	};
-
-private:
-	typedef std::vector<PlayerDesc>			PlayersDescs;
-	typedef PlayersDescs::iterator			PlayersDescsIt;
-	typedef PlayersDescs::const_iterator	PlayersDescsConstIt;
-
-	PlayersDescs		m_Players;
+	Players		m_UnplacedPlayers;
+	Players		m_Players;
 };
 
 #endif

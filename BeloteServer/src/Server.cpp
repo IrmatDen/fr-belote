@@ -33,6 +33,8 @@ void Server::Start()
 	m_Listener.SetBlocking(false);
 	m_Listener.Listen(PORT);
 
+	m_BeloteContext->Reset();
+
 	while(m_Running)
 	{
 		m_ClientsCount = 0;

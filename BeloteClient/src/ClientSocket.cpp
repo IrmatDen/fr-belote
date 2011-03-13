@@ -4,19 +4,21 @@
 
 #include <SFML/Network.hpp>
 
+#include "Tools.h"
+#include "StateMachine.h"
+
 #include "Packets.h"
 #include "BeloteContextPackets.h"
 #include "Server.h"
 
 #include "ClientSocket.h"
-#include "StateMachine.h"
 
 const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
 const CEGUI::String ClientSocket::EventConnectionStatusUpdated("ConnectionStatusUpdated");
 const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
 const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
-const CEGUI::String ClientSocket::EventFreePositionsSent("FreePositionsSent");
+const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
 
 // Define network state machine stuff...
 namespace
@@ -173,13 +175,12 @@ namespace
 
 				switch(bcpt)
 				{
-				case BCPT_AvailablePos:
+				case BCPT_CurrentPositionning:
 					{
-						FreePositionsArgs args;
-						packet >> args.m_FreePosCount;
-						for (sf::Uint32 i = 0; i != args.m_FreePosCount; i++)
-							packet >> args.m_FreePos[i];
-						m_Self->SetFreePositionsArgs(args);
+						CurrentPositioningArgs args;
+						for (sf::Uint32 i = 0; i != countof(args.m_Pos); i++)
+							packet >> args.m_Pos[i];
+						m_Self->SetCurrentPositioningArgs(args);
 					}
 					break;
 
@@ -494,6 +495,12 @@ void ClientSocket::SetConnectionStatusArgs(const ConnectionStatusEventArgs &args
 	m_IsConnectionStatusReady = true;
 }
 
+void ClientSocket::SetCurrentPositioningArgs(const CurrentPositioningArgs &args)
+{
+	m_CurrentPositioningArgs = args;
+	m_AreCurrentPositioningArgsAvailable = true;
+}
+
 void ClientSocket::Update()
 {
 	if (m_IsConnectionStatusReady && !m_IsDisconnecting)
@@ -502,10 +509,10 @@ void ClientSocket::Update()
 		m_IsConnectionStatusReady = false;
 	}
 
-	if (m_AreFreePosArgsAvailable)
+	if (m_AreCurrentPositioningArgsAvailable)
 	{
-		fireEvent(EventFreePositionsSent, m_FreePosArgs, EventNamespace);
-		m_AreFreePosArgsAvailable = false;
+		fireEvent(EventCurrentPositioningSent, m_CurrentPositioningArgs, EventNamespace);
+		m_AreCurrentPositioningArgsAvailable = false;
 	}
 
 	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);

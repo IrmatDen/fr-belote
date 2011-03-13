@@ -36,11 +36,10 @@ public:
 				m_Message;
 };
 
-class FreePositionsArgs : public CEGUI::EventArgs
+class CurrentPositioningArgs : public CEGUI::EventArgs
 {
 public:
-	unsigned int	m_FreePosCount;
-	std::string		m_FreePos[4];
+	std::string		m_Pos[4];
 };
 
 class ClientSocketPrivate;
@@ -53,7 +52,7 @@ public:
 	static const CEGUI::String EventPlayerConnected;
 	static const CEGUI::String EventPlayerDisconnected;
 	static const CEGUI::String EventTextBroadcasted;
-	static const CEGUI::String EventFreePositionsSent;
+	static const CEGUI::String EventCurrentPositioningSent;
 
 public:
 	ClientSocket();
@@ -76,7 +75,7 @@ public:
 	// Reserved for private use.
 	void	EnqueueBroadcastedText(const TextBroadcastedEventArgs &args);
 	// Reserved for private use.
-	void	SetFreePositionsArgs(const FreePositionsArgs &args)				{ m_FreePosArgs = args; m_AreFreePosArgsAvailable = true; }
+	void	SetCurrentPositioningArgs(const CurrentPositioningArgs &args);
 	// Reserved for private use.
 	void	SetConnectionStatusArgs(const ConnectionStatusEventArgs &args);
 
@@ -108,8 +107,8 @@ private:
 	bool									m_IsConnectionStatusReady;
 	ConnectionStatusEventArgs				m_ConnectionStateEventArgs;
 	
-	bool									m_AreFreePosArgsAvailable;
-	FreePositionsArgs						m_FreePosArgs;
+	bool									m_AreCurrentPositioningArgsAvailable;
+	CurrentPositioningArgs					m_CurrentPositioningArgs;
 };
 
 #endif

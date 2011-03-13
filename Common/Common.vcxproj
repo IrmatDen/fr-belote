@@ -75,6 +75,7 @@
   <ItemGroup>
     <ClInclude Include="src\Singleton.h" />
     <ClInclude Include="src\StateMachine.h" />
+    <ClInclude Include="src\Tools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\StateMachine.cpp" />

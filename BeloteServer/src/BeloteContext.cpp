@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <bitset>
+#include <functional>
 #include <iterator>
 
 #include <SFML/Network.hpp>
@@ -13,73 +14,95 @@ const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "N
 
 BeloteContext::BeloteContext()
 {
-	m_Players.reserve(ValidPlayerPositionCount);
+	m_UnplacedPlayers.reserve(ValidPlayerPositionCount);
+	m_Players.resize(ValidPlayerPositionCount);
+
+	Reset();
+}
+
+void BeloteContext::Reset()
+{
+	std::fill(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), Players::value_type(0));
+	std::fill(m_Players.begin(), m_Players.end(), Players::value_type(0));
 }
 
 void BeloteContext::AddPlayer(ServerSocket *player)
 {
-	if (m_Players.size() == ValidPlayerPositionCount)
-	{
-		std::cout << "[BeloteContext::AddPlayer] Trying to add too much player!" << std::endl;
-		return;
-	}
-
-	PlayerDesc	addedPlayer;
-	addedPlayer.m_Connection	= player;
-	addedPlayer.m_Pos			= PP_Unknown;
-	m_Players.push_back(addedPlayer);
-
-	std::vector<PlayerPosition> freePos;
-	GetAvailablePositions(freePos);
-	SendAvailablePositionsTo(addedPlayer.m_Connection, freePos);
+	m_UnplacedPlayers.push_back(player);
+	SendCurrentPositioningTo(player);
 }
 
 void BeloteContext::DropPlayer(ServerSocket *player)
 {
-	PlayersDescsIt descIt = std::find(m_Players.begin(), m_Players.end(), player);
-	m_Players.erase(std::remove(m_Players.begin(), m_Players.end(), player), m_Players.end());
+	PlayersIt playerIt = std::find(m_Players.begin(), m_Players.end(), player);
+	if (playerIt != m_Players.end())
+	{
+		const size_t posIdx = std::distance(playerIt, m_Players.begin());
+		m_Players[posIdx]	= 0;
 	
-	// TODO Setup phase only?
-	SendAvailablePositionsToAll();
+		// TODO Setup phase only? replace by IA in game?
+		SendCurrentPositioningToAll();
+	}
+	else
+	{
+		PlayersIt playerIt = std::find(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player);
+		m_UnplacedPlayers.erase(std::remove(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player), m_UnplacedPlayers.end());
+	}
 }
 
 void BeloteContext::SetPlayerPos(ServerSocket *player, const std::string &posName)
 {
-	PlayersDescsIt descIt		= std::find(m_Players.begin(), m_Players.end(), player);
+	// Find position index.
 	const std::string* posPtr	= std::find(PlayerPositionStrings, PlayerPositionStrings + sizeof(PlayerPositionStrings), posName);
-	size_t posIdx				= posPtr - PlayerPositionStrings;
-	descIt->m_Pos				= (PlayerPosition)posIdx;
+	const size_t posIdx			= posPtr - PlayerPositionStrings;
 
-	SendAvailablePositionsToAll();
-}
-
-void BeloteContext::GetAvailablePositions(std::vector<PlayerPosition> &outFreePos)
-{
-	outFreePos.reserve(ValidPlayerPositionCount);
-
-	std::bitset<PP_Count> freePos(0);
-	std::for_each(m_Players.begin(), m_Players.end(), [&] (const PlayerDesc &d) { freePos[d.m_Pos] = 1; } );
-	
-	for(size_t i = 0; i != PP_Count; i++)
+	// Place or move player
+	PlayersIt playerIt = std::find(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player);
+	if (playerIt != m_UnplacedPlayers.end())
 	{
-		if (!freePos[i] && i != PP_Unknown)
-			outFreePos.push_back((PlayerPosition)i);
+		m_UnplacedPlayers.erase(std::remove(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player), m_UnplacedPlayers.end());
+
+		// TODO conccurrency issue lurking here! last arrived impose his will!
+		m_Players[posIdx] = player;
 	}
+	else
+	{
+		playerIt = std::find(m_Players.begin(), m_Players.end(), player);
+		if (playerIt != m_Players.end())
+		{
+			(*playerIt)			= Players::value_type(0);
+			m_Players[posIdx]	= player;
+		}
+		else
+		{
+			std::cout << "[Server] BeloteContext::SetPlayerPos: player not found!" << std::endl;
+		}
+	}
+
+	SendCurrentPositioningToAll();
 }
 
-void BeloteContext::SendAvailablePositionsToAll()
+void BeloteContext::SendCurrentPositioningToAll()
 {
-	std::vector<PlayerPosition> freePos;
-	GetAvailablePositions(freePos);
+	auto action = [&] (Players::const_reference cref) { if (cref) SendCurrentPositioningTo(cref); };
 
-	std::for_each(m_Players.begin(), m_Players.end(), [&] (const PlayerDesc &d) { SendAvailablePositionsTo(d.m_Connection, freePos); } );
+	std::for_each(m_UnplacedPlayers.begin(),	m_UnplacedPlayers.end(),	action);
+	std::for_each(m_Players.begin(),			m_Players.end(),			action);
 }
 
-void BeloteContext::SendAvailablePositionsTo(ServerSocket *player, const std::vector<PlayerPosition> &freePos)
+void BeloteContext::SendCurrentPositioningTo(ServerSocket *player)
 {
 	sf::Packet packet;
-	packet << PT_GameContextPacket << BCPT_AvailablePos << freePos.size();
-	std::for_each(freePos.begin(), freePos.end(), [&] (const PlayerPosition &pp) { packet << PlayerPositionStrings[pp]; } );
+	packet << PT_GameContextPacket << BCPT_CurrentPositionning;
+	std::for_each(m_Players.begin(), m_Players.end(),
+			[&] (Players::const_reference cref)
+			{
+				if (cref)
+					packet << cref->GetClientName();
+				else
+					packet << std::string();
+			}
+		);
 
 	player->GetSocket().Send(packet);
 }

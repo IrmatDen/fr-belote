@@ -7,7 +7,7 @@
 enum BeloteContextPacketType
 {
 	// Setup packets
-	BCPT_AvailablePos,
+	BCPT_CurrentPositionning,
 	BCPT_PlayerChoosePos,
 };
 

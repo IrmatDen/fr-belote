@@ -7,6 +7,9 @@ local CardHeight				= 178
 local CardPlayablePropertyName	= "Playable" -- the value can be either "1" or "0" (default)
 local CardHoverPropertyName		= "AnimInstanceIdx"
 
+local PositionButtonTexts		= { "Sud", "Ouest", "Nord", "Est" }
+local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "ButtonEast" }
+
 local animInstances = { }
 
 function toTextBroadcastedEventArgs(e)
@@ -17,8 +20,8 @@ function toPlayerConnectedEventArgs(e)
     return tolua.cast(e,"const PlayerConnectedEventArgs")
 end
 
-function toFreePositionsArgs(e)
-    return tolua.cast(e,"const FreePositionsArgs")
+function toCurrentPositioningArgs(e)
+    return tolua.cast(e,"const CurrentPositioningArgs")
 end
 
 -- Add a card to the player's current hand
@@ -127,21 +130,25 @@ function onConnectionStatusUpdated(args)
 	end
 end
 
-function onFreePositionsSent(args)
-	local fpArgs			= toFreePositionsArgs(args)
-	
-	-- First, disable every setup buttons.
+function onCurrentPositioningSent(args)
+	-- First, enable every setup buttons.
 	local winMgr			= CEGUI.WindowManager:getSingleton()
 	local setupBtnsParent	= winMgr:getWindow("GameSetup")
 	local setupBtnsCount	= setupBtnsParent:getChildCount() - 1
 	for i = 0, setupBtnsCount do
 		local btn = setupBtnsParent:getChildAtIdx(i)
-		btn:disable()
+		btn:enable()
+		btn:setText(PositionButtonTexts[i + 1])
 	end
 	
-	-- And now enable the ones
-	for i = 0, fpArgs.m_FreePosCount - 1 do
-		setupBtnsParent:getChild("Button" .. fpArgs.m_FreePos[i]):enable()
+	-- And now disable the occupied ones, and set the player name.
+	local curPosArgs = toCurrentPositioningArgs(args)
+	for i = 0, 3 do
+		local btn = setupBtnsParent:getChild(PositionButtonNames[i + 1])
+		btn:setText(PositionButtonTexts[i + 1] .. ": " .. curPosArgs.m_Pos[i])
+		if curPosArgs.m_Pos[i] ~= "" then
+			btn:disable()
+		end
 	end
 end
 
@@ -280,4 +287,4 @@ client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
-client:subscribeEvent("FreePositionsSent", "onFreePositionsSent")
+client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")

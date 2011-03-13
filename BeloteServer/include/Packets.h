@@ -1,6 +1,7 @@
 #ifndef BELOTESERVER_PACKETS_H
 #define BELOTESERVER_PACKETS_H
 
+#include <SFML/Network.hpp>
 #include <SFML/Config.hpp>
 
 enum PacketType
@@ -14,6 +15,7 @@ enum PacketType
 	PT_ClientDisconnected,
 	PT_ClientTextMessage,
 	PT_ServerBroadcastTextMessage,
+	PT_GameContextPacket,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

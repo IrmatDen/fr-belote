@@ -24,12 +24,21 @@
     <ClInclude Include="include\Packets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\BeloteContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BeloteContextPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ServerSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BeloteContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -90,11 +90,14 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\BeloteContextPackets.h" />
     <ClInclude Include="include\Packets.h" />
     <ClInclude Include="include\Server.h" />
+    <ClInclude Include="src\BeloteContext.h" />
     <ClInclude Include="src\ServerSocket.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BeloteContext.cpp" />
     <ClCompile Include="src\Server.cpp" />
     <ClCompile Include="src\ServerSocket.cpp" />
   </ItemGroup>

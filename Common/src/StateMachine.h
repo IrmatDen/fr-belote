@@ -11,12 +11,16 @@ typedef unsigned int EventCode;
 
 struct Action
 {
+	virtual ~Action()		{ ; }
+
 	virtual void operator()() = 0;
 };
 
 struct State;
 struct Transition
 {
+	virtual ~Transition()		{ ; }
+
 	Transition() : m_Source(0), m_Target(0), m_Action(0)	{ ; }
 	Transition(State *src, State *dst, Action *a) : m_Source(src), m_Target(dst), m_Action(a)	{ ; }
 
@@ -32,6 +36,7 @@ struct State
 {
 public:
 	State(StateMachine *sm) : m_StateMachine(sm)	{ ; }
+	virtual ~State()								{ ; }
 
 	// Setup
 	void		AddTransition(EventCode evt, State *target)				{ AddTransition(evt, target, 0); }
@@ -61,6 +66,7 @@ class StateMachine
 {
 public:
 	StateMachine() : m_CurrentState(0)	{ ; }
+	virtual ~StateMachine()				{ ; }
 
 	void	Start(State *startState)
 	{

@@ -4,6 +4,7 @@
 #include <SFML/Network.hpp>
 
 class ServerSocket;
+class BeloteContext;
 
 class Server
 {
@@ -14,6 +15,7 @@ public:
 
 public:
 	Server();
+	~Server();
 
 	unsigned int	GetClientCount() const		{ return m_ClientsCount; }
 
@@ -24,10 +26,16 @@ public:
 	void	Stop();
 
 private:
+	typedef std::vector<ServerSocket*>	Clients;
+	typedef Clients::iterator			ClientsIt;
+	typedef Clients::const_iterator		ClientsConstIt;
+
 	bool				m_Running;
-	unsigned int		m_ClientsCount;
 	sf::TcpListener		m_Listener;
-	ServerSocket *		m_Clients[MAX_CLIENTS];
+	Clients				m_Clients;
+	unsigned int		m_ClientsCount;
+
+	BeloteContext		* m_BeloteContext;
 };
 
 #endif

@@ -49,9 +49,9 @@ private:
 	};
 
 private:
-	typedef std::vector<PlayerDesc>						PlayersDescs;
-	typedef std::vector<PlayerDesc>::iterator			PlayersDescsIt;
-	typedef std::vector<PlayerDesc>::const_iterator		PlayersDescsConstIt;
+	typedef std::vector<PlayerDesc>			PlayersDescs;
+	typedef PlayersDescs::iterator			PlayersDescsIt;
+	typedef PlayersDescs::const_iterator	PlayersDescsConstIt;
 
 	PlayersDescs		m_Players;
 };

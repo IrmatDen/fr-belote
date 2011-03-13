@@ -7,6 +7,7 @@
 #include "Server.h"
 #include "Packets.h"
 #include "ServerSocket.h"
+#include "BeloteContext.h"
 
 // Define network state machine stuff...
 namespace
@@ -89,8 +90,13 @@ namespace
 					switch (pt)
 					{
 					case PT_ClientLeave:
-						m_Server->ClientDisconnected(m_ServerSocket->GetClientName());
-						m_StateMachine->Stop();
+						{
+							m_Server->ClientDisconnected(m_ServerSocket->GetClientName());
+							m_StateMachine->Stop();
+							
+							BeloteContext *context = m_ServerSocket->GetBeloteContext();
+							context->DropPlayer(m_ServerSocket);
+						}
 						break;
 						
 					case PT_ClientTextMessage:
@@ -152,6 +158,9 @@ namespace
 			virtual void operator()()
 			{
 				m_Server->ClientConnected(m_ServerSocket->GetClientName());
+				
+				BeloteContext *context = m_ServerSocket->GetBeloteContext();
+				context->AddPlayer(m_ServerSocket);
 			}
 			
 			Server			* m_Server;
@@ -335,7 +344,8 @@ private:
 	Actions::BroadcastTextMessage			* m_ActionBroadcastText;
 };
 
-ServerSocket::ServerSocket(Server *server)
+ServerSocket::ServerSocket(Server *server, BeloteContext *beloteContext)
+	: m_BeloteContext(beloteContext)
 {
 	m_priv = new ServerSocketPrivate(server, this);
 }
@@ -347,6 +357,9 @@ ServerSocket::~ServerSocket()
 
 bool ServerSocket::CheckConnection(sf::TcpListener &listener)
 {
+	if (IsConnected())
+		return true;
+
 	if (listener.Accept(m_Socket) != sf::Socket::Done)
 		return false;
 

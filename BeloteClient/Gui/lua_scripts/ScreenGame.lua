@@ -111,7 +111,9 @@ end
 -----------------------------------------
 
 function onConnectionStatusUpdated(args)
-	local connStatus = toConnectionStatusEventArgs(args).m_ConnectionStatus
+	local game			= Game:getSingleton()
+	local connStatus	= toConnectionStatusEventArgs(args).m_ConnectionStatus
+	
 	if connStatus == ConnectionStatusEventArgs.CS_Connected then
 		Game:getSingleton():LoadGame()
 	elseif connStatus == ConnectionStatusEventArgs.CS_LobbyFull then

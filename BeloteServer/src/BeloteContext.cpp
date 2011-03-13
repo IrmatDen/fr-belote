@@ -48,10 +48,9 @@ void BeloteContext::GetAvailablePositions(std::vector<PlayerPosition> &outFreePo
 	std::bitset<PP_Count> freePos(0);
 	std::for_each(m_Players.begin(), m_Players.end(), [&] (const PlayerDesc &d) { freePos[d.m_Pos] = 1; } );
 	
-	// We must discard PP_Unknown from valid positions list.
-	for(size_t i = 0; i != ValidPlayerPositionCount; i++)
+	for(size_t i = 0; i != PP_Count; i++)
 	{
-		if (!freePos[i])
+		if (!freePos[i] && i != PP_Unknown)
 			outFreePos.push_back((PlayerPosition)i);
 	}
 }

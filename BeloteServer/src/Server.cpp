@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/IpAddress.hpp>
@@ -7,10 +8,22 @@
 #include "Packets.h"
 #include "ServerSocket.h"
 
+#include "BeloteContext.h"
+
 Server::Server()
 {
-	for (int i = 0; i != MAX_CLIENTS; i++)
-		m_Clients[i] = new ServerSocket(this);
+	m_BeloteContext = new BeloteContext();
+
+	m_Clients.resize(MAX_CLIENTS);
+	std::generate(m_Clients.begin(), m_Clients.end(),
+			[&] () -> Clients::value_type
+			{ return new ServerSocket(this, m_BeloteContext); }
+		);
+}
+
+Server::~Server()
+{
+	std::for_each(m_Clients.begin(), m_Clients.end(), [] (Clients::reference ref) { delete ref; } );
 }
 
 void Server::Start()
@@ -23,24 +36,25 @@ void Server::Start()
 	while(m_Running)
 	{
 		m_ClientsCount = 0;
-		for (int i = 0; i != MAX_CLIENTS; i++)
-		{
-			if (m_Clients[i]->IsConnected())
-			{
-				m_ClientsCount++;
-				m_Clients[i]->Update();
-				continue;
-			}
-
-			m_Clients[i]->CheckConnection(m_Listener);
-		}
+		std::for_each(m_Clients.begin(), m_Clients.end(),
+				[&] (Clients::reference ref)
+				{	if (ref->IsConnected())
+					{
+						m_ClientsCount++;
+						ref->Update();
+					}
+					ref->CheckConnection(m_Listener);
+				}
+			);
 
 		sf::Sleep(0.005f);
 	}
 	
 	// Notify clients that the server is shutting down
-	for (int i = 0; i != MAX_CLIENTS; i++)
-		m_Clients[i]->CloseConnection();
+	std::for_each(m_Clients.begin(), m_Clients.end(),
+			[] (Clients::reference ref)
+			{ if (ref->IsConnected()) ref->CloseConnection(); }
+		);
 
 	m_Listener.Close();
 }
@@ -52,33 +66,24 @@ void Server::Stop()
 
 void Server::ClientConnected(const std::string &clientName)
 {
-	for (int i = 0; i != MAX_CLIENTS; i++)
-	{
-		if (!m_Clients[i]->IsConnected())
-			continue;
-
-		m_Clients[i]->ClientConnected(clientName);
-	}
+	std::for_each(m_Clients.begin(), m_Clients.end(),
+			[&] (Clients::reference ref)
+			{ if (ref->IsConnected()) ref->ClientConnected(clientName); }
+		);
 }
 
 void Server::ClientDisconnected(const std::string &clientName)
 {
-	for (int i = 0; i != MAX_CLIENTS; i++)
-	{
-		if (!m_Clients[i]->IsConnected())
-			continue;
-
-		m_Clients[i]->ClientDisconnected(clientName);
-	}
+	std::for_each(m_Clients.begin(), m_Clients.end(),
+			[&] (Clients::reference ref)
+			{ if (ref->IsConnected()) ref->ClientDisconnected(clientName); }
+		);
 }
 
 void Server::BroadcastText(const std::string &clientName, const std::string &msg)
 {
-	for (int i = 0; i != MAX_CLIENTS; i++)
-	{
-		if (!m_Clients[i]->IsConnected())
-			continue;
-
-		m_Clients[i]->SendText(clientName, msg);
-	}
+	std::for_each(m_Clients.begin(), m_Clients.end(),
+			[&] (Clients::reference ref)
+			{ if (ref->IsConnected()) ref->SendText(clientName, msg); }
+		);
 }

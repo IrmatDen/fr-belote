@@ -19,6 +19,7 @@ const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
 const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
+const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
 
 // Define network state machine stuff...
 namespace
@@ -32,6 +33,7 @@ namespace
 		NEC_CantConnect,
 		NEC_SendTextMessage,
 		NEC_SendPlayerPosition,
+		NEC_StartGame,
 		NEC_DisconnectionRequest,
 	};
 
@@ -183,6 +185,12 @@ namespace
 						m_Self->SetCurrentPositioningArgs(args);
 					}
 					break;
+					
+				case BCPT_GameStarting:
+					{
+						m_Self->SetGameStarting();
+					}
+					break;
 
 				default:
 					break;
@@ -308,6 +316,17 @@ namespace
 			std::string		m_PosName;
 		};
 
+		struct StartGame : public ActionBase
+		{
+			StartGame(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_GameContextPacket << BCPT_StartGameRequest;
+				m_Socket.Send(p);
+			}
+		};
+
 		struct Disconnect : public ActionBase
 		{
 			Disconnect(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
@@ -349,6 +368,7 @@ public:
 		m_ActionSendName	= new Actions::SendName(m_Socket);
 		m_ActionSendTxtMsg	= new Actions::SendTextMessage(m_Socket);
 		m_ActionSendPos		= new Actions::SendPosition(m_Socket);
+		m_ActionStartGame	= new Actions::StartGame(m_Socket);
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
 		
 		// Transitions
@@ -360,6 +380,7 @@ public:
 		m_StateConnected	->AddTransition(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
 		m_StateIdle			->AddTransition(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
 		m_StateIdle			->AddTransition(NEC_SendPlayerPosition,		m_StateIdle,			m_ActionSendPos		);
+		m_StateIdle			->AddTransition(NEC_StartGame,				m_StateIdle,			m_ActionStartGame	);
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
@@ -387,6 +408,11 @@ public:
 	{
 		m_ActionSendPos->m_PosName = posName;
 		m_StateMachine->Notify(NEC_SendPlayerPosition);
+	}
+
+	void StartGame()
+	{
+		m_StateMachine->Notify(NEC_StartGame);
 	}
 
 	void Wait()
@@ -434,6 +460,7 @@ private:
 	Actions::SendName			* m_ActionSendName;
 	Actions::SendTextMessage	* m_ActionSendTxtMsg;
 	Actions::SendPosition		* m_ActionSendPos;
+	Action						* m_ActionStartGame;
 	Action						* m_ActionDisconnect;
 };
 
@@ -452,6 +479,7 @@ void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8Enc
 {
 	m_IsConnectionStatusReady	= false;
 	m_IsDisconnecting			= false;
+	m_GameStarting				= false;
 
 	m_priv->Connect(hostIP, utf8EncodedName);
 }
@@ -470,6 +498,11 @@ void ClientSocket::SendChatMessage(const std::string &utf8EncodedMessage)
 void ClientSocket::ChoosePosition(const std::string &posName)
 {
 	m_priv->ChoosePosition(posName);
+}
+
+void ClientSocket::StartGame()
+{
+	m_priv->StartGame();
 }
 
 void ClientSocket::EnqueueBroadcastedText(const TextBroadcastedEventArgs &args)
@@ -513,6 +546,13 @@ void ClientSocket::Update()
 	{
 		fireEvent(EventCurrentPositioningSent, m_CurrentPositioningArgs, EventNamespace);
 		m_AreCurrentPositioningArgsAvailable = false;
+	}
+
+	if (m_GameStarting)
+	{
+		CEGUI::EventArgs nullArgs;
+		fireEvent(EventGameStarting, nullArgs, EventNamespace);
+		m_GameStarting = false;
 	}
 
 	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);

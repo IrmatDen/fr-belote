@@ -53,6 +53,7 @@ public:
 	static const CEGUI::String EventPlayerDisconnected;
 	static const CEGUI::String EventTextBroadcasted;
 	static const CEGUI::String EventCurrentPositioningSent;
+	static const CEGUI::String EventGameStarting;
 
 public:
 	ClientSocket();
@@ -69,6 +70,7 @@ public:
 	void	Wait();
 
 	void	ChoosePosition(const std::string &posName);
+	void	StartGame();
 
 	// Reserved for private use.
 	void	EnqueuePlayerConnected(const PlayerConnectedEventArgs &args);
@@ -78,6 +80,8 @@ public:
 	void	SetCurrentPositioningArgs(const CurrentPositioningArgs &args);
 	// Reserved for private use.
 	void	SetConnectionStatusArgs(const ConnectionStatusEventArgs &args);
+	// Reserved for private use.
+	void	SetGameStarting()														{ m_GameStarting = true; }
 
 private:
 	template <typename T>
@@ -109,6 +113,8 @@ private:
 	
 	bool									m_AreCurrentPositioningArgsAvailable;
 	CurrentPositioningArgs					m_CurrentPositioningArgs;
+
+	bool									m_GameStarting;
 };
 
 #endif

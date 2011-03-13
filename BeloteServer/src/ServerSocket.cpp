@@ -136,6 +136,12 @@ namespace
 						m_ServerSocket->GetBeloteContext()->SetPlayerPos(m_ServerSocket, posName);
 					}
 					break;
+					
+				case BCPT_StartGameRequest:
+					{
+						m_ServerSocket->GetBeloteContext()->StartGame();
+					}
+					break;
 
 				default:
 					break;

@@ -26,6 +26,7 @@ void BeloteContext::Reset()
 	std::fill(m_Players.begin(), m_Players.end(), Players::value_type(0));
 }
 
+// Player management methods
 void BeloteContext::AddPlayer(ServerSocket *player)
 {
 	m_UnplacedPlayers.push_back(player);
@@ -105,4 +106,18 @@ void BeloteContext::SendCurrentPositioningTo(ServerSocket *player)
 		);
 
 	player->GetSocket().Send(packet);
+}
+
+// Game management methods
+void BeloteContext::StartGame()
+{
+	// Tell everyone we're about to start.
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_GameStarting;
+	std::for_each(m_Players.begin(), m_Players.end(),
+			[&] (Players::const_reference cref)
+			{
+				cref->GetSocket().Send(packet);
+			}
+		);
 }

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/13/11 20:49:48.
+** Generated automatically by tolua++-1.0.92 on 03/13/11 21:16:35.
 */
 
 #ifndef __cplusplus
@@ -785,6 +785,37 @@ static int tolua_LuaInterface_ClientSocket_ChoosePosition00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: StartGame of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_StartGame00
+static int tolua_LuaInterface_ClientSocket_StartGame00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'StartGame'",NULL);
+#endif
+ {
+  self->StartGame();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'StartGame'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Disconnect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Disconnect00
 static int tolua_LuaInterface_ClientSocket_Disconnect00(lua_State* tolua_S)
@@ -887,6 +918,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"Connect",tolua_LuaInterface_ClientSocket_Connect00);
   tolua_function(tolua_S,"SendChatMessage",tolua_LuaInterface_ClientSocket_SendChatMessage00);
   tolua_function(tolua_S,"ChoosePosition",tolua_LuaInterface_ClientSocket_ChoosePosition00);
+  tolua_function(tolua_S,"StartGame",tolua_LuaInterface_ClientSocket_StartGame00);
   tolua_function(tolua_S,"Disconnect",tolua_LuaInterface_ClientSocket_Disconnect00);
  tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);

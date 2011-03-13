@@ -155,7 +155,12 @@ function onCurrentPositioningSent(args)
 	end
 end
 
-function onStartGame(args)
+-- NB: this is when the "Start Game" *button* is clicked, NOT when the game start as per a server's request!
+function onStartGameBtn(args)
+	Game:getSingleton():GetClientSocket():StartGame()
+end
+
+function onGameStarting(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
@@ -289,10 +294,11 @@ winMgr:getWindow("ButtonSouth"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
-winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGame")
+winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGameBtn")
 	-- Network events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
 client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")
+client:subscribeEvent("GameStarting", "onGameStarting")

@@ -35,6 +35,9 @@ public:
 	void	DropPlayer(ServerSocket *player);
 	void	SetPlayerPos(ServerSocket *player, const std::string &posName);
 
+	// Game management
+	void	StartGame();
+
 private:
 	void	SendCurrentPositioningToAll();
 	void	SendCurrentPositioningTo(ServerSocket *player);

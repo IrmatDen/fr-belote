@@ -22,6 +22,14 @@ public:
 		_PP_Count
 	};
 
+	enum ScoreIndex
+	{
+		SI_NorthSouth,
+		SI_WestEast,
+
+		_SI_Count
+	};
+
 	static const size_t			ValidPlayerPositionCount = _PP_Count;
 	static const std::string	PlayerPositionStrings[];
 
@@ -42,6 +50,9 @@ private:
 	void	SendCurrentPositioningToAll();
 	void	SendCurrentPositioningTo(ServerSocket *player);
 
+	void	InitDeck();
+	void	ShuffleDeck();
+
 private:
 	typedef std::vector<ServerSocket*>	Players;
 	typedef Players::iterator			PlayersIt;
@@ -49,6 +60,9 @@ private:
 
 	Players		m_UnplacedPlayers;
 	Players		m_Players;
+
+	sf::Uint32		m_Scores[_SI_Count];
+	std::string		m_Deck[32];
 };
 
 #endif

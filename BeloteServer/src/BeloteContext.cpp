@@ -1,10 +1,12 @@
 #include <iostream>
 #include <algorithm>
 #include <bitset>
-#include <functional>
 #include <iterator>
 
 #include <SFML/Network.hpp>
+#include <SFML/System.hpp>
+
+#include "Tools.h"
 
 #include "BeloteContext.h"
 #include "Packets.h"
@@ -120,4 +122,56 @@ void BeloteContext::StartGame()
 				cref->GetSocket().Send(packet);
 			}
 		);
+
+	// Init game state.
+	InitDeck();
+	ShuffleDeck();
+	for(size_t i = 0; i < countof(m_Scores); i++)
+		m_Scores[i] = 0;
+}
+
+void BeloteContext::InitDeck()
+{
+	m_Deck[0] = "C1";
+	m_Deck[1] = "C7";
+	m_Deck[2] = "C8";
+	m_Deck[3] = "C9";
+	m_Deck[4] = "C10";
+	m_Deck[5] = "CJ";
+	m_Deck[6] = "CQ";
+	m_Deck[7] = "CK";
+	m_Deck[8] = "D1";
+	m_Deck[9] = "D7";
+	m_Deck[10] = "D8";
+	m_Deck[11] = "D9";
+	m_Deck[12] = "D10";
+	m_Deck[13] = "DJ";
+	m_Deck[14] = "DQ";
+	m_Deck[15] = "DK";
+	m_Deck[16] = "H1";
+	m_Deck[17] = "H7";
+	m_Deck[18] = "H8";
+	m_Deck[19] = "H9";
+	m_Deck[20] = "H10";
+	m_Deck[21] = "HJ";
+	m_Deck[22] = "HQ";
+	m_Deck[23] = "HK";
+	m_Deck[24] = "S1";
+	m_Deck[25] = "S7";
+	m_Deck[26] = "S8";
+	m_Deck[27] = "S9";
+	m_Deck[28] = "S10";
+	m_Deck[29] = "SJ";
+	m_Deck[30] = "SQ";
+	m_Deck[31] = "SK";
+}
+
+void BeloteContext::ShuffleDeck()
+{
+	// more info available @ http://www.cigital.com/papers/download/developer_gambling.php
+	for(int ct = 0; ct != countof(m_Deck); ct++)
+	{
+		int x = sf::Randomizer::Random(ct, countof(m_Deck) - 1);
+		std::swap(m_Deck[ct], m_Deck[x]);
+	}
 }

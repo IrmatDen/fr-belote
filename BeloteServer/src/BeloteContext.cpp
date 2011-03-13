@@ -37,7 +37,7 @@ void BeloteContext::DropPlayer(ServerSocket *player)
 	PlayersIt playerIt = std::find(m_Players.begin(), m_Players.end(), player);
 	if (playerIt != m_Players.end())
 	{
-		const size_t posIdx = std::distance(playerIt, m_Players.begin());
+		const size_t posIdx = std::distance(m_Players.begin(), playerIt);
 		m_Players[posIdx]	= 0;
 	
 		// TODO Setup phase only? replace by IA in game?

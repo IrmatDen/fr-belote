@@ -42,8 +42,8 @@ void Server::Start()
 				[&] (Clients::reference ref)
 				{	if (ref->IsConnected())
 					{
-						m_ClientsCount++;
 						ref->Update();
+						m_ClientsCount++;
 					}
 					ref->CheckConnection(m_Listener);
 				}

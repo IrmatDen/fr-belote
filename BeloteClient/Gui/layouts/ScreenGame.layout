@@ -33,6 +33,7 @@
 		<Window Type="DefaultWindow" Name="GameArea" >
 			<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,-240},{1,0}}" />
 			<Window Type="DefaultWindow" Name="GameSetup" >
+				<Property Name="Visible" Value="True" />
 				<Window Type="OgreTray/Button" Name="ButtonSouth" >
 					<Property Name="Text" Value="Sud" />
 					<Property Name="Font" Value="DejaVuSans-8" />
@@ -53,8 +54,14 @@
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.8,-75},{0.5,-17.5},{0.8,75},{0.5,17.5}}" />
 				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonStartGame" >
+					<Property Name="Text" Value="Démarrer la partie" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{0.5,-17.5},{0.5,75},{0.5,17.5}}" />
+				</Window>
 			</Window>
 			<Window Type="DefaultWindow" Name="GameInProgress" >
+				<Property Name="Visible" Value="False" />
 				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-280},{0.5, 400},{1,-40}}" />
 				</Window>

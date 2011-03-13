@@ -131,25 +131,34 @@ function onConnectionStatusUpdated(args)
 end
 
 function onCurrentPositioningSent(args)
-	-- First, enable every setup buttons.
+	local curPosArgs 		= toCurrentPositioningArgs(args)
 	local winMgr			= CEGUI.WindowManager:getSingleton()
 	local setupBtnsParent	= winMgr:getWindow("GameSetup")
-	local setupBtnsCount	= setupBtnsParent:getChildCount() - 1
-	for i = 0, setupBtnsCount do
-		local btn = setupBtnsParent:getChildAtIdx(i)
-		btn:enable()
-		btn:setText(PositionButtonTexts[i + 1])
-	end
-	
-	-- And now disable the occupied ones, and set the player name.
-	local curPosArgs = toCurrentPositioningArgs(args)
+	local playersReady		= 0
 	for i = 0, 3 do
 		local btn = setupBtnsParent:getChild(PositionButtonNames[i + 1])
 		if curPosArgs.m_Pos[i] ~= "" then
 			btn:setText(PositionButtonTexts[i + 1] .. ": " .. curPosArgs.m_Pos[i])
 			btn:disable()
+			playersReady = playersReady + 1
+		else
+			btn:setText(PositionButtonTexts[i + 1])
+			btn:enable()
 		end
 	end
+	
+	local startBtn = setupBtnsParent:getChild("ButtonStartGame")
+	if playersReady == 4 then
+		startBtn:enable()
+	else
+		startBtn:disable()
+	end
+end
+
+function onStartGame(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("GameSetup"):setVisible(false)
+	winMgr:getWindow("GameInProgress"):setVisible(true)
 end
 
 -- Game zone events
@@ -260,8 +269,6 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
-winMgr:getWindow("GameInProgress"):setVisible(false)
-
 addCard("H7")
 addCard("H8")
 addCard("H9")
@@ -282,6 +289,7 @@ winMgr:getWindow("ButtonSouth"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGame")
 	-- Network events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")

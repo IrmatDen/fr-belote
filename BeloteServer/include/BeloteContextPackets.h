@@ -8,6 +8,7 @@ enum BeloteContextPacketType
 {
 	// Setup packets
 	BCPT_AvailablePos,
+	BCPT_PlayerChoosePos,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, BeloteContextPacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

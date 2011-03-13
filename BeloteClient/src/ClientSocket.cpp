@@ -29,6 +29,7 @@ namespace
 		NEC_SendName,
 		NEC_CantConnect,
 		NEC_SendTextMessage,
+		NEC_SendPlayerPosition,
 		NEC_DisconnectionRequest,
 	};
 
@@ -288,6 +289,24 @@ namespace
 			std::string		m_Utf8EncodedText;
 		};
 
+		struct SendPosition : public ActionBase
+		{
+			SendPosition(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
+
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_GameContextPacket << BCPT_PlayerChoosePos << m_PosName;
+				sf::Socket::Status s = m_Socket.Send(p);
+
+				// Error checking
+				if (s != sf::Socket::Done)
+					std::cout << "[Client] Error sending position in Actions::SendPosition. Error code: " << s << std::endl;
+			}
+
+			std::string		m_PosName;
+		};
+
 		struct Disconnect : public ActionBase
 		{
 			Disconnect(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
@@ -328,6 +347,7 @@ public:
 		m_ActionConnect		= new Actions::Connect(m_Socket);
 		m_ActionSendName	= new Actions::SendName(m_Socket);
 		m_ActionSendTxtMsg	= new Actions::SendTextMessage(m_Socket);
+		m_ActionSendPos		= new Actions::SendPosition(m_Socket);
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
 		
 		// Transitions
@@ -338,6 +358,7 @@ public:
 		m_StateLobbyFull	->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 		m_StateConnected	->AddTransition(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
 		m_StateIdle			->AddTransition(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
+		m_StateIdle			->AddTransition(NEC_SendPlayerPosition,		m_StateIdle,			m_ActionSendPos		);
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
@@ -359,6 +380,12 @@ public:
 	{
 		m_ActionSendTxtMsg->m_Utf8EncodedText = utf8EncodedMessage;
 		m_StateMachine->Notify(NEC_SendTextMessage);
+	}
+
+	void ChoosePosition(const std::string &posName)
+	{
+		m_ActionSendPos->m_PosName = posName;
+		m_StateMachine->Notify(NEC_SendPlayerPosition);
 	}
 
 	void Wait()
@@ -405,6 +432,7 @@ private:
 	Actions::Connect			* m_ActionConnect;
 	Actions::SendName			* m_ActionSendName;
 	Actions::SendTextMessage	* m_ActionSendTxtMsg;
+	Actions::SendPosition		* m_ActionSendPos;
 	Action						* m_ActionDisconnect;
 };
 
@@ -436,6 +464,11 @@ void ClientSocket::Disconnect()
 void ClientSocket::SendChatMessage(const std::string &utf8EncodedMessage)
 {
 	m_priv->SendChatMessage(utf8EncodedMessage);
+}
+
+void ClientSocket::ChoosePosition(const std::string &posName)
+{
+	m_priv->ChoosePosition(posName);
 }
 
 void ClientSocket::EnqueueBroadcastedText(const TextBroadcastedEventArgs &args)

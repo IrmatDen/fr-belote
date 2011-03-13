@@ -43,6 +43,16 @@ void BeloteContext::DropPlayer(ServerSocket *player)
 	SendAvailablePositionsToAll();
 }
 
+void BeloteContext::SetPlayerPos(ServerSocket *player, const std::string &posName)
+{
+	PlayersDescsIt descIt		= std::find(m_Players.begin(), m_Players.end(), player);
+	const std::string* posPtr	= std::find(PlayerPositionStrings, PlayerPositionStrings + sizeof(PlayerPositionStrings), posName);
+	size_t posIdx				= posPtr - PlayerPositionStrings;
+	descIt->m_Pos				= (PlayerPosition)posIdx;
+
+	SendAvailablePositionsToAll();
+}
+
 void BeloteContext::GetAvailablePositions(std::vector<PlayerPosition> &outFreePos)
 {
 	outFreePos.reserve(ValidPlayerPositionCount);

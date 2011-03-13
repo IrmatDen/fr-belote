@@ -107,6 +107,10 @@ namespace
 						}
 						break;
 
+					case PT_GameContextPacket:
+						HandleGameContextPacket(packet);
+						break;
+
 					default:
 						std::cout << "[Server] Unexpected packet received in State::Idle::Update. Packet type is: " << pt << std::endl;
 						break;
@@ -116,6 +120,27 @@ namespace
 
 			Server			* m_Server;
 			ServerSocket	* m_ServerSocket;
+
+		private:
+			void HandleGameContextPacket(sf::Packet &packet)
+			{
+				BeloteContextPacketType bcpt;
+				packet >> bcpt;
+
+				switch(bcpt)
+				{
+				case BCPT_PlayerChoosePos:
+					{
+						std::string posName;
+						packet >> posName;
+						m_ServerSocket->GetBeloteContext()->SetPlayerPos(m_ServerSocket, posName);
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
 		};
 
 		struct Disconnected : public State

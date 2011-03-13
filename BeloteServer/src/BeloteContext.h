@@ -32,6 +32,7 @@ public:
 	// Players' management
 	void	AddPlayer(ServerSocket *player);
 	void	DropPlayer(ServerSocket *player);
+	void	SetPlayerPos(ServerSocket *player, const std::string &posName);
 
 private:
 	void	GetAvailablePositions(std::vector<PlayerPosition> &freePos);

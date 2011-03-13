@@ -146,6 +146,15 @@ function onFreePositionsSent(args)
 end
 
 -- Game zone events
+function onChoosePosition(args)
+	local window	= CEGUI.toWindowEventArgs(args).window
+	local posStr	= window:getName()
+	local posName	= posStr:sub(string.len("Button") + 1)
+	
+	local client	= Game:getSingleton():GetClientSocket()
+	client:ChoosePosition(posName)
+end
+
 function onCardHoverIn(args)
 	local window = CEGUI.toWindowEventArgs(args).window
 	
@@ -262,6 +271,10 @@ updatePlayableCards()
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
 winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
+winMgr:getWindow("ButtonSouth"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
 	-- Network events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")

@@ -69,6 +69,8 @@ public:
 	//! This will wait until the socket has finished running (must only be used when quitting).
 	void	Wait();
 
+	void	ChoosePosition(const std::string &posName);
+
 	// Reserved for private use.
 	void	EnqueuePlayerConnected(const PlayerConnectedEventArgs &args);
 	// Reserved for private use.

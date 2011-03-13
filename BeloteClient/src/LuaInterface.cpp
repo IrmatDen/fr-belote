@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/13/11 21:48:38.
+** Generated automatically by tolua++-1.0.92 on 03/13/11 22:56:57.
 */
 
 #ifndef __cplusplus
@@ -38,6 +38,7 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"GUIManager");
  tolua_usertype(tolua_S,"CEGUI::String");
  tolua_usertype(tolua_S,"ClientSocket");
+ tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
  tolua_usertype(tolua_S,"CurrentPositioningArgs");
  tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
@@ -680,6 +681,58 @@ static int tolua_set_LuaInterface_CurrentPositioningArgs_m_Pos(lua_State* tolua_
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_Cards of class  CurrentCardsInHandArgs */
+#ifndef TOLUA_DISABLE_tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards
+static int tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards(lua_State* tolua_S)
+{
+ int tolua_index;
+  CurrentCardsInHandArgs* self;
+ lua_pushstring(tolua_S,".self");
+ lua_rawget(tolua_S,1);
+ self = (CurrentCardsInHandArgs*)  lua_touserdata(tolua_S,-1);
+#ifndef TOLUA_RELEASE
+ {
+ tolua_Error tolua_err;
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in array indexing.",&tolua_err);
+ }
+#endif
+ tolua_index = (int)tolua_tonumber(tolua_S,2,0);
+#ifndef TOLUA_RELEASE
+ if (tolua_index<0 || tolua_index>=8)
+ tolua_error(tolua_S,"array indexing out of range.",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_Cards[tolua_index]);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Cards of class  CurrentCardsInHandArgs */
+#ifndef TOLUA_DISABLE_tolua_set_LuaInterface_CurrentCardsInHandArgs_m_Cards
+static int tolua_set_LuaInterface_CurrentCardsInHandArgs_m_Cards(lua_State* tolua_S)
+{
+ int tolua_index;
+  CurrentCardsInHandArgs* self;
+ lua_pushstring(tolua_S,".self");
+ lua_rawget(tolua_S,1);
+ self = (CurrentCardsInHandArgs*)  lua_touserdata(tolua_S,-1);
+#ifndef TOLUA_RELEASE
+ {
+ tolua_Error tolua_err;
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in array indexing.",&tolua_err);
+ }
+#endif
+ tolua_index = (int)tolua_tonumber(tolua_S,2,0);
+#ifndef TOLUA_RELEASE
+ if (tolua_index<0 || tolua_index>=8)
+ tolua_error(tolua_S,"array indexing out of range.",NULL);
+#endif
+  self->m_Cards[tolua_index] = ((std::string)  tolua_tocppstring(tolua_S,3,0));
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -912,6 +965,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_cclass(tolua_S,"CurrentPositioningArgs","CurrentPositioningArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"CurrentPositioningArgs");
   tolua_array(tolua_S,"m_Pos",tolua_get_LuaInterface_CurrentPositioningArgs_m_Pos,tolua_set_LuaInterface_CurrentPositioningArgs_m_Pos);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"CurrentCardsInHandArgs","CurrentCardsInHandArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"CurrentCardsInHandArgs");
+  tolua_array(tolua_S,"m_Cards",tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards,tolua_set_LuaInterface_CurrentCardsInHandArgs_m_Cards);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

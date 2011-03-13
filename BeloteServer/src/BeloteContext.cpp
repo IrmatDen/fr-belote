@@ -15,41 +15,49 @@
 const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "North", "East", "Unknown" };
 
 BeloteContext::BeloteContext()
+	: d(0)
 {
-	m_UnplacedPlayers.reserve(ValidPlayerPositionCount);
-	m_Players.resize(ValidPlayerPositionCount);
+	d = new ContextData();
+
+	d->m_UnplacedPlayers.reserve(ValidPlayerPositionCount);
+	d->m_Players.resize(ValidPlayerPositionCount);
 
 	Reset();
 }
 
+BeloteContext::~BeloteContext()
+{
+	delete d;
+}
+
 void BeloteContext::Reset()
 {
-	std::fill(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), Players::value_type(0));
-	std::fill(m_Players.begin(), m_Players.end(), Players::value_type(0));
+	std::fill(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), Players::value_type(0));
+	std::fill(d->m_Players.begin(),d-> m_Players.end(), Players::value_type(0));
 }
 
 // Player management methods
 void BeloteContext::AddPlayer(ServerSocket *player)
 {
-	m_UnplacedPlayers.push_back(player);
+	d->m_UnplacedPlayers.push_back(player);
 	SendCurrentPositioningTo(player);
 }
 
 void BeloteContext::DropPlayer(ServerSocket *player)
 {
-	PlayersIt playerIt = std::find(m_Players.begin(), m_Players.end(), player);
-	if (playerIt != m_Players.end())
+	PlayersIt playerIt = std::find(d->m_Players.begin(), d->m_Players.end(), player);
+	if (playerIt != d->m_Players.end())
 	{
-		const size_t posIdx = std::distance(m_Players.begin(), playerIt);
-		m_Players[posIdx]	= 0;
+		const size_t posIdx = std::distance(d->m_Players.begin(), playerIt);
+		d->m_Players[posIdx]	= 0;
 	
 		// TODO Setup phase only? replace by IA in game?
 		SendCurrentPositioningToAll();
 	}
 	else
 	{
-		PlayersIt playerIt = std::find(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player);
-		m_UnplacedPlayers.erase(std::remove(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player), m_UnplacedPlayers.end());
+		PlayersIt playerIt = std::find(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player);
+		d->m_UnplacedPlayers.erase(std::remove(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player), d->m_UnplacedPlayers.end());
 	}
 }
 
@@ -60,21 +68,21 @@ void BeloteContext::SetPlayerPos(ServerSocket *player, const std::string &posNam
 	const size_t posIdx			= posPtr - PlayerPositionStrings;
 
 	// Place or move player
-	PlayersIt playerIt = std::find(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player);
-	if (playerIt != m_UnplacedPlayers.end())
+	PlayersIt playerIt = std::find(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player);
+	if (playerIt != d->m_UnplacedPlayers.end())
 	{
-		m_UnplacedPlayers.erase(std::remove(m_UnplacedPlayers.begin(), m_UnplacedPlayers.end(), player), m_UnplacedPlayers.end());
+		d->m_UnplacedPlayers.erase(std::remove(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player), d->m_UnplacedPlayers.end());
 
 		// TODO conccurrency issue lurking here! last arrived impose his will!
-		m_Players[posIdx] = player;
+		d->m_Players[posIdx] = player;
 	}
 	else
 	{
-		playerIt = std::find(m_Players.begin(), m_Players.end(), player);
-		if (playerIt != m_Players.end())
+		playerIt = std::find(d->m_Players.begin(), d->m_Players.end(), player);
+		if (playerIt != d->m_Players.end())
 		{
 			(*playerIt)			= Players::value_type(0);
-			m_Players[posIdx]	= player;
+			d->m_Players[posIdx]	= player;
 		}
 		else
 		{
@@ -89,15 +97,15 @@ void BeloteContext::SendCurrentPositioningToAll()
 {
 	auto action = [&] (Players::const_reference cref) { if (cref) SendCurrentPositioningTo(cref); };
 
-	std::for_each(m_UnplacedPlayers.begin(),	m_UnplacedPlayers.end(),	action);
-	std::for_each(m_Players.begin(),			m_Players.end(),			action);
+	std::for_each(d->m_UnplacedPlayers.begin(),	d->m_UnplacedPlayers.end(),	action);
+	std::for_each(d->m_Players.begin(),			d->m_Players.end(),			action);
 }
 
 void BeloteContext::SendCurrentPositioningTo(ServerSocket *player)
 {
 	sf::Packet packet;
 	packet << PT_GameContextPacket << BCPT_CurrentPositionning;
-	std::for_each(m_Players.begin(), m_Players.end(),
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
 			[&] (Players::const_reference cref)
 			{
 				if (cref)
@@ -116,7 +124,7 @@ void BeloteContext::StartGame()
 	// Tell everyone we're about to start.
 	sf::Packet packet;
 	packet << PT_GameContextPacket << BCPT_GameStarting;
-	std::for_each(m_Players.begin(), m_Players.end(),
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
 			[&] (Players::const_reference cref)
 			{
 				cref->GetSocket().Send(packet);
@@ -126,52 +134,117 @@ void BeloteContext::StartGame()
 	// Init game state.
 	InitDeck();
 	ShuffleDeck();
-	for(size_t i = 0; i < countof(m_Scores); i++)
-		m_Scores[i] = 0;
+	for(size_t i = 0; i < countof(d->m_Scores); i++)
+		d->m_Scores[i] = 0;
+
+	d->m_CurrentDealer = PP_South;
+
+	// Start game! :)
+	DealFirstPart();
 }
 
 void BeloteContext::InitDeck()
 {
-	m_Deck[0] = "C1";
-	m_Deck[1] = "C7";
-	m_Deck[2] = "C8";
-	m_Deck[3] = "C9";
-	m_Deck[4] = "C10";
-	m_Deck[5] = "CJ";
-	m_Deck[6] = "CQ";
-	m_Deck[7] = "CK";
-	m_Deck[8] = "D1";
-	m_Deck[9] = "D7";
-	m_Deck[10] = "D8";
-	m_Deck[11] = "D9";
-	m_Deck[12] = "D10";
-	m_Deck[13] = "DJ";
-	m_Deck[14] = "DQ";
-	m_Deck[15] = "DK";
-	m_Deck[16] = "H1";
-	m_Deck[17] = "H7";
-	m_Deck[18] = "H8";
-	m_Deck[19] = "H9";
-	m_Deck[20] = "H10";
-	m_Deck[21] = "HJ";
-	m_Deck[22] = "HQ";
-	m_Deck[23] = "HK";
-	m_Deck[24] = "S1";
-	m_Deck[25] = "S7";
-	m_Deck[26] = "S8";
-	m_Deck[27] = "S9";
-	m_Deck[28] = "S10";
-	m_Deck[29] = "SJ";
-	m_Deck[30] = "SQ";
-	m_Deck[31] = "SK";
+	d->m_Deck[0] = "C1";
+	d->m_Deck[1] = "C7";
+	d->m_Deck[2] = "C8";
+	d->m_Deck[3] = "C9";
+	d->m_Deck[4] = "C10";
+	d->m_Deck[5] = "CJ";
+	d->m_Deck[6] = "CQ";
+	d->m_Deck[7] = "CK";
+	d->m_Deck[8] = "D1";
+	d->m_Deck[9] = "D7";
+	d->m_Deck[10] = "D8";
+	d->m_Deck[11] = "D9";
+	d->m_Deck[12] = "D10";
+	d->m_Deck[13] = "DJ";
+	d->m_Deck[14] = "DQ";
+	d->m_Deck[15] = "DK";
+	d->m_Deck[16] = "H1";
+	d->m_Deck[17] = "H7";
+	d->m_Deck[18] = "H8";
+	d->m_Deck[19] = "H9";
+	d->m_Deck[20] = "H10";
+	d->m_Deck[21] = "HJ";
+	d->m_Deck[22] = "HQ";
+	d->m_Deck[23] = "HK";
+	d->m_Deck[24] = "S1";
+	d->m_Deck[25] = "S7";
+	d->m_Deck[26] = "S8";
+	d->m_Deck[27] = "S9";
+	d->m_Deck[28] = "S10";
+	d->m_Deck[29] = "SJ";
+	d->m_Deck[30] = "SQ";
+	d->m_Deck[31] = "SK";
 }
 
 void BeloteContext::ShuffleDeck()
 {
 	// more info available @ http://www.cigital.com/papers/download/developer_gambling.php
-	for(int ct = 0; ct != countof(m_Deck); ct++)
+	// of course, the "safe seed" is not so safe here, at least at the moment.
+	for(int ct = 0; ct != countof(d->m_Deck); ct++)
 	{
-		int x = sf::Randomizer::Random(ct, countof(m_Deck) - 1);
-		std::swap(m_Deck[ct], m_Deck[x]);
+		int x = sf::Randomizer::Random(ct, countof(d->m_Deck) - 1);
+		std::swap(d->m_Deck[ct], d->m_Deck[x]);
 	}
+}
+
+BeloteContext::PlayerPosition BeloteContext::GetNextPlayer(PlayerPosition pp) const
+{
+	if (PP_East == pp)
+		return PP_South;
+	
+	return (PlayerPosition)(pp + 1);
+}
+
+void BeloteContext::DealFirstPart()
+{
+	// TODO customize dealing with 3-2 / 2-3
+	// Only supporting 3-2 for now
+	int currentCardsCountToGive	= 3;
+	PlayerPosition pp		= d->m_CurrentDealer;
+	int currentDeckPos		= 0;
+	int currentHandPos[4]	= { 0, 0, 0, 0 };
+	for (int playerIdx = 0; playerIdx != _PP_Count * 2; playerIdx++)
+	{
+		for (int card = 0; card != currentCardsCountToGive; card++)
+			d->m_PlayersHand[pp][currentHandPos[pp]++] = d->m_Deck[currentDeckPos++];
+
+		pp = GetNextPlayer(pp);
+
+		if (playerIdx == _PP_Count)
+			currentCardsCountToGive = 5 - currentCardsCountToGive;
+	}
+
+	// Ensure that the last 3 cards are not currently dealt.
+	for (int c = 0; c != 3; c++)
+	{
+		for (int p = 0; p != _PP_Count; p++)
+			d->m_PlayersHand[p][7 - c] = "";
+	}
+
+	// Order players' hand based on colour.
+	// TODO organize hand based around colour alternation
+	for (int p = 0; p != _PP_Count; p++)
+	{
+		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]));
+	}
+	
+
+	// Show their respective partial hands to the players.
+	int playerIndex = 0;
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player)
+		{
+			sf::Packet packet;
+			packet << PT_GameContextPacket << BCPT_CardsDealt;
+			for (int i = 0; i != 8; i++)
+				packet << d->m_PlayersHand[playerIndex][i];
+
+			player->GetSocket().Send(packet);
+
+			playerIndex++;
+		}
+	);
 }

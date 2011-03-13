@@ -11,6 +11,7 @@ enum BeloteContextPacketType
 	BCPT_PlayerChoosePos,
 	BCPT_StartGameRequest,
 	BCPT_GameStarting,
+	BCPT_CardsDealt,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, BeloteContextPacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

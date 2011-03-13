@@ -42,6 +42,12 @@ public:
 	std::string		m_Pos[4];
 };
 
+class CurrentCardsInHandArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_Cards[8];
+};
+
 class ClientSocketPrivate;
 
 class ClientSocket : public CEGUI::EventSet
@@ -54,6 +60,7 @@ public:
 	static const CEGUI::String EventTextBroadcasted;
 	static const CEGUI::String EventCurrentPositioningSent;
 	static const CEGUI::String EventGameStarting;
+	static const CEGUI::String EventCardsReceived;
 
 public:
 	ClientSocket();
@@ -82,6 +89,8 @@ public:
 	void	SetConnectionStatusArgs(const ConnectionStatusEventArgs &args);
 	// Reserved for private use.
 	void	SetGameStarting()														{ m_GameStarting = true; }
+	// Reserved for private use.
+	void	SetCardsInHandArgs(const CurrentCardsInHandArgs &args);
 
 private:
 	template <typename T>
@@ -115,6 +124,9 @@ private:
 	CurrentPositioningArgs					m_CurrentPositioningArgs;
 
 	bool									m_GameStarting;
+	
+	bool									m_CardsInHandReceived;
+	CurrentCardsInHandArgs					m_CurrentCardsInHandArgs;
 };
 
 #endif

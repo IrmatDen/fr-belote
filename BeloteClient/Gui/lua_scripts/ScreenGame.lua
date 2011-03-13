@@ -24,6 +24,10 @@ function toCurrentPositioningArgs(e)
     return tolua.cast(e,"const CurrentPositioningArgs")
 end
 
+function toCurrentCardsInHandArgs(e)
+    return tolua.cast(e,"const CurrentCardsInHandArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -82,10 +86,6 @@ end
 -- Update playable property on all player's hand's cards
 function updatePlayableCards()
 	local winMgr			= CEGUI.WindowManager:getSingleton()
-	
-	-- debug info, will be extracted from somewhere later on.
-	winMgr:getWindow("HJ"):setUserString(CardPlayablePropertyName, "1")
-	
 	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
 	local cardsCount		= playerHandArea:getChildCount() - 1
 	
@@ -164,6 +164,18 @@ function onGameStarting(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
+end
+
+function onCardsReceived(args)
+	local handContent = toCurrentCardsInHandArgs(args)
+	for i = 0, 7 do
+		if handContent.m_Cards[i] ~= "" then
+			addCard(handContent.m_Cards[i])
+		end
+	end
+	
+	rearrangeCards()
+	updatePlayableCards()
 end
 
 -- Game zone events
@@ -274,17 +286,6 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
-addCard("H7")
-addCard("H8")
-addCard("H9")
-addCard("H10")
-addCard("HJ")
-addCard("HQ")
-addCard("HK")
-addCard("H1")
-rearrangeCards()
-updatePlayableCards()
-
 -- subscribe required events
 	-- UI Panel events
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
@@ -302,3 +303,4 @@ client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
 client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")
 client:subscribeEvent("GameStarting", "onGameStarting")
+client:subscribeEvent("CardsReceived", "onCardsReceived")

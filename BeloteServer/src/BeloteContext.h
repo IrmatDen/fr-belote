@@ -35,6 +35,7 @@ public:
 
 public:
 	BeloteContext();
+	~BeloteContext();
 
 	void	Reset();
 
@@ -45,6 +46,7 @@ public:
 
 	// Game management
 	void	StartGame();
+	void	DealFirstPart();
 
 private:
 	void	SendCurrentPositioningToAll();
@@ -53,16 +55,27 @@ private:
 	void	InitDeck();
 	void	ShuffleDeck();
 
+	PlayerPosition	GetNextPlayer(PlayerPosition pp) const;
+
 private:
 	typedef std::vector<ServerSocket*>	Players;
 	typedef Players::iterator			PlayersIt;
 	typedef Players::const_iterator		PlayersConstIt;
 
-	Players		m_UnplacedPlayers;
-	Players		m_Players;
+	struct ContextData
+	{
+		Players		m_UnplacedPlayers;
+		Players		m_Players;
 
-	sf::Uint32		m_Scores[_SI_Count];
-	std::string		m_Deck[32];
+		sf::Uint32		m_Scores[_SI_Count];
+		std::string		m_Deck[32];
+
+		PlayerPosition	m_CurrentDealer;
+		std::string		m_PlayersHand[_PP_Count][8];
+	};
+
+private:
+	ContextData *d;
 };
 
 #endif

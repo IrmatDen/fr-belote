@@ -20,6 +20,7 @@ const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
 const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
+const CEGUI::String ClientSocket::EventCardsReceived("CardsReceived");
 
 // Define network state machine stuff...
 namespace
@@ -189,6 +190,15 @@ namespace
 				case BCPT_GameStarting:
 					{
 						m_Self->SetGameStarting();
+					}
+					break;
+
+				case BCPT_CardsDealt:
+					{
+						CurrentCardsInHandArgs args;
+						for (sf::Uint32 i = 0; i != countof(args.m_Cards); i++)
+							packet >> args.m_Cards[i];
+						m_Self->SetCardsInHandArgs(args);
 					}
 					break;
 
@@ -534,6 +544,12 @@ void ClientSocket::SetCurrentPositioningArgs(const CurrentPositioningArgs &args)
 	m_AreCurrentPositioningArgsAvailable = true;
 }
 
+void ClientSocket::SetCardsInHandArgs(const CurrentCardsInHandArgs &args)
+{
+	m_CurrentCardsInHandArgs = args;
+	m_CardsInHandReceived = true;
+}
+
 void ClientSocket::Update()
 {
 	if (m_IsConnectionStatusReady && !m_IsDisconnecting)
@@ -553,6 +569,12 @@ void ClientSocket::Update()
 		CEGUI::EventArgs nullArgs;
 		fireEvent(EventGameStarting, nullArgs, EventNamespace);
 		m_GameStarting = false;
+	}
+
+	if (m_CardsInHandReceived)
+	{
+		fireEvent(EventCardsReceived, m_CurrentCardsInHandArgs, EventNamespace);
+		m_CardsInHandReceived = false;
 	}
 
 	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);

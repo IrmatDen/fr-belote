@@ -17,6 +17,10 @@ function toPlayerConnectedEventArgs(e)
     return tolua.cast(e,"const PlayerConnectedEventArgs")
 end
 
+function toFreePositionsArgs(e)
+    return tolua.cast(e,"const FreePositionsArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -110,19 +114,35 @@ end
 -- Start of handler functions
 -----------------------------------------
 
+-- Network events
 function onConnectionStatusUpdated(args)
 	local game			= Game:getSingleton()
 	local connStatus	= toConnectionStatusEventArgs(args).m_ConnectionStatus
 	
-	if connStatus == ConnectionStatusEventArgs.CS_Connected then
-		Game:getSingleton():LoadGame()
-	elseif connStatus == ConnectionStatusEventArgs.CS_LobbyFull then
-		print("Lobby full, can't join! This shouldn't happen in-game though, WTF?")
-	else -- Disconnected, meaning host unreachable
+	if connStatus == ConnectionStatusEventArgs.CS_Disconnected then
 		print("Connection lost! Get a real error message dude and explain yourself!")
+		game:LoadMenu()
+	else
+		print("Unexpected connection status: " .. connStatus)
+	end
+end
+
+function onFreePositionsSent(args)
+	local fpArgs			= toFreePositionsArgs(args)
+	
+	-- First, disable every setup buttons.
+	local winMgr			= CEGUI.WindowManager:getSingleton()
+	local setupBtnsParent	= winMgr:getWindow("GameSetup")
+	local setupBtnsCount	= setupBtnsParent:getChildCount() - 1
+	for i = 0, setupBtnsCount do
+		local btn = setupBtnsParent:getChildAtIdx(i)
+		btn:disable()
 	end
 	
-	game:LoadMenu()
+	-- And now enable the ones
+	for i = 0, fpArgs.m_FreePosCount - 1 do
+		setupBtnsParent:getChild("Button" .. fpArgs.m_FreePos[i]):enable()
+	end
 end
 
 -- Game zone events
@@ -224,6 +244,8 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
+winMgr:getWindow("GameInProgress"):setVisible(false)
+
 addCard("H7")
 addCard("H8")
 addCard("H9")
@@ -245,3 +267,4 @@ client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
+client:subscribeEvent("FreePositionsSent", "onFreePositionsSent")

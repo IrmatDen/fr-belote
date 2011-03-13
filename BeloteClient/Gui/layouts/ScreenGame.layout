@@ -32,8 +32,32 @@
         </Window>
 		<Window Type="DefaultWindow" Name="GameArea" >
 			<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,-240},{1,0}}" />
-			<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
-				<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-280},{0.5, 400},{1,-40}}" />
+			<Window Type="DefaultWindow" Name="GameSetup" >
+				<Window Type="OgreTray/Button" Name="ButtonSouth" >
+					<Property Name="Text" Value="Sud" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{1,-85},{0.5,75},{1,-50}}" />
+				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonWest" >
+					<Property Name="Text" Value="Ouest" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.2,-75},{0.5,-17.5},{0.2,75},{0.5,17.5}}" />
+				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonNorth" >
+					<Property Name="Text" Value="Nord" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{0,50},{0.5,75},{0,85}}" />
+				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonEast" >
+					<Property Name="Text" Value="Est" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.8,-75},{0.5,-17.5},{0.8,75},{0.5,17.5}}" />
+				</Window>
+			</Window>
+			<Window Type="DefaultWindow" Name="GameInProgress" >
+				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
+					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-280},{0.5, 400},{1,-40}}" />
+				</Window>
 			</Window>
 		</Window>
     </Window>

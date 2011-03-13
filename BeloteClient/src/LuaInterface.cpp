@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/13/11 15:05:50.
+** Generated automatically by tolua++-1.0.92 on 03/13/11 17:35:16.
 */
 
 #ifndef __cplusplus
@@ -38,11 +38,12 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"GUIManager");
  tolua_usertype(tolua_S,"CEGUI::String");
  tolua_usertype(tolua_S,"ClientSocket");
+ tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
  tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"SoundManager");
- tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
+ tolua_usertype(tolua_S,"FreePositionsArgs");
  tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
  tolua_usertype(tolua_S,"Game");
  tolua_usertype(tolua_S,"TextBroadcastedEventArgs");
@@ -627,6 +628,88 @@ static int tolua_set_TextBroadcastedEventArgs_m_Message(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_FreePosCount of class  FreePositionsArgs */
+#ifndef TOLUA_DISABLE_tolua_get_FreePositionsArgs_unsigned_m_FreePosCount
+static int tolua_get_FreePositionsArgs_unsigned_m_FreePosCount(lua_State* tolua_S)
+{
+  FreePositionsArgs* self = (FreePositionsArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_FreePosCount'",NULL);
+#endif
+ tolua_pushnumber(tolua_S,(lua_Number)self->m_FreePosCount);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_FreePosCount of class  FreePositionsArgs */
+#ifndef TOLUA_DISABLE_tolua_set_FreePositionsArgs_unsigned_m_FreePosCount
+static int tolua_set_FreePositionsArgs_unsigned_m_FreePosCount(lua_State* tolua_S)
+{
+  FreePositionsArgs* self = (FreePositionsArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_FreePosCount'",NULL);
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_FreePosCount = ((unsigned int)  tolua_tonumber(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_FreePos of class  FreePositionsArgs */
+#ifndef TOLUA_DISABLE_tolua_get_LuaInterface_FreePositionsArgs_m_FreePos
+static int tolua_get_LuaInterface_FreePositionsArgs_m_FreePos(lua_State* tolua_S)
+{
+ int tolua_index;
+  FreePositionsArgs* self;
+ lua_pushstring(tolua_S,".self");
+ lua_rawget(tolua_S,1);
+ self = (FreePositionsArgs*)  lua_touserdata(tolua_S,-1);
+#ifndef TOLUA_RELEASE
+ {
+ tolua_Error tolua_err;
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in array indexing.",&tolua_err);
+ }
+#endif
+ tolua_index = (int)tolua_tonumber(tolua_S,2,0);
+#ifndef TOLUA_RELEASE
+ if (tolua_index<0 || tolua_index>=4)
+ tolua_error(tolua_S,"array indexing out of range.",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_FreePos[tolua_index]);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_FreePos of class  FreePositionsArgs */
+#ifndef TOLUA_DISABLE_tolua_set_LuaInterface_FreePositionsArgs_m_FreePos
+static int tolua_set_LuaInterface_FreePositionsArgs_m_FreePos(lua_State* tolua_S)
+{
+ int tolua_index;
+  FreePositionsArgs* self;
+ lua_pushstring(tolua_S,".self");
+ lua_rawget(tolua_S,1);
+ self = (FreePositionsArgs*)  lua_touserdata(tolua_S,-1);
+#ifndef TOLUA_RELEASE
+ {
+ tolua_Error tolua_err;
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in array indexing.",&tolua_err);
+ }
+#endif
+ tolua_index = (int)tolua_tonumber(tolua_S,2,0);
+#ifndef TOLUA_RELEASE
+ if (tolua_index<0 || tolua_index>=4)
+ tolua_error(tolua_S,"array indexing out of range.",NULL);
+#endif
+  self->m_FreePos[tolua_index] = ((std::string)  tolua_tocppstring(tolua_S,3,0));
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -790,6 +873,11 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"TextBroadcastedEventArgs");
   tolua_variable(tolua_S,"m_Teller",tolua_get_TextBroadcastedEventArgs_m_Teller,tolua_set_TextBroadcastedEventArgs_m_Teller);
   tolua_variable(tolua_S,"m_Message",tolua_get_TextBroadcastedEventArgs_m_Message,tolua_set_TextBroadcastedEventArgs_m_Message);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"FreePositionsArgs","FreePositionsArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"FreePositionsArgs");
+  tolua_variable(tolua_S,"m_FreePosCount",tolua_get_FreePositionsArgs_unsigned_m_FreePosCount,tolua_set_FreePositionsArgs_unsigned_m_FreePosCount);
+  tolua_array(tolua_S,"m_FreePos",tolua_get_LuaInterface_FreePositionsArgs_m_FreePos,tolua_set_LuaInterface_FreePositionsArgs_m_FreePos);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

@@ -5,6 +5,7 @@
 #include <SFML/Network.hpp>
 
 #include "Packets.h"
+#include "BeloteContextPackets.h"
 #include "Server.h"
 
 #include "ClientSocket.h"
@@ -15,6 +16,7 @@ const CEGUI::String ClientSocket::EventConnectionStatusUpdated("ConnectionStatus
 const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
 const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
+const CEGUI::String ClientSocket::EventFreePositionsSent("FreePositionsSent");
 
 // Define network state machine stuff...
 namespace
@@ -139,6 +141,10 @@ namespace
 						}
 						break;
 
+					case PT_GameContextPacket:
+						HandleGameContextPacket(packet);
+						break;
+
 					case PT_ServerShuttingDown:
 						std::cout << "[Client] Server shutting down, me too" << std::endl;
 						m_StateMachine->Notify(NEC_DisconnectionRequest);
@@ -157,6 +163,29 @@ namespace
 
 			sf::TcpSocket	& m_Socket;
 			ClientSocket	* m_Self;
+
+		private:
+			void HandleGameContextPacket(sf::Packet &packet)
+			{
+				BeloteContextPacketType bcpt;
+				packet >> bcpt;
+
+				switch(bcpt)
+				{
+				case BCPT_AvailablePos:
+					{
+						FreePositionsArgs args;
+						packet >> args.m_FreePosCount;
+						for (sf::Uint32 i = 0; i != args.m_FreePosCount; i++)
+							packet >> args.m_FreePos[i];
+						m_Self->SetFreePositionsArgs(args);
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
 		};
 
 		struct LobbyFull : public State
@@ -438,6 +467,12 @@ void ClientSocket::Update()
 	{
 		fireEvent(EventConnectionStatusUpdated, m_ConnectionStateEventArgs, EventNamespace);
 		m_IsConnectionStatusReady = false;
+	}
+
+	if (m_AreFreePosArgsAvailable)
+	{
+		fireEvent(EventFreePositionsSent, m_FreePosArgs, EventNamespace);
+		m_AreFreePosArgsAvailable = false;
 	}
 
 	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);

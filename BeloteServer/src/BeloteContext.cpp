@@ -6,6 +6,8 @@
 #include <SFML/Network.hpp>
 
 #include "BeloteContext.h"
+#include "Packets.h"
+#include "BeloteContextPackets.h"
 
 const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "North", "East", "Unknown" };
 
@@ -65,7 +67,9 @@ void BeloteContext::SendAvailablePositionsToAll()
 
 void BeloteContext::SendAvailablePositionsTo(ServerSocket *player, const std::vector<PlayerPosition> &freePos)
 {
-	std::cout << "BeloteContext::SendAvailablePositionsTo(" << player->GetClientName() << ") :" << std::endl;
-	std::ostream_iterator<PlayerPosition> outIt(std::cout, "\n");
-	std::copy(freePos.begin(), freePos.end(), outIt);
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_AvailablePos << freePos.size();
+	std::for_each(freePos.begin(), freePos.end(), [&] (const PlayerPosition &pp) { packet << PlayerPositionStrings[pp]; } );
+
+	player->GetSocket().Send(packet);
 }

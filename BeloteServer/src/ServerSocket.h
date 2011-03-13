@@ -25,6 +25,7 @@ public:
 	const std::string&	GetClientName() const							{ return m_ClientName; }
 
 	BeloteContext*		GetBeloteContext()								{ return m_BeloteContext; }
+	sf::TcpSocket&		GetSocket()										{ return m_Socket; }
 
 private:
 	ServerSocketPrivate		* m_priv;

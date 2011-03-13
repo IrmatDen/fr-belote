@@ -145,8 +145,8 @@ function onCurrentPositioningSent(args)
 	local curPosArgs = toCurrentPositioningArgs(args)
 	for i = 0, 3 do
 		local btn = setupBtnsParent:getChild(PositionButtonNames[i + 1])
-		btn:setText(PositionButtonTexts[i + 1] .. ": " .. curPosArgs.m_Pos[i])
 		if curPosArgs.m_Pos[i] ~= "" then
+			btn:setText(PositionButtonTexts[i + 1] .. ": " .. curPosArgs.m_Pos[i])
 			btn:disable()
 		end
 	end

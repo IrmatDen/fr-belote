@@ -65,6 +65,16 @@ function onQuitGame(args)
 end
 
 	-- Rules screen
+
+function onHostNameValid(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("MenuScreenRules/ButtonRulesStart"):enable()
+end
+
+function onHostNameInvalid(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("MenuScreenRules/ButtonRulesStart"):disable()
+end
 	
 function onRulesStart(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
@@ -82,16 +92,16 @@ end
 
 	-- Join game screen
 
-function onIPValid(args)
+function enableJoinGame(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):setEnabled(true)
 end
 
-function onIPInvalid(args)
+function disableJoinGame(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):setEnabled(false)
 end
-	
+
 function onDoJoinGame(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
 	
@@ -131,8 +141,20 @@ for screen = 0, screensCount do
 end
 displayScreen("MenuScreenMain")
 
+-- Misc. setup
+local hostNameBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenRules/PlayerName"))
+local clientNameBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/PlayerNameClient"))
 local hostIpBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/HostIP"))
-hostIpBox:setValidationString("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+
+local gameRotCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/GameRotation"))
+gameRotCB:addItem(CEGUI.createListboxTextItem("Horaire", 0, nil, false, true))
+gameRotCB:addItem(CEGUI.createListboxTextItem("Anti-horaire", 0, nil, false, true))
+gameRotCB:setItemSelectState(0, true)
+
+local beloteSaveCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/BeloteSave"))
+beloteSaveCB:addItem(CEGUI.createListboxTextItem("Oui", 0, nil, false, true))
+beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
+beloteSaveCB:setItemSelectState(0, true)
 
 -- subscribe required events
 	-- Network events
@@ -144,22 +166,20 @@ winMgr:getWindow("MenuScreenMain/ButtonQuit"):subscribeEvent("Clicked", "onQuitG
 	-- Rules menu
 winMgr:getWindow("MenuScreenRules/ButtonRulesStart"):subscribeEvent("Clicked", "onRulesStart")
 winMgr:getWindow("MenuScreenRules/ButtonRulesBack"):subscribeEvent("Clicked", "onBack")
+hostNameBox:subscribeEvent("ValidEntry", "onHostNameValid")
+hostNameBox:subscribeEvent("TextInvalidated", "onHostNameInvalid")
+hostNameBox:subscribeEvent("InvalidEntryAttempted", "onHostNameInvalid")
 	-- Join game menu
 winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):subscribeEvent("Clicked", "onDoJoinGame")
 winMgr:getWindow("MenuScreenJoinGame/ButtonJoinBack"):subscribeEvent("Clicked", "onBack")
-hostIpBox:subscribeEvent("ValidEntry", "onIPValid")
-hostIpBox:subscribeEvent("TextInvalidated", "onIPInvalid")
-hostIpBox:subscribeEvent("InvalidEntryAttempted", "onIPInvalid")
+clientNameBox:subscribeEvent("ValidEntry", "enableJoinGame")
+clientNameBox:subscribeEvent("TextInvalidated", "disableJoinGame")
+clientNameBox:subscribeEvent("InvalidEntryAttempted", "disableJoinGame")
+hostIpBox:subscribeEvent("ValidEntry", "enableJoinGame")
+hostIpBox:subscribeEvent("TextInvalidated", "disableJoinGame")
+hostIpBox:subscribeEvent("InvalidEntryAttempted", "disableJoinGame")
 
--- Misc. setup
-local gameRotCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/GameRotation"))
-gameRotCB:addItem(CEGUI.createListboxTextItem("Horaire", 0, nil, false, true))
-gameRotCB:addItem(CEGUI.createListboxTextItem("Anti-horaire", 0, nil, false, true))
-gameRotCB:setItemSelectState(0, true)
-
-local beloteSaveCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/BeloteSave"))
-beloteSaveCB:addItem(CEGUI.createListboxTextItem("Oui", 0, nil, false, true))
-beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
-beloteSaveCB:setItemSelectState(0, true)
-
+-- Finish setup parts which fire events
+hostNameBox:setText("Host")
+clientNameBox:setText("Client")
 hostIpBox:setText("127.0.0.1")

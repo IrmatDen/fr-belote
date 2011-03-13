@@ -197,6 +197,7 @@
                 <Window Type="OgreTray/Editbox" Name="MenuScreenRules/PlayerName" >
                     <Property Name="MaxTextLength" Value="1073741823" />
                     <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.1,0},{0.845,0},{0.17,0}}" />
+                    <Property Name="ValidationString" Value=".+" />
                     <Property Name="TextParsingEnabled" Value="False" />
                 </Window>
             </Window>
@@ -265,12 +266,13 @@
                 <Window Type="OgreTray/Editbox" Name="MenuScreenJoinGame/PlayerNameClient" >
                     <Property Name="MaxTextLength" Value="1073741823" />
                     <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.1,0},{0.845,0},{0.17,0}}" />
+                    <Property Name="ValidationString" Value=".+" />
                     <Property Name="TextParsingEnabled" Value="False" />
                 </Window>
                 <Window Type="OgreTray/Editbox" Name="MenuScreenJoinGame/HostIP" >
                     <Property Name="MaxTextLength" Value="1073741823" />
                     <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.215,0},{0.845,0},{0.285,0}}" />
-                    <Property Name="ValidationString" Value="" />
+                    <Property Name="ValidationString" Value="(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" />
                     <Property Name="TextParsingEnabled" Value="False" />
                 </Window>
             </Window>

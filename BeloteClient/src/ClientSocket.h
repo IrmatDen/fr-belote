@@ -50,17 +50,93 @@ public:
 
 class ClientSocketPrivate;
 
+template <typename ArgType = CEGUI::EventArgs>
+class ThreadSafeEventQueue
+{
+public:
+	typedef std::queue<ArgType>	EventQueue;
+
+public:
+	ThreadSafeEventQueue(const CEGUI::String &eventName, const CEGUI::String &eventNamespace)
+		: m_EventName(eventName), m_EventNamespace(eventNamespace)
+	{
+	}
+
+	void	reset()
+	{
+		std::swap(m_EventQueue, EventQueue());
+	}
+	
+	void	push(const ArgType &arg = ArgType())
+	{
+		sf::Lock l(m_Mutex);
+		m_EventQueue.push(arg);
+	}
+
+	// guard is expected to be a callable object of type:
+	// bool (guard)(const EventQueue &currentQueue)
+	// such that the arguments gets pushed only if the return value is true.
+	template <typename GuardType>
+	void	push(GuardType guard, const ArgType &arg = ArgType())
+	{
+		sf::Lock l(m_Mutex);
+		if (guard(m_EventQueue))
+			m_EventQueue.push(arg);
+	}
+
+	void	process(CEGUI::EventSet *eventSet)
+	{
+		sf::Lock lock(m_Mutex);
+		while (!m_EventQueue.empty())
+		{
+			ArgType args = m_EventQueue.front();
+			m_EventQueue.pop();
+
+			eventSet->fireEvent(m_EventName, args, m_EventNamespace);
+		}
+	}
+
+private:
+	sf::Mutex		m_Mutex;
+	EventQueue		m_EventQueue;
+	CEGUI::String	m_EventName;
+	CEGUI::String	m_EventNamespace;
+};
+
 class ClientSocket : public CEGUI::EventSet
 {
 public:
 	static const CEGUI::String EventNamespace;
 	static const CEGUI::String EventConnectionStatusUpdated;
 	static const CEGUI::String EventPlayerConnected;
-	static const CEGUI::String EventPlayerDisconnected;
 	static const CEGUI::String EventTextBroadcasted;
 	static const CEGUI::String EventCurrentPositioningSent;
 	static const CEGUI::String EventGameStarting;
 	static const CEGUI::String EventCardsReceived;
+
+public:
+	ThreadSafeEventQueue<PlayerConnectedEventArgs>		m_PlayerConnected;
+	ThreadSafeEventQueue<TextBroadcastedEventArgs>		m_TextBroadcasted;
+	ThreadSafeEventQueue<CurrentCardsInHandArgs>		m_CardsReceived;
+	ThreadSafeEventQueue<CurrentPositioningArgs>		m_CurrentPositioningSent;
+	ThreadSafeEventQueue<>								m_GameStarting;
+	ThreadSafeEventQueue<ConnectionStatusEventArgs>		m_ConnectionStatus;
+
+	struct ConnectionStatusPushGuard
+		: public std::unary_function<
+				const ThreadSafeEventQueue<ConnectionStatusEventArgs>::EventQueue&,
+				bool
+			>
+	{
+		typedef ThreadSafeEventQueue<ConnectionStatusEventArgs>::EventQueue	EventQueue;
+		bool operator()(const EventQueue &currentQueue)
+		{
+			if (currentQueue.size() == 0)
+				return true;
+			return currentQueue.back().m_ConnectionStatus == ConnectionStatusEventArgs::CS_Connected;
+		}
+
+	} m_ConnectionStatusPushGuard;
 
 public:
 	ClientSocket();
@@ -79,54 +155,9 @@ public:
 	void	ChoosePosition(const std::string &posName);
 	void	StartGame();
 
-	// Reserved for private use.
-	void	EnqueuePlayerConnected(const PlayerConnectedEventArgs &args);
-	// Reserved for private use.
-	void	EnqueueBroadcastedText(const TextBroadcastedEventArgs &args);
-	// Reserved for private use.
-	void	SetCurrentPositioningArgs(const CurrentPositioningArgs &args);
-	// Reserved for private use.
-	void	SetConnectionStatusArgs(const ConnectionStatusEventArgs &args);
-	// Reserved for private use.
-	void	SetGameStarting()														{ m_GameStarting = true; }
-	// Reserved for private use.
-	void	SetCardsInHandArgs(const CurrentCardsInHandArgs &args);
-
 private:
-	template <typename T>
-	void	UpdateMessageQueue(std::queue<T> &msgQueue, sf::Mutex &mutex,  const CEGUI::String &eventName)
-	{
-		sf::Lock lock(mutex);
-		while (!msgQueue.empty())
-		{
-			T args = msgQueue.front();
-			msgQueue.pop();
-
-			fireEvent(eventName, args, EventNamespace);
-		}
-	}
-
-private:
-	ClientSocketPrivate *					m_priv;
-
-	bool									m_IsDisconnecting;
-	
-	sf::Mutex								m_TextBroadcastedQueueMutex;
-	std::queue<TextBroadcastedEventArgs>	m_TextBroadcastedQueue;
-	
-	sf::Mutex								m_PlayerConnectedQueueMutex;
-	std::queue<PlayerConnectedEventArgs>	m_PlayerConnectedQueue;
-
-	bool									m_IsConnectionStatusReady;
-	ConnectionStatusEventArgs				m_ConnectionStateEventArgs;
-	
-	bool									m_AreCurrentPositioningArgsAvailable;
-	CurrentPositioningArgs					m_CurrentPositioningArgs;
-
-	bool									m_GameStarting;
-	
-	bool									m_CardsInHandReceived;
-	CurrentCardsInHandArgs					m_CurrentCardsInHandArgs;
+	ClientSocketPrivate *	m_priv;
+	bool					m_IsDisconnecting;
 };
 
 #endif

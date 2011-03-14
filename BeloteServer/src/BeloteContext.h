@@ -69,9 +69,12 @@ private:
 
 		sf::Uint32		m_Scores[_SI_Count];
 		std::string		m_Deck[32];
+		int				m_CurrentDeckPos;
 
 		PlayerPosition	m_CurrentDealer;
+		PlayerPosition	m_CurrentPlayer;
 		std::string		m_PlayersHand[_PP_Count][8];
+		std::string		m_PotentialAsset;
 	};
 
 private:

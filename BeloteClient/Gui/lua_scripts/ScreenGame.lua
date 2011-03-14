@@ -295,13 +295,13 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
-	winMgr:getWindow("GameSetup"):setVisible(false)
-	winMgr:getWindow("GameInProgress"):setVisible(true)
-	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
+	--winMgr:getWindow("GameSetup"):setVisible(false)
+	--winMgr:getWindow("GameInProgress"):setVisible(true)
+	--winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
 	
-	addCard("H1")
-	winMgr:getWindow("H1"):setUserString(CardPlayablePropertyName, "1")
-	rearrangeCards()
+	--addCard("H1")
+	--winMgr:getWindow("H1"):setUserString(CardPlayablePropertyName, "1")
+	--rearrangeCards()
 	
 
 -- subscribe required events

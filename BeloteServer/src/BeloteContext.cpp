@@ -140,6 +140,7 @@ void BeloteContext::StartGame()
 	d->m_CurrentDealer = PP_South;
 
 	// Start game! :)
+	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 	DealFirstPart();
 }
 
@@ -203,13 +204,13 @@ void BeloteContext::DealFirstPart()
 	// TODO customize dealing with 3-2 / 2-3
 	// Only supporting 3-2 for now
 	int currentCardsCountToGive	= 3;
-	PlayerPosition pp		= d->m_CurrentDealer;
-	int currentDeckPos		= 0;
+	PlayerPosition pp		= d->m_CurrentPlayer;
+	d->m_CurrentDeckPos		= 0;
 	int currentHandPos[4]	= { 0, 0, 0, 0 };
 	for (int playerIdx = 0; playerIdx != _PP_Count * 2; playerIdx++)
 	{
 		for (int card = 0; card != currentCardsCountToGive; card++)
-			d->m_PlayersHand[pp][currentHandPos[pp]++] = d->m_Deck[currentDeckPos++];
+			d->m_PlayersHand[pp][currentHandPos[pp]++] = d->m_Deck[d->m_CurrentDeckPos++];
 
 		pp = GetNextPlayer(pp);
 
@@ -224,13 +225,27 @@ void BeloteContext::DealFirstPart()
 			d->m_PlayersHand[p][7 - c] = "";
 	}
 
-	// Order players' hand based on colour.
-	// TODO organize hand based around colour alternation
+	// Sort players' hand based on colour.
+	auto compFunc = [](const std::string &c1, const std::string &c2) -> bool
+					{
+						if (c1 == "")					return false;
+						if (c2 == "")					return true;
+						
+						static const std::string colourOrder("HSDC");
+						const size_t	c1ColourIdx = colourOrder.find(c1.front()),
+										c2ColourIdx = colourOrder.find(c2.front());
+						if (c1ColourIdx < c2ColourIdx)	return true;
+						if (c2ColourIdx < c1ColourIdx)	return false;
+						
+						static const std::string valueOrder("78910JQK1");
+						const size_t	c1ValueIdx	= valueOrder.find_last_of(c1.c_str() + 1),
+										c2ValueIdx	= valueOrder.find_last_of(c2.c_str() + 1);
+						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
+					};
 	for (int p = 0; p != _PP_Count; p++)
 	{
-		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]));
+		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
 	}
-	
 
 	// Show their respective partial hands to the players.
 	int playerIndex = 0;
@@ -245,6 +260,19 @@ void BeloteContext::DealFirstPart()
 			player->GetSocket().Send(packet);
 
 			playerIndex++;
+		}
+	);
+
+	// Show potential asset.
+	d->m_PotentialAsset = d->m_Deck[d->m_CurrentDeckPos++];
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player)
+		{
+			sf::Packet packet;
+			packet << PT_GameContextPacket << BCPT_PotentialAsset;
+			packet << d->m_PotentialAsset;
+
+			player->GetSocket().Send(packet);
 		}
 	);
 }

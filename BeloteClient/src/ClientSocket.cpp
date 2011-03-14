@@ -16,7 +16,6 @@
 const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
 const CEGUI::String ClientSocket::EventConnectionStatusUpdated("ConnectionStatusUpdated");
 const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
-const CEGUI::String ClientSocket::EventPlayerDisconnected("PlayerDisconnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
 const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
@@ -94,7 +93,8 @@ namespace
 			{
 				ConnectionStatusEventArgs args;
 				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_Connected;
-				m_Self->SetConnectionStatusArgs(args);
+				
+				m_Self->m_ConnectionStatus.push(m_Self->m_ConnectionStatusPushGuard, args);
 				m_StateMachine->Notify(NEC_SendName);
 			}
 
@@ -126,7 +126,7 @@ namespace
 							PlayerConnectedEventArgs args;
 							packet >> args.m_PlayerName;
 							args.m_Connected = true;
-							m_Self->EnqueuePlayerConnected(args);
+							m_Self->m_PlayerConnected.push(args);
 						}
 						break;
 						
@@ -135,7 +135,7 @@ namespace
 							PlayerConnectedEventArgs args;
 							packet >> args.m_PlayerName;
 							args.m_Connected = false;
-							m_Self->EnqueuePlayerConnected(args);
+							m_Self->m_PlayerConnected.push(args);
 						}
 						break;
 
@@ -143,7 +143,7 @@ namespace
 						{
 							TextBroadcastedEventArgs args;
 							packet >> args.m_Teller >> args.m_Message;
-							m_Self->EnqueueBroadcastedText(args);
+							m_Self->m_TextBroadcasted.push(args);
 						}
 						break;
 
@@ -183,13 +183,13 @@ namespace
 						CurrentPositioningArgs args;
 						for (sf::Uint32 i = 0; i != countof(args.m_Pos); i++)
 							packet >> args.m_Pos[i];
-						m_Self->SetCurrentPositioningArgs(args);
+						m_Self->m_CurrentPositioningSent.push(args);
 					}
 					break;
 					
 				case BCPT_GameStarting:
 					{
-						m_Self->SetGameStarting();
+						m_Self->m_GameStarting.push();
 					}
 					break;
 
@@ -198,7 +198,7 @@ namespace
 						CurrentCardsInHandArgs args;
 						for (sf::Uint32 i = 0; i != countof(args.m_Cards); i++)
 							packet >> args.m_Cards[i];
-						m_Self->SetCardsInHandArgs(args);
+						m_Self->m_CardsReceived.push(args);
 					}
 					break;
 
@@ -218,7 +218,7 @@ namespace
 			{
 				ConnectionStatusEventArgs args;
 				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_LobbyFull;
-				m_Self->SetConnectionStatusArgs(args);
+				m_Self->m_ConnectionStatus.push(m_Self->m_ConnectionStatusPushGuard, args);
 
 				m_StateMachine->Notify(NEC_DisconnectionRequest);
 			}
@@ -236,7 +236,7 @@ namespace
 			{
 				ConnectionStatusEventArgs args;
 				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_Disconnected;
-				m_Self->SetConnectionStatusArgs(args);
+				m_Self->m_ConnectionStatus.push(m_Self->m_ConnectionStatusPushGuard, args);
 
 				m_StateMachine->Stop();
 			}
@@ -475,7 +475,13 @@ private:
 };
 
 ClientSocket::ClientSocket()
-	: m_IsConnectionStatusReady(false), m_IsDisconnecting(false)
+: m_IsDisconnecting(false),
+	m_PlayerConnected		(EventPlayerConnected, EventNamespace),
+	m_TextBroadcasted		(EventTextBroadcasted, EventNamespace),
+	m_CardsReceived			(EventCardsReceived, EventNamespace),
+	m_CurrentPositioningSent(EventCurrentPositioningSent, EventNamespace),
+	m_GameStarting			(EventGameStarting, EventNamespace),
+	m_ConnectionStatus		(EventConnectionStatusUpdated, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -487,9 +493,14 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 {
-	m_IsConnectionStatusReady	= false;
-	m_IsDisconnecting			= false;
-	m_GameStarting				= false;
+	m_IsDisconnecting = false;
+
+	m_PlayerConnected.reset();
+	m_TextBroadcasted.reset();
+	m_CardsReceived.reset();
+	m_CurrentPositioningSent.reset();
+	m_GameStarting.reset();
+	m_ConnectionStatus.reset();
 
 	m_priv->Connect(hostIP, utf8EncodedName);
 }
@@ -515,70 +526,16 @@ void ClientSocket::StartGame()
 	m_priv->StartGame();
 }
 
-void ClientSocket::EnqueueBroadcastedText(const TextBroadcastedEventArgs &args)
-{
-	sf::Lock lock(m_TextBroadcastedQueueMutex);
-	m_TextBroadcastedQueue.push(args);
-}
-
-void ClientSocket::EnqueuePlayerConnected(const PlayerConnectedEventArgs &args)
-{
-	sf::Lock lock(m_PlayerConnectedQueueMutex);
-	m_PlayerConnectedQueue.push(args);
-}
-
-void ClientSocket::SetConnectionStatusArgs(const ConnectionStatusEventArgs &args)
-{
-	if (m_IsConnectionStatusReady && m_ConnectionStateEventArgs.m_ConnectionStatus != ConnectionStatusEventArgs::CS_Connected)
-	{
-		return;
-	}
-
-	m_ConnectionStateEventArgs = args;
-	m_IsConnectionStatusReady = true;
-}
-
-void ClientSocket::SetCurrentPositioningArgs(const CurrentPositioningArgs &args)
-{
-	m_CurrentPositioningArgs = args;
-	m_AreCurrentPositioningArgsAvailable = true;
-}
-
-void ClientSocket::SetCardsInHandArgs(const CurrentCardsInHandArgs &args)
-{
-	m_CurrentCardsInHandArgs = args;
-	m_CardsInHandReceived = true;
-}
-
 void ClientSocket::Update()
 {
-	if (m_IsConnectionStatusReady && !m_IsDisconnecting)
-	{
-		fireEvent(EventConnectionStatusUpdated, m_ConnectionStateEventArgs, EventNamespace);
-		m_IsConnectionStatusReady = false;
-	}
+	if (!m_IsDisconnecting)
+		m_ConnectionStatus.process(this);
 
-	if (m_AreCurrentPositioningArgsAvailable)
-	{
-		fireEvent(EventCurrentPositioningSent, m_CurrentPositioningArgs, EventNamespace);
-		m_AreCurrentPositioningArgsAvailable = false;
-	}
-
-	if (m_GameStarting)
-	{
-		CEGUI::EventArgs nullArgs;
-		fireEvent(EventGameStarting, nullArgs, EventNamespace);
-		m_GameStarting = false;
-	}
-
-	if (m_CardsInHandReceived)
-	{
-		fireEvent(EventCardsReceived, m_CurrentCardsInHandArgs, EventNamespace);
-		m_CardsInHandReceived = false;
-	}
-
-	UpdateMessageQueue(m_TextBroadcastedQueue, m_TextBroadcastedQueueMutex, EventTextBroadcasted);
-	UpdateMessageQueue(m_PlayerConnectedQueue, m_PlayerConnectedQueueMutex, EventPlayerConnected);
+	m_GameStarting.process(this);
+	m_PlayerConnected.process(this);
+	m_TextBroadcasted.process(this);
+	m_CardsReceived.process(this);
+	m_CurrentPositioningSent.process(this);
 }
 
 void ClientSocket::Wait()

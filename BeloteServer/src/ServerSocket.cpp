@@ -138,9 +138,19 @@ namespace
 					break;
 					
 				case BCPT_StartGameRequest:
+					m_ServerSocket->GetBeloteContext()->StartGame();
+					break;
+
+				case BCPT_AcceptAsset:
 					{
-						m_ServerSocket->GetBeloteContext()->StartGame();
+						std::string colour;
+						packet >> colour;
+						m_ServerSocket->GetBeloteContext()->AcceptAsset(colour);
 					}
+					break;
+					
+				case BCPT_RefuseAsset:
+					m_ServerSocket->GetBeloteContext()->RefuseAsset();
 					break;
 
 				default:

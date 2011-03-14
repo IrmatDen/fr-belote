@@ -47,8 +47,12 @@ class ClientSocket : public CEGUI::EventSet
 {
 public:
 	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName);
+	void	Disconnect();
+
 	void	SendChatMessage(const std::string &utf8EncodedMessage);
+
 	void	ChoosePosition(const std::string &posName);
 	void	StartGame();
-	void	Disconnect();
+	void	AcceptAsset(const std::string &assetColour);
+	void	RefuseAsset();
 };

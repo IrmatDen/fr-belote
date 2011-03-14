@@ -164,6 +164,8 @@ public:
 
 	void	ChoosePosition(const std::string &posName);
 	void	StartGame();
+	void	AcceptAsset(const std::string &assetColour);
+	void	RefuseAsset();
 
 private:
 	ClientSocketPrivate *	m_priv;

@@ -208,11 +208,24 @@ function onStartGameBtn(args)
 end
 
 function onAcceptAsset(args)
-	print("onAcceptAsset")
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local imgName	= winMgr:getWindow("AssetProposalImg"):getProperty("Image")
+	local colour	= imgName:sub(string.len("PlayingCards/") + 1)
+	
+	local client	= Game:getSingleton():GetClientSocket()
+	client:AcceptAsset(colour)
+	
+	winMgr:getWindow("ButtonAcceptAsset"):setVisible(false)
+	winMgr:getWindow("ButtonRefuseAsset"):setVisible(false)
 end
 
 function onRefuseAsset(args)
-	print("onRefuseAsset")
+	local client	= Game:getSingleton():GetClientSocket()
+	client:RefuseAsset()
+	
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("ButtonAcceptAsset"):setVisible(false)
+	winMgr:getWindow("ButtonRefuseAsset"):setVisible(false)
 end
 
 function onCardHoverIn(args)

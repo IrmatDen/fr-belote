@@ -135,6 +135,7 @@ void BeloteContext::StartGame()
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 	DealFirstPart();
 	
+	d->m_IsInFirstAnnouncePhase = true;
 	AskForRevealedAsset();
 }
 
@@ -280,4 +281,26 @@ void BeloteContext::AskForRevealedAsset()
 	sf::Packet packet;
 	packet << PT_GameContextPacket << BCPT_AskRevealedAsset;
 	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
+}
+
+void BeloteContext::AcceptAsset(const std::string &colourName)
+{
+	d->m_CurrentAsset = colourName;
+	std::cout << "[Server] asset is " << d->m_CurrentAsset << std::endl;
+	// We should start playing heh?
+}
+
+void BeloteContext::RefuseAsset()
+{
+	if (d->m_CurrentPlayer == d->m_CurrentDealer)
+		d->m_IsInFirstAnnouncePhase = false;
+
+	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
+	
+	if (d->m_IsInFirstAnnouncePhase)
+		AskForRevealedAsset();
+	else
+	{
+		// We'll see later on...
+	}
 }

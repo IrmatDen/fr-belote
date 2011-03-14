@@ -47,6 +47,8 @@ public:
 	// Game management
 	void	StartGame();
 	void	DealFirstPart();
+	void	AcceptAsset(const std::string &colourName);
+	void	RefuseAsset();
 
 private:
 	void	SendCurrentPositioningToAll();
@@ -84,6 +86,8 @@ private:
 		PlayerPosition	m_CurrentPlayer;
 		std::string		m_PlayersHand[_PP_Count][8];
 		std::string		m_PotentialAsset;
+		bool			m_IsInFirstAnnouncePhase;
+		std::string		m_CurrentAsset;
 	};
 
 private:

@@ -36,6 +36,8 @@ namespace
 		NEC_SendTextMessage,
 		NEC_SendPlayerPosition,
 		NEC_StartGame,
+		NEC_AcceptAsset,
+		NEC_RefuseAsset,
 		NEC_DisconnectionRequest,
 	};
 
@@ -346,6 +348,35 @@ namespace
 			}
 		};
 
+		struct AcceptAsset : public ActionBase
+		{
+			AcceptAsset(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
+
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_GameContextPacket << BCPT_AcceptAsset << m_AssetColour;
+				sf::Socket::Status s = m_Socket.Send(p);
+
+				// Error checking
+				if (s != sf::Socket::Done)
+					std::cout << "[Client] Error sending position in Actions::AcceptAsset. Error code: " << s << std::endl;
+			}
+
+			std::string		m_AssetColour;
+		};
+
+		struct RefuseAsset : public ActionBase
+		{
+			RefuseAsset(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_GameContextPacket << BCPT_RefuseAsset;
+				m_Socket.Send(p);
+			}
+		};
+
 		struct Disconnect : public ActionBase
 		{
 			Disconnect(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
@@ -388,6 +419,8 @@ public:
 		m_ActionSendTxtMsg	= new Actions::SendTextMessage(m_Socket);
 		m_ActionSendPos		= new Actions::SendPosition(m_Socket);
 		m_ActionStartGame	= new Actions::StartGame(m_Socket);
+		m_ActionAcceptAsset	= new Actions::AcceptAsset(m_Socket);
+		m_ActionRefuseAsset	= new Actions::RefuseAsset(m_Socket);
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
 		
 		// Transitions
@@ -400,6 +433,8 @@ public:
 		m_StateIdle			->AddTransition(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
 		m_StateIdle			->AddTransition(NEC_SendPlayerPosition,		m_StateIdle,			m_ActionSendPos		);
 		m_StateIdle			->AddTransition(NEC_StartGame,				m_StateIdle,			m_ActionStartGame	);
+		m_StateIdle			->AddTransition(NEC_AcceptAsset,			m_StateIdle,			m_ActionAcceptAsset	);
+		m_StateIdle			->AddTransition(NEC_RefuseAsset,			m_StateIdle,			m_ActionRefuseAsset	);
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
@@ -432,6 +467,17 @@ public:
 	void StartGame()
 	{
 		m_StateMachine->Notify(NEC_StartGame);
+	}
+
+	void AcceptAsset(const std::string &assetColour)
+	{
+		m_ActionAcceptAsset->m_AssetColour = assetColour;
+		m_StateMachine->Notify(NEC_AcceptAsset);
+	}
+
+	void RefuseAsset()
+	{
+		m_StateMachine->Notify(NEC_RefuseAsset);
 	}
 
 	void Wait()
@@ -480,6 +526,8 @@ private:
 	Actions::SendTextMessage	* m_ActionSendTxtMsg;
 	Actions::SendPosition		* m_ActionSendPos;
 	Action						* m_ActionStartGame;
+	Actions::AcceptAsset		* m_ActionAcceptAsset;
+	Action						* m_ActionRefuseAsset;
 	Action						* m_ActionDisconnect;
 };
 
@@ -535,6 +583,16 @@ void ClientSocket::ChoosePosition(const std::string &posName)
 void ClientSocket::StartGame()
 {
 	m_priv->StartGame();
+}
+
+void ClientSocket::AcceptAsset(const std::string &assetColour)
+{
+	m_priv->AcceptAsset(assetColour);
+}
+
+void ClientSocket::RefuseAsset()
+{
+	m_priv->RefuseAsset();
 }
 
 void ClientSocket::Update()

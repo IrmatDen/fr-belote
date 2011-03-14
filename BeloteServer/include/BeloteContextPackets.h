@@ -14,6 +14,7 @@ enum BeloteContextPacketType
 	BCPT_CardsDealt,
 	BCPT_PotentialAsset,
 	BCPT_AskRevealedAsset,
+	BCPT_AskAnotherAsset,
 	BCPT_AcceptAsset,
 	BCPT_RefuseAsset
 };

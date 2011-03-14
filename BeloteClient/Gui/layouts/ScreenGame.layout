@@ -69,15 +69,42 @@
 						<Property Name="FrameEnabled" Value="False" />
 						<Property Name="Image" Value="" />
 					</Window>
-					<Window Type="OgreTray/Button" Name="ButtonAcceptAsset" >
-						<Property Name="Text" Value="Prendre" />
-						<Property Name="Font" Value="DejaVuSans-8" />
-						<Property Name="UnifiedAreaRect" Value="{{0.5,-100},{0.5,55},{0.5, -12},{0.5,85}}" />
+					<Window Type="DefaultWindow" Name="AssetProposalFirstTurn">
+						<Window Type="OgreTray/Button" Name="ButtonAcceptAsset" >
+							<Property Name="Text" Value="Prendre" />
+							<Property Name="Font" Value="DejaVuSans-8" />
+							<Property Name="UnifiedAreaRect" Value="{{0.5,-100},{0.5,55},{0.5, -12},{0.5,85}}" />
+						</Window>
+						<Window Type="OgreTray/Button" Name="ButtonRefuseAsset" >
+							<Property Name="Text" Value="Passer" />
+							<Property Name="Font" Value="DejaVuSans-8" />
+							<Property Name="UnifiedAreaRect" Value="{{0.5,12},{0.5,55},{0.5, 100},{0.5,85}}" />
+						</Window>
 					</Window>
-					<Window Type="OgreTray/Button" Name="ButtonRefuseAsset" >
-						<Property Name="Text" Value="Passer" />
-						<Property Name="Font" Value="DejaVuSans-8" />
-						<Property Name="UnifiedAreaRect" Value="{{0.5,12},{0.5,55},{0.5, 100},{0.5,85}}" />
+					<Window Type="DefaultWindow" Name="AssetProposalSecondTurn">
+						<Window Type="OgreTray/StaticImage" Name="AssetImgAlternate1">
+							<Property Name="UnifiedPosition" Value="{{0.5,-100},{0.5,55}}" />
+							<Property Name="UnifiedSize" Value="{{0,30},{0,30}}" />
+							<Property Name="Image" Value="PlayingCards/AssetD" />
+							<Property Name="FrameEnabled" Value="False" />
+						</Window>
+						<Window Type="OgreTray/StaticImage" Name="AssetImgAlternate2">
+							<Property Name="UnifiedPosition" Value="{{0.5,-65},{0.5,55}}" />
+							<Property Name="UnifiedSize" Value="{{0,30},{0,30}}" />
+							<Property Name="Image" Value="PlayingCards/AssetH" />
+							<Property Name="FrameEnabled" Value="False" />
+						</Window>
+						<Window Type="OgreTray/StaticImage" Name="AssetImgAlternate3">
+							<Property Name="UnifiedPosition" Value="{{0.5,-30},{0.5,55}}" />
+							<Property Name="UnifiedSize" Value="{{0,30},{0,30}}" />
+							<Property Name="Image" Value="PlayingCards/AssetS" />
+							<Property Name="FrameEnabled" Value="False" />
+						</Window>
+						<Window Type="OgreTray/Button" Name="ButtonRefuseAsset2" >
+							<Property Name="Text" Value="Passer" />
+							<Property Name="Font" Value="DejaVuSans-8" />
+							<Property Name="UnifiedAreaRect" Value="{{0.5,12},{0.5,55},{0.5, 100},{0.5,85}}" />
+						</Window>
 					</Window>
 				</Window>
 				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >

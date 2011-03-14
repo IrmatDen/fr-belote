@@ -55,7 +55,7 @@ private:
 	void	SendCurrentPositioningTo(ServerSocket *player);
 
 	void	NotifyStarting();
-	void	AskForRevealedAsset();
+	void	AskForAsset();
 
 	void	InitDeck();
 	void	ShuffleDeck();

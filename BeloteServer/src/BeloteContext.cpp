@@ -136,7 +136,7 @@ void BeloteContext::StartGame()
 	DealFirstPart();
 	
 	d->m_IsInFirstAnnouncePhase = true;
-	AskForRevealedAsset();
+	AskForAsset();
 }
 
 void BeloteContext::NotifyStarting()
@@ -276,10 +276,15 @@ void BeloteContext::DealFirstPart()
 	);
 }
 
-void BeloteContext::AskForRevealedAsset()
+void BeloteContext::AskForAsset()
 {
 	sf::Packet packet;
-	packet << PT_GameContextPacket << BCPT_AskRevealedAsset;
+	packet << PT_GameContextPacket;
+	if (d->m_IsInFirstAnnouncePhase)
+		packet << BCPT_AskRevealedAsset;
+	else
+		packet << BCPT_AskAnotherAsset;
+
 	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
 }
 
@@ -287,9 +292,9 @@ void BeloteContext::AcceptAsset(const std::string &colourName)
 {
 	d->m_CurrentAsset = colourName.front();
 
-	m_TeamAcceptingContract = (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North) ? TI_NorthSouth : TI_WestEast;
+	d->m_TeamAcceptingContract = (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North) ? TI_NorthSouth : TI_WestEast;
 
-	std::cout << "[Server] asset is " << d->m_CurrentAsset << " for team " << m_TeamAcceptingContract << std::endl;
+	std::cout << "[Server] asset is " << d->m_CurrentAsset << " for team " << d->m_TeamAcceptingContract << std::endl;
 	// We should start playing heh?
 }
 
@@ -300,10 +305,5 @@ void BeloteContext::RefuseAsset()
 
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 	
-	if (d->m_IsInFirstAnnouncePhase)
-		AskForRevealedAsset();
-	else
-	{
-		// We'll see later on...
-	}
+	AskForAsset();
 }

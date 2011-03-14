@@ -32,4 +32,8 @@
     <Image Name="SJ" XPos="640" YPos="534" Width="128" Height="178" />
     <Image Name="SQ" XPos="768" YPos="534" Width="128" Height="178" />
     <Image Name="SK" XPos="896" YPos="534" Width="128" Height="178" />
+    <Image Name="AssetC" XPos="40" YPos="66" Width="47" Height="47" />
+    <Image Name="AssetD" XPos="40" YPos="244" Width="47" Height="47" />
+    <Image Name="AssetH" XPos="40" YPos="422" Width="47" Height="47" />
+    <Image Name="AssetS" XPos="40" YPos="600" Width="47" Height="47" />
 </Imageset>

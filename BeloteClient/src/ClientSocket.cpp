@@ -22,6 +22,7 @@ const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
 const CEGUI::String ClientSocket::EventCardsReceived("CardsReceived");
 const CEGUI::String ClientSocket::EventPotentialAsset("PotentialAsset");
 const CEGUI::String ClientSocket::EventAskRevealedAsset("AskRevealedAsset");
+const CEGUI::String ClientSocket::EventAskAnotherAsset("AskAnotherAsset");
 
 // Define network state machine stuff...
 namespace
@@ -214,6 +215,10 @@ namespace
 
 				case BCPT_AskRevealedAsset:
 					m_Self->m_AskRevealedAsset.push();
+					break;
+
+				case BCPT_AskAnotherAsset:
+					m_Self->m_AskAnotherAsset.push();
 					break;
 				}
 			}
@@ -540,7 +545,8 @@ ClientSocket::ClientSocket()
 	m_GameStarting			(EventGameStarting, EventNamespace),
 	m_ConnectionStatus		(EventConnectionStatusUpdated, EventNamespace),
 	m_PotentialAsset		(EventPotentialAsset, EventNamespace),
-	m_AskRevealedAsset		(EventAskRevealedAsset, EventNamespace)
+	m_AskRevealedAsset		(EventAskRevealedAsset, EventNamespace),
+	m_AskAnotherAsset		(EventAskAnotherAsset, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -597,6 +603,9 @@ void ClientSocket::RefuseAsset()
 
 void ClientSocket::Update()
 {
+	// Brute force ftw!
+	// Ok, I may consider storing current game phase to avoid this...
+
 	if (!m_IsDisconnecting)
 		m_ConnectionStatus.process(this);
 
@@ -607,6 +616,7 @@ void ClientSocket::Update()
 	m_CardsReceived.process(this);
 	m_PotentialAsset.process(this);
 	m_AskRevealedAsset.process(this);
+	m_AskAnotherAsset.process(this);
 }
 
 void ClientSocket::Wait()

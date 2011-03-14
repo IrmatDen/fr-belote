@@ -164,8 +164,8 @@ function onGameStarting(args)
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
-	winMgr:getWindow("ButtonAcceptAsset"):setVisible(false)
-	winMgr:getWindow("ButtonRefuseAsset"):setVisible(false)
+	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
+	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 end
 
 function onCardsReceived(args)
@@ -188,8 +188,34 @@ end
 
 function onAskRevealedAsset(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("ButtonAcceptAsset"):setVisible(true)
-	winMgr:getWindow("ButtonRefuseAsset"):setVisible(true)
+	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(true)
+end
+
+function onAskAnotherAsset(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(true)
+	
+	-- Build current proposed asset name
+	local imgName	= winMgr:getWindow("AssetProposalImg"):getProperty("Image")
+	local colour	= imgName:sub(string.len("PlayingCards/") + 1):sub(1, 1)
+	local forbiddenAsset = "PlayingCards/Asset" .. colour
+	
+	-- Extract forbidden asset from all 4 assets images.
+	local allAssets		= { "PlayingCards/AssetC", "PlayingCards/AssetD", "PlayingCards/AssetH", "PlayingCards/AssetS" }
+	local forbiddenIdx	= 0
+	for i = 1, #allAssets do
+		if allAssets[i] == forbiddenAsset then
+			forbiddenIdx = i
+			break
+		end
+	end
+	table.remove(allAssets, forbiddenIdx)
+	
+	-- Set the potential asset image on the 3 proposal buttons
+	for i = 1, #allAssets do
+		local assetImg = winMgr:getWindow("AssetImgAlternate" .. i)
+		assetImg:setProperty("Image", allAssets[i])
+	end
 end
 
 -- Game zone events
@@ -208,15 +234,23 @@ function onStartGameBtn(args)
 end
 
 function onAcceptAsset(args)
+	local winSrc	= CEGUI.toWindowEventArgs(args).window
 	local winMgr	= CEGUI.WindowManager:getSingleton()
-	local imgName	= winMgr:getWindow("AssetProposalImg"):getProperty("Image")
-	local colour	= imgName:sub(string.len("PlayingCards/") + 1)
+	local assetCol	= ""
+	
+	if winSrc:getName() == "ButtonAcceptAsset" then
+		local imgName	= winMgr:getWindow("AssetProposalImg"):getProperty("Image")
+		assetCol		= imgName:sub(string.len("PlayingCards/") + 1)
+	else
+		local imgName	= winSrc:getProperty("Image")
+		assetCol		= imgName:sub(string.len("PlayingCards/Asset") + 1)
+	end
 	
 	local client	= Game:getSingleton():GetClientSocket()
-	client:AcceptAsset(colour)
+	client:AcceptAsset(assetCol)
 	
-	winMgr:getWindow("ButtonAcceptAsset"):setVisible(false)
-	winMgr:getWindow("ButtonRefuseAsset"):setVisible(false)
+	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
+	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 end
 
 function onRefuseAsset(args)
@@ -224,8 +258,8 @@ function onRefuseAsset(args)
 	client:RefuseAsset()
 	
 	local winMgr	= CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("ButtonAcceptAsset"):setVisible(false)
-	winMgr:getWindow("ButtonRefuseAsset"):setVisible(false)
+	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
+	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 end
 
 function onCardHoverIn(args)
@@ -338,6 +372,10 @@ winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGameBtn")
 winMgr:getWindow("ButtonAcceptAsset"):subscribeEvent("Clicked", "onAcceptAsset")
 winMgr:getWindow("ButtonRefuseAsset"):subscribeEvent("Clicked", "onRefuseAsset")
+winMgr:getWindow("AssetImgAlternate1"):subscribeEvent("MouseClick", "onAcceptAsset")
+winMgr:getWindow("AssetImgAlternate2"):subscribeEvent("MouseClick", "onAcceptAsset")
+winMgr:getWindow("AssetImgAlternate3"):subscribeEvent("MouseClick", "onAcceptAsset")
+winMgr:getWindow("ButtonRefuseAsset2"):subscribeEvent("Clicked", "onRefuseAsset")
 	-- Network events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
@@ -348,3 +386,4 @@ client:subscribeEvent("GameStarting", "onGameStarting")
 client:subscribeEvent("CardsReceived", "onCardsReceived")
 client:subscribeEvent("PotentialAsset", "onPotentialAsset")
 client:subscribeEvent("AskRevealedAsset", "onAskRevealedAsset")
+client:subscribeEvent("AskAnotherAsset", "onAskAnotherAsset")

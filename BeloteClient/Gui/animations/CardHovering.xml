@@ -2,14 +2,14 @@
 <Animations>
 	<AnimationDefinition name="HoverIn" duration="0.15" replayMode="once">
 		<Affector property="UnifiedYPosition" interpolator="UDim">
-			<KeyFrame position="0.0" value="{1,-178}" />
-			<KeyFrame position="0.15" value="{1,-238}" />
+			<KeyFrame position="0.0" value="{1,-133.5}" />
+			<KeyFrame position="0.15" value="{1,-178}" />
 		</Affector>
 	</AnimationDefinition>
 	<AnimationDefinition name="HoverOut" duration="0.15" replayMode="once">
 		<Affector property="UnifiedYPosition" interpolator="UDim">
-			<KeyFrame position="0.0" value="{1,-238}" />
-			<KeyFrame position="0.15" value="{1,-178}" />
+			<KeyFrame position="0.0" value="{1,-178}" />
+			<KeyFrame position="0.15" value="{1,-133.5}" />
 		</Affector>
 	</AnimationDefinition>
 </Animations>

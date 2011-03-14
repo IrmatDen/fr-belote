@@ -2,8 +2,8 @@
 -- Utilities
 -----------------------------------------
 
-local CardWidth					= 128
-local CardHeight				= 178
+local CardWidth					= 96
+local CardHeight				= 133.5
 local CardPlayablePropertyName	= "Playable" -- the value can be either "1" or "0" (default)
 local CardHoverPropertyName		= "AnimInstanceIdx"
 
@@ -285,6 +285,14 @@ guiSystem:setGUISheet(root)
 
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
+
+	winMgr:getWindow("GameSetup"):setVisible(false)
+	winMgr:getWindow("GameInProgress"):setVisible(true)
+	
+	addCard("H1")
+	winMgr:getWindow("H1"):setUserString(CardPlayablePropertyName, "1")
+	rearrangeCards()
+	
 
 -- subscribe required events
 	-- UI Panel events

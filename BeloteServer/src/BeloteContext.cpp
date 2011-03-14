@@ -213,7 +213,7 @@ void BeloteContext::DealFirstPart()
 
 		pp = GetNextPlayer(pp);
 
-		if (playerIdx == _PP_Count)
+		if (playerIdx == _PP_Count - 1)
 			currentCardsCountToGive = 5 - currentCardsCountToGive;
 	}
 
@@ -224,43 +224,8 @@ void BeloteContext::DealFirstPart()
 			d->m_PlayersHand[p][7 - c] = "";
 	}
 
-	// Sort players' hand based on colour.
-	auto compFunc = [](const std::string &c1, const std::string &c2) -> bool
-					{
-						if (c1 == "")					return false;
-						if (c2 == "")					return true;
-						
-						static const std::string colourOrder("HSDC");
-						const size_t	c1ColourIdx = colourOrder.find(c1.front()),
-										c2ColourIdx = colourOrder.find(c2.front());
-						if (c1ColourIdx < c2ColourIdx)	return true;
-						if (c2ColourIdx < c1ColourIdx)	return false;
-						
-						static const std::string valueOrder("78910JQK1");
-						const size_t	c1ValueIdx	= valueOrder.find_last_of(c1.c_str() + 1),
-										c2ValueIdx	= valueOrder.find_last_of(c2.c_str() + 1);
-						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
-					};
-	for (int p = 0; p != _PP_Count; p++)
-	{
-		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
-	}
-
-	// Show their respective partial hands to the players.
-	int playerIndex = 0;
-	std::for_each(d->m_Players.begin(), d->m_Players.end(),
-		[&] (Players::reference player)
-		{
-			sf::Packet packet;
-			packet << PT_GameContextPacket << BCPT_CardsDealt;
-			for (int i = 0; i != 8; i++)
-				packet << d->m_PlayersHand[playerIndex][i];
-
-			player->GetSocket().Send(packet);
-
-			playerIndex++;
-		}
-	);
+	OrderHands();
+	SendCurrentHands();
 
 	// Show potential asset.
 	d->m_PotentialAsset = d->m_Deck[d->m_CurrentDeckPos++];
@@ -291,11 +256,9 @@ void BeloteContext::AskForAsset()
 void BeloteContext::AcceptAsset(const std::string &colourName)
 {
 	d->m_CurrentAsset = colourName.front();
-
 	d->m_TeamAcceptingContract = (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North) ? TI_NorthSouth : TI_WestEast;
 
-	std::cout << "[Server] asset is " << d->m_CurrentAsset << " for team " << d->m_TeamAcceptingContract << std::endl;
-	// We should start playing heh?
+	DealLastPart();
 }
 
 void BeloteContext::RefuseAsset()
@@ -306,4 +269,71 @@ void BeloteContext::RefuseAsset()
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 	
 	AskForAsset();
+}
+
+void BeloteContext::DealLastPart()
+{
+	PlayerPosition taker	= d->m_CurrentPlayer;
+	d->m_CurrentPlayer		= GetNextPlayer(d->m_CurrentDealer);
+	PlayerPosition pp		= d->m_CurrentPlayer;
+	int currentHandPos[4]	= { 5, 5, 5, 5 };
+
+	// Finish distributing the deck
+	for (int i = 0; i != _PP_Count; i++)
+	{
+		int cardsToGive = (pp == taker) ? 2 : 3;
+		for (int card = 0; card != cardsToGive; card++)
+			d->m_PlayersHand[pp][currentHandPos[pp]++] = d->m_Deck[d->m_CurrentDeckPos++];
+
+		pp = GetNextPlayer(pp);
+	}
+
+	// Give the shown card to the taker.
+	d->m_PlayersHand[taker][7] = d->m_PotentialAsset;
+
+	OrderHands();
+	SendCurrentHands();
+}
+
+void BeloteContext::OrderHands()
+{
+	auto compFunc = [](const std::string &c1, const std::string &c2) -> bool
+					{
+						if (c1 == "")					return false;
+						if (c2 == "")					return true;
+						
+						static const std::string colourOrder("HSDC");
+						const size_t	c1ColourIdx = colourOrder.find(c1.front()),
+										c2ColourIdx = colourOrder.find(c2.front());
+						if (c1ColourIdx < c2ColourIdx)	return true;
+						if (c2ColourIdx < c1ColourIdx)	return false;
+						
+						static const std::string valueOrder("78910JQK1");
+						const size_t	c1ValueIdx	= valueOrder.find_last_of(c1.c_str() + 1),
+										c2ValueIdx	= valueOrder.find_last_of(c2.c_str() + 1);
+						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
+					};
+
+	for (int p = 0; p != _PP_Count; p++)
+	{
+		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
+	}
+}
+
+void BeloteContext::SendCurrentHands()
+{
+	int playerIndex = 0;
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player)
+		{
+			sf::Packet packet;
+			packet << PT_GameContextPacket << BCPT_CardsDealt;
+			for (int i = 0; i != 8; i++)
+				packet << d->m_PlayersHand[playerIndex][i];
+
+			player->GetSocket().Send(packet);
+
+			playerIndex++;
+		}
+	);
 }

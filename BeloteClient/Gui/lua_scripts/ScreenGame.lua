@@ -169,10 +169,12 @@ function onGameStarting(args)
 end
 
 function onCardsReceived(args)
-	local handContent = toCurrentCardsInHandArgs(args)
+	local handContent	= toCurrentCardsInHandArgs(args)
+	local winMgr		= CEGUI.WindowManager:getSingleton()
 	for i = 0, 7 do
-		if handContent.m_Cards[i] ~= "" then
-			addCard(handContent.m_Cards[i])
+		local name = handContent.m_Cards[i]
+		if name ~= "" and not winMgr:isWindowPresent(name) then
+			addCard(name)
 		end
 	end
 	

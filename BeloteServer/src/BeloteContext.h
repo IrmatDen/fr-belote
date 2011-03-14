@@ -46,7 +46,6 @@ public:
 
 	// Game management
 	void	StartGame();
-	void	DealFirstPart();
 	void	AcceptAsset(const std::string &colourName);
 	void	RefuseAsset();
 
@@ -59,6 +58,10 @@ private:
 
 	void	InitDeck();
 	void	ShuffleDeck();
+	void	DealFirstPart();
+	void	DealLastPart();
+	void	OrderHands();
+	void	SendCurrentHands();
 
 	PlayerPosition	GetNextPlayer(PlayerPosition pp) const
 	{

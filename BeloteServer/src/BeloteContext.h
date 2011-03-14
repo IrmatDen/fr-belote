@@ -22,12 +22,12 @@ public:
 		_PP_Count
 	};
 
-	enum ScoreIndex
+	enum TeamIndex
 	{
-		SI_NorthSouth,
-		SI_WestEast,
+		TI_NorthSouth,
+		TI_WestEast,
 
-		_SI_Count
+		_TI_Count
 	};
 
 	static const size_t			ValidPlayerPositionCount = _PP_Count;
@@ -78,7 +78,7 @@ private:
 		Players		m_UnplacedPlayers;
 		Players		m_Players;
 
-		sf::Uint32		m_Scores[_SI_Count];
+		sf::Uint32		m_Scores[_TI_Count];
 		std::string		m_Deck[32];
 		int				m_CurrentDeckPos;
 
@@ -88,6 +88,7 @@ private:
 		std::string		m_PotentialAsset;
 		bool			m_IsInFirstAnnouncePhase;
 		std::string		m_CurrentAsset;
+		TeamIndex		m_TeamAcceptingContract;
 	};
 
 private:

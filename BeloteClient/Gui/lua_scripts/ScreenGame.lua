@@ -164,6 +164,8 @@ function onGameStarting(args)
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
+	winMgr:getWindow("ButtonAcceptAsset"):setVisible(false)
+	winMgr:getWindow("ButtonRefuseAsset"):setVisible(false)
 end
 
 function onCardsReceived(args)
@@ -182,6 +184,12 @@ function onPotentialAsset(args)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
 	local asset		= toPotentialAssetArgs(args).m_Card
 	winMgr:getWindow("AssetProposalImg"):setProperty("Image", "PlayingCards/" .. asset)
+end
+
+function onAskRevealedAsset(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("ButtonAcceptAsset"):setVisible(true)
+	winMgr:getWindow("ButtonRefuseAsset"):setVisible(true)
 end
 
 -- Game zone events
@@ -305,15 +313,6 @@ guiSystem:setGUISheet(root)
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
-	--winMgr:getWindow("GameSetup"):setVisible(false)
-	--winMgr:getWindow("GameInProgress"):setVisible(true)
-	--winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
-	
-	--addCard("H1")
-	--winMgr:getWindow("H1"):setUserString(CardPlayablePropertyName, "1")
-	--rearrangeCards()
-	
-
 -- subscribe required events
 	-- UI Panel events
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
@@ -335,3 +334,4 @@ client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")
 client:subscribeEvent("GameStarting", "onGameStarting")
 client:subscribeEvent("CardsReceived", "onCardsReceived")
 client:subscribeEvent("PotentialAsset", "onPotentialAsset")
+client:subscribeEvent("AskRevealedAsset", "onAskRevealedAsset")

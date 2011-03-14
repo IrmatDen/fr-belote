@@ -121,15 +121,7 @@ void BeloteContext::SendCurrentPositioningTo(ServerSocket *player)
 // Game management methods
 void BeloteContext::StartGame()
 {
-	// Tell everyone we're about to start.
-	sf::Packet packet;
-	packet << PT_GameContextPacket << BCPT_GameStarting;
-	std::for_each(d->m_Players.begin(), d->m_Players.end(),
-			[&] (Players::const_reference cref)
-			{
-				cref->GetSocket().Send(packet);
-			}
-		);
+	NotifyStarting();
 
 	// Init game state.
 	InitDeck();
@@ -142,6 +134,20 @@ void BeloteContext::StartGame()
 	// Start game! :)
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 	DealFirstPart();
+	
+	AskForRevealedAsset();
+}
+
+void BeloteContext::NotifyStarting()
+{
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_GameStarting;
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+			[&] (Players::const_reference cref)
+			{
+				cref->GetSocket().Send(packet);
+			}
+	);
 }
 
 void BeloteContext::InitDeck()
@@ -189,14 +195,6 @@ void BeloteContext::ShuffleDeck()
 		int x = sf::Randomizer::Random(ct, countof(d->m_Deck) - 1);
 		std::swap(d->m_Deck[ct], d->m_Deck[x]);
 	}
-}
-
-BeloteContext::PlayerPosition BeloteContext::GetNextPlayer(PlayerPosition pp) const
-{
-	if (PP_East == pp)
-		return PP_South;
-	
-	return (PlayerPosition)(pp + 1);
 }
 
 void BeloteContext::DealFirstPart()
@@ -275,4 +273,11 @@ void BeloteContext::DealFirstPart()
 			player->GetSocket().Send(packet);
 		}
 	);
+}
+
+void BeloteContext::AskForRevealedAsset()
+{
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_AskRevealedAsset;
+	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
 }

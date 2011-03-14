@@ -120,6 +120,7 @@ public:
 	static const CEGUI::String EventGameStarting;
 	static const CEGUI::String EventCardsReceived;
 	static const CEGUI::String EventPotentialAsset;
+	static const CEGUI::String EventAskRevealedAsset;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>		m_PlayerConnected;
@@ -129,6 +130,7 @@ public:
 	ThreadSafeEventQueue<>								m_GameStarting;
 	ThreadSafeEventQueue<ConnectionStatusEventArgs>		m_ConnectionStatus;
 	ThreadSafeEventQueue<PotentialAssetArgs>			m_PotentialAsset;
+	ThreadSafeEventQueue<>								m_AskRevealedAsset;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

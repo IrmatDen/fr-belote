@@ -52,10 +52,19 @@ private:
 	void	SendCurrentPositioningToAll();
 	void	SendCurrentPositioningTo(ServerSocket *player);
 
+	void	NotifyStarting();
+	void	AskForRevealedAsset();
+
 	void	InitDeck();
 	void	ShuffleDeck();
 
-	PlayerPosition	GetNextPlayer(PlayerPosition pp) const;
+	PlayerPosition	GetNextPlayer(PlayerPosition pp) const
+	{
+		if (PP_East == pp)
+			return PP_South;
+	
+		return (PlayerPosition)(pp + 1);
+	}
 
 private:
 	typedef std::vector<ServerSocket*>	Players;

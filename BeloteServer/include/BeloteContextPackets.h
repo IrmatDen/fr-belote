@@ -13,6 +13,7 @@ enum BeloteContextPacketType
 	BCPT_GameStarting,
 	BCPT_CardsDealt,
 	BCPT_PotentialAsset,
+	BCPT_AskRevealedAsset,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, BeloteContextPacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

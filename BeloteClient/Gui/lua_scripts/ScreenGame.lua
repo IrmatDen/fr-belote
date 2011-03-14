@@ -155,15 +155,11 @@ function onCurrentPositioningSent(args)
 	end
 end
 
--- NB: this is when the "Start Game" *button* is clicked, NOT when the game start as per a server's request!
-function onStartGameBtn(args)
-	Game:getSingleton():GetClientSocket():StartGame()
-end
-
 function onGameStarting(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
+	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
 end
 
 function onCardsReceived(args)
@@ -186,6 +182,19 @@ function onChoosePosition(args)
 	
 	local client	= Game:getSingleton():GetClientSocket()
 	client:ChoosePosition(posName)
+end
+
+-- NB: this is when the "Start Game" *button* is clicked, NOT when the game start as per a server's request!
+function onStartGameBtn(args)
+	Game:getSingleton():GetClientSocket():StartGame()
+end
+
+function onAcceptAsset(args)
+	print("onAcceptAsset")
+end
+
+function onRefuseAsset(args)
+	print("onRefuseAsset")
 end
 
 function onCardHoverIn(args)
@@ -288,6 +297,7 @@ guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
+	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
 	
 	addCard("H1")
 	winMgr:getWindow("H1"):setUserString(CardPlayablePropertyName, "1")
@@ -304,6 +314,8 @@ winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGameBtn")
+winMgr:getWindow("ButtonAcceptAsset"):subscribeEvent("Clicked", "onAcceptAsset")
+winMgr:getWindow("ButtonRefuseAsset"):subscribeEvent("Clicked", "onRefuseAsset")
 	-- Network events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")

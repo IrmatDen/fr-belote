@@ -63,6 +63,7 @@
 			<Window Type="DefaultWindow" Name="GameInProgress" >
 				<Property Name="Visible" Value="False" />
 				<Window Type="DefaultWindow" Name="GameArea/AssetProposal" >
+					<Property Name="RiseOnClick" Value="False" />
 					<Window Type="OgreTray/StaticImage" Name="AssetProposalImg">
 						<Property Name="UnifiedAreaRect" Value="{{0.5,-48},{0.5,-89},{0.5, 48},{0.5,44.5}}" />
 						<Property Name="FrameEnabled" Value="False" />
@@ -71,12 +72,12 @@
 					<Window Type="OgreTray/Button" Name="ButtonAcceptAsset" >
 						<Property Name="Text" Value="Prendre" />
 						<Property Name="Font" Value="DejaVuSans-8" />
-						<Property Name="UnifiedAreaRect" Value="{{0.35,-44},{0.5,55},{0.35, 44},{0.5,85}}" />
+						<Property Name="UnifiedAreaRect" Value="{{0.5,-100},{0.5,55},{0.5, -12},{0.5,85}}" />
 					</Window>
 					<Window Type="OgreTray/Button" Name="ButtonRefuseAsset" >
 						<Property Name="Text" Value="Passer" />
 						<Property Name="Font" Value="DejaVuSans-8" />
-						<Property Name="UnifiedAreaRect" Value="{{0.65,-44},{0.5,55},{0.65, 44},{0.5,85}}" />
+						<Property Name="UnifiedAreaRect" Value="{{0.5,12},{0.5,55},{0.5, 100},{0.5,85}}" />
 					</Window>
 				</Window>
 				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >

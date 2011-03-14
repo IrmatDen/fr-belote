@@ -16,6 +16,10 @@ function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
 end
 
+function toSystemMessageBroadcastedEventArgs(e)
+    return tolua.cast(e,"const SystemMessageBroadcastedEventArgs")
+end
+
 function toPlayerConnectedEventArgs(e)
     return tolua.cast(e,"const PlayerConnectedEventArgs")
 end
@@ -330,7 +334,14 @@ function onTextBroadcasted(args)
 	
 	appendTextToChatBox(text)
 end
+
+function onSystemMessageBroadcasted(args)
+	local sysMsgArgs	= toSystemMessageBroadcastedEventArgs(args)
+	local text			= "[font='DejaVuSans-8']" .. sysMsgArgs.m_Message
 	
+	appendTextToChatBox(text)
+end
+
 function onQuitTable(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
 
@@ -383,6 +394,7 @@ client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("PlayerDisconnected", "onPlayerConnectedStateChange")
 client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
+client:subscribeEvent("SystemMessageBroadcasted", "onSystemMessageBroadcasted")
 client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")
 client:subscribeEvent("GameStarting", "onGameStarting")
 client:subscribeEvent("CardsReceived", "onCardsReceived")

@@ -11,13 +11,16 @@
 #include "BeloteContext.h"
 #include "Packets.h"
 #include "BeloteContextPackets.h"
+#include "Server.h"
 
 const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "North", "East", "Unknown" };
 
-BeloteContext::BeloteContext()
+BeloteContext::BeloteContext(Server *server)
 	: d(0)
 {
 	d = new ContextData();
+
+	d->m_Server = server;
 
 	d->m_UnplacedPlayers.reserve(ValidPlayerPositionCount);
 	d->m_Players.resize(ValidPlayerPositionCount);
@@ -130,8 +133,11 @@ void BeloteContext::StartGame()
 		d->m_Scores[i] = 0;
 
 	d->m_CurrentDealer = PP_South;
+	PreTurn();
+}
 
-	// Start game! :)
+void BeloteContext::PreTurn()
+{
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 	DealFirstPart();
 	

@@ -25,6 +25,12 @@ public:
 				m_Message;
 };
 
+class SystemMessageBroadcastedEventArgs : public CEGUI::EventArgs
+{
+public:
+	std::string	m_Message;
+};
+
 class CurrentPositioningArgs : public CEGUI::EventArgs
 {
 public:

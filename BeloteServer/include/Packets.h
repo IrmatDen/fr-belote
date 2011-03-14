@@ -15,6 +15,7 @@ enum PacketType
 	PT_ClientDisconnected,
 	PT_ClientTextMessage,
 	PT_ServerBroadcastTextMessage,
+	PT_ServerBroadcastSystemMessage,
 	PT_GameContextPacket,
 };
 

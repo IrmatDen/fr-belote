@@ -12,7 +12,7 @@
 
 Server::Server()
 {
-	m_BeloteContext = new BeloteContext();
+	m_BeloteContext = new BeloteContext(this);
 
 	m_Clients.resize(MAX_CLIENTS);
 	std::generate(m_Clients.begin(), m_Clients.end(),
@@ -87,5 +87,13 @@ void Server::BroadcastText(const std::string &clientName, const std::string &msg
 	std::for_each(m_Clients.begin(), m_Clients.end(),
 			[&] (Clients::reference ref)
 			{ if (ref->IsConnected()) ref->SendText(clientName, msg); }
+		);
+}
+
+void Server::BroadcastSystemMessage(const std::string &msg)
+{
+	std::for_each(m_Clients.begin(), m_Clients.end(),
+			[&] (Clients::reference ref)
+			{ if (ref->IsConnected()) ref->SendSystemMessage(msg); }
 		);
 }

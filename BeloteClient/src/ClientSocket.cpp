@@ -17,6 +17,7 @@ const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
 const CEGUI::String ClientSocket::EventConnectionStatusUpdated("ConnectionStatusUpdated");
 const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
 const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
+const CEGUI::String ClientSocket::EventSystemMessageBroadcasted("SystemMessageBroadcasted");
 const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
 const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
 const CEGUI::String ClientSocket::EventCardsReceived("CardsReceived");
@@ -149,6 +150,14 @@ namespace
 							TextBroadcastedEventArgs args;
 							packet >> args.m_Teller >> args.m_Message;
 							m_Self->m_TextBroadcasted.push(args);
+						}
+						break;
+
+					case PT_ServerBroadcastSystemMessage:
+						{
+							SystemMessageBroadcastedEventArgs args;
+							packet >> args.m_Message;
+							m_Self->m_SystemMessageBroadcasted.push(args);
 						}
 						break;
 
@@ -538,15 +547,16 @@ private:
 
 ClientSocket::ClientSocket()
 : m_IsDisconnecting(false),
-	m_PlayerConnected		(EventPlayerConnected, EventNamespace),
-	m_TextBroadcasted		(EventTextBroadcasted, EventNamespace),
-	m_CardsReceived			(EventCardsReceived, EventNamespace),
-	m_CurrentPositioningSent(EventCurrentPositioningSent, EventNamespace),
-	m_GameStarting			(EventGameStarting, EventNamespace),
-	m_ConnectionStatus		(EventConnectionStatusUpdated, EventNamespace),
-	m_PotentialAsset		(EventPotentialAsset, EventNamespace),
-	m_AskRevealedAsset		(EventAskRevealedAsset, EventNamespace),
-	m_AskAnotherAsset		(EventAskAnotherAsset, EventNamespace)
+	m_PlayerConnected			(EventPlayerConnected, EventNamespace),
+	m_TextBroadcasted			(EventTextBroadcasted, EventNamespace),
+	m_SystemMessageBroadcasted	(EventSystemMessageBroadcasted, EventNamespace),
+	m_CardsReceived				(EventCardsReceived, EventNamespace),
+	m_CurrentPositioningSent	(EventCurrentPositioningSent, EventNamespace),
+	m_GameStarting				(EventGameStarting, EventNamespace),
+	m_ConnectionStatus			(EventConnectionStatusUpdated, EventNamespace),
+	m_PotentialAsset			(EventPotentialAsset, EventNamespace),
+	m_AskRevealedAsset			(EventAskRevealedAsset, EventNamespace),
+	m_AskAnotherAsset			(EventAskAnotherAsset, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -612,6 +622,7 @@ void ClientSocket::Update()
 	m_GameStarting.process(this);
 	m_PlayerConnected.process(this);
 	m_TextBroadcasted.process(this);
+	m_SystemMessageBroadcasted.process(this);
 	m_CurrentPositioningSent.process(this);
 	m_CardsReceived.process(this);
 	m_PotentialAsset.process(this);

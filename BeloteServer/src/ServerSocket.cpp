@@ -237,7 +237,10 @@ namespace
 			virtual void operator()()
 			{
 				sf::Packet p;
-				p << PT_ServerBroadcastTextMessage << m_ClientName.c_str() << m_Message.c_str();
+				if (m_ClientName != "")
+					p << PT_ServerBroadcastTextMessage << m_ClientName.c_str() << m_Message.c_str();
+				else
+					p << PT_ServerBroadcastSystemMessage << m_Message;
 				m_Socket->Send(p);
 			}
 
@@ -331,6 +334,13 @@ public:
 	void SendText(const std::string &clientName, const std::string &msg)
 	{
 		m_ActionBroadcastText->m_ClientName = clientName;
+		m_ActionBroadcastText->m_Message = msg;
+		m_StateMachine->Notify(NEC_BroadcastTextRequest);
+	}
+
+	void SendSystemMessage(const std::string &msg)
+	{
+		m_ActionBroadcastText->m_ClientName = "";
 		m_ActionBroadcastText->m_Message = msg;
 		m_StateMachine->Notify(NEC_BroadcastTextRequest);
 	}
@@ -429,6 +439,11 @@ void ServerSocket::ClientDisconnected(const std::string &clientName)
 void ServerSocket::SendText(const std::string &clientName, const std::string &msg)
 {
 	m_priv->SendText(clientName, msg);
+}
+
+void ServerSocket::SendSystemMessage(const std::string &msg)
+{
+	m_priv->SendSystemMessage(msg);
 }
 
 void ServerSocket::CloseConnection()

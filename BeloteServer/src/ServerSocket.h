@@ -19,6 +19,7 @@ public:
 	void	ClientDisconnected(const std::string &clientName);
 	void	ClientConnected(const std::string &clientName);
 	void	SendText(const std::string &clientName, const std::string &msg);
+	void	SendSystemMessage(const std::string &msg);
 	void	CloseConnection();
 
 	void				SetClientName(const std::string &clientName)	{ m_ClientName =  clientName; }

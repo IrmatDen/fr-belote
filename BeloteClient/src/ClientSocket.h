@@ -36,6 +36,12 @@ public:
 				m_Message;
 };
 
+class SystemMessageBroadcastedEventArgs : public CEGUI::EventArgs
+{
+public:
+	std::string	m_Message;
+};
+
 class CurrentPositioningArgs : public CEGUI::EventArgs
 {
 public:
@@ -116,6 +122,7 @@ public:
 	static const CEGUI::String EventConnectionStatusUpdated;
 	static const CEGUI::String EventPlayerConnected;
 	static const CEGUI::String EventTextBroadcasted;
+	static const CEGUI::String EventSystemMessageBroadcasted;
 	static const CEGUI::String EventCurrentPositioningSent;
 	static const CEGUI::String EventGameStarting;
 	static const CEGUI::String EventCardsReceived;
@@ -124,15 +131,16 @@ public:
 	static const CEGUI::String EventAskAnotherAsset;
 
 public:
-	ThreadSafeEventQueue<PlayerConnectedEventArgs>		m_PlayerConnected;
-	ThreadSafeEventQueue<TextBroadcastedEventArgs>		m_TextBroadcasted;
-	ThreadSafeEventQueue<CurrentCardsInHandArgs>		m_CardsReceived;
-	ThreadSafeEventQueue<CurrentPositioningArgs>		m_CurrentPositioningSent;
-	ThreadSafeEventQueue<>								m_GameStarting;
-	ThreadSafeEventQueue<ConnectionStatusEventArgs>		m_ConnectionStatus;
-	ThreadSafeEventQueue<PotentialAssetArgs>			m_PotentialAsset;
-	ThreadSafeEventQueue<>								m_AskRevealedAsset;
-	ThreadSafeEventQueue<>								m_AskAnotherAsset;
+	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
+	ThreadSafeEventQueue<TextBroadcastedEventArgs>			m_TextBroadcasted;
+	ThreadSafeEventQueue<SystemMessageBroadcastedEventArgs>	m_SystemMessageBroadcasted;
+	ThreadSafeEventQueue<CurrentCardsInHandArgs>			m_CardsReceived;
+	ThreadSafeEventQueue<CurrentPositioningArgs>			m_CurrentPositioningSent;
+	ThreadSafeEventQueue<>									m_GameStarting;
+	ThreadSafeEventQueue<ConnectionStatusEventArgs>			m_ConnectionStatus;
+	ThreadSafeEventQueue<PotentialAssetArgs>				m_PotentialAsset;
+	ThreadSafeEventQueue<>									m_AskRevealedAsset;
+	ThreadSafeEventQueue<>									m_AskAnotherAsset;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

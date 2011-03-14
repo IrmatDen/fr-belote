@@ -9,6 +9,8 @@
 #include "ServerSocket.h"
 #include "BeloteContextPackets.h"
 
+class Server;
+
 class BeloteContext
 {
 public:
@@ -34,7 +36,7 @@ public:
 	static const std::string	PlayerPositionStrings[];
 
 public:
-	BeloteContext();
+	BeloteContext(Server *server);
 	~BeloteContext();
 
 	void	Reset();
@@ -58,6 +60,7 @@ private:
 
 	void	InitDeck();
 	void	ShuffleDeck();
+	void	PreTurn();
 	void	DealFirstPart();
 	void	DealLastPart();
 	void	OrderHands();
@@ -78,6 +81,7 @@ private:
 
 	struct ContextData
 	{
+		Server		* m_Server;
 		Players		m_UnplacedPlayers;
 		Players		m_Players;
 

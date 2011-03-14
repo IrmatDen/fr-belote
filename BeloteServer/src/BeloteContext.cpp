@@ -285,7 +285,7 @@ void BeloteContext::AskForRevealedAsset()
 
 void BeloteContext::AcceptAsset(const std::string &colourName)
 {
-	d->m_CurrentAsset = colourName;
+	d->m_CurrentAsset = colourName.front();
 	std::cout << "[Server] asset is " << d->m_CurrentAsset << std::endl;
 	// We should start playing heh?
 }

@@ -20,6 +20,7 @@ const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
 const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
 const CEGUI::String ClientSocket::EventCardsReceived("CardsReceived");
+const CEGUI::String ClientSocket::EventPotentialAsset("PotentialAsset");
 
 // Define network state machine stuff...
 namespace
@@ -199,6 +200,14 @@ namespace
 						for (sf::Uint32 i = 0; i != countof(args.m_Cards); i++)
 							packet >> args.m_Cards[i];
 						m_Self->m_CardsReceived.push(args);
+					}
+					break;
+
+				case BCPT_PotentialAsset:
+					{
+						PotentialAssetArgs args;
+						packet >> args.m_Card;
+						m_Self->m_PotentialAsset.push(args);
 					}
 					break;
 
@@ -481,7 +490,8 @@ ClientSocket::ClientSocket()
 	m_CardsReceived			(EventCardsReceived, EventNamespace),
 	m_CurrentPositioningSent(EventCurrentPositioningSent, EventNamespace),
 	m_GameStarting			(EventGameStarting, EventNamespace),
-	m_ConnectionStatus		(EventConnectionStatusUpdated, EventNamespace)
+	m_ConnectionStatus		(EventConnectionStatusUpdated, EventNamespace),
+	m_PotentialAsset		(EventPotentialAsset, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -534,8 +544,9 @@ void ClientSocket::Update()
 	m_GameStarting.process(this);
 	m_PlayerConnected.process(this);
 	m_TextBroadcasted.process(this);
-	m_CardsReceived.process(this);
 	m_CurrentPositioningSent.process(this);
+	m_CardsReceived.process(this);
+	m_PotentialAsset.process(this);
 }
 
 void ClientSocket::Wait()

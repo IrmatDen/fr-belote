@@ -28,6 +28,10 @@ function toCurrentCardsInHandArgs(e)
     return tolua.cast(e,"const CurrentCardsInHandArgs")
 end
 
+function toPotentialAssetArgs(e)
+    return tolua.cast(e,"const PotentialAssetArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -172,6 +176,12 @@ function onCardsReceived(args)
 	
 	rearrangeCards()
 	updatePlayableCards()
+end
+
+function onPotentialAsset(args)
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local asset		= toPotentialAssetArgs(args).m_Card
+	winMgr:getWindow("AssetProposalImg"):setProperty("Image", "PlayingCards/" .. asset)
 end
 
 -- Game zone events
@@ -324,3 +334,4 @@ client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
 client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")
 client:subscribeEvent("GameStarting", "onGameStarting")
 client:subscribeEvent("CardsReceived", "onCardsReceived")
+client:subscribeEvent("PotentialAsset", "onPotentialAsset")

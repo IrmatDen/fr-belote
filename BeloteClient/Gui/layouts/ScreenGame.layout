@@ -107,6 +107,27 @@
 						</Window>
 					</Window>
 				</Window>
+				<Window Type="DefaultWindow" Name="PlayersNames" >
+					<Property Name="MousePassThroughEnabled" Value="True" />
+					<Window Type="OgreTray/StaticText" Name="PlayerLeft" >
+						<Property Name="Font" Value="DejaVuSans-8" />
+						<Property Name="FrameEnabled" Value="True" />
+						<Property Name="HorzFormatting" Value="HorzCentred" />
+						<Property Name="UnifiedAreaRect" Value="{{0.1,-50},{0.5,-20.5},{0.1,60},{0.5,20.5}}" />
+					</Window>
+					<Window Type="OgreTray/StaticText" Name="PlayerPartner" >
+						<Property Name="Font" Value="DejaVuSans-8" />
+						<Property Name="FrameEnabled" Value="True" />
+						<Property Name="HorzFormatting" Value="HorzCentred" />
+						<Property Name="UnifiedAreaRect" Value="{{0.5,-60},{0,15},{0.5,60},{0,56}}" />
+					</Window>
+					<Window Type="OgreTray/StaticText" Name="PlayerRight" >
+						<Property Name="Font" Value="DejaVuSans-8" />
+						<Property Name="FrameEnabled" Value="True" />
+						<Property Name="HorzFormatting" Value="HorzCentred" />
+						<Property Name="UnifiedAreaRect" Value="{{0.9,-60},{0.5,-20.5},{0.9,50},{0.5,20.5}}" />
+					</Window>
+				</Window>
 				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-193},{0.5, 400},{1,-15}}" />
 				</Window>

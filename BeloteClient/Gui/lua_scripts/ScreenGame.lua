@@ -7,10 +7,12 @@ local CardHeight				= 133.5
 local CardPlayablePropertyName	= "Playable" -- the value can be either "1" or "0" (default)
 local CardHoverPropertyName		= "AnimInstanceIdx"
 
+local animInstances = { }
+
 local PositionButtonTexts		= { "Sud", "Ouest", "Nord", "Est" }
 local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "ButtonEast" }
-
-local animInstances = { }
+local myPosition				= 0
+local currentPositionning		= { }
 
 function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
@@ -124,6 +126,19 @@ function isCardPlayable(c)
 	return tonumber(c:getUserString(CardPlayablePropertyName))
 end
 
+function setupPlayersName()
+	local winMgr				= CEGUI.WindowManager:getSingleton()
+	local playerNamesWindows	= { "PlayerLeft", "PlayerPartner", "PlayerRight" }
+	for i = 2, 4 do
+		local relativePos = myPosition + i - 1
+		if relativePos > 4 then
+			relativePos = relativePos - 4
+		end
+		
+		winMgr:getWindow(playerNamesWindows[i - 1]):setText(currentPositionning[relativePos])
+	end
+end
+
 function appendTextToChatBox(text)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local chatBox = CEGUI.toListbox(winMgr:getWindow("UIPanel/ChatBox/List"))
@@ -156,6 +171,8 @@ function onCurrentPositioningSent(args)
 	local setupBtnsParent	= winMgr:getWindow("GameSetup")
 	local playersReady		= 0
 	for i = 0, 3 do
+		currentPositionning[i + 1] = curPosArgs.m_Pos[i]
+		
 		local btn = setupBtnsParent:getChild(PositionButtonNames[i + 1])
 		if curPosArgs.m_Pos[i] ~= "" then
 			btn:setText(PositionButtonTexts[i + 1] .. ": " .. curPosArgs.m_Pos[i])
@@ -182,6 +199,8 @@ function onGameStarting(args)
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
 	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
 	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
+	
+	setupPlayersName()
 end
 
 function onPlayerDealing(args)
@@ -294,6 +313,12 @@ function onChoosePosition(args)
 	
 	local client	= Game:getSingleton():GetClientSocket()
 	client:ChoosePosition(posName)
+	
+	for i = 1, #PositionButtonNames do
+		if posStr ==  PositionButtonNames[i] then
+			myPosition = i
+		end
+	end
 end
 
 -- NB: this is when the "Start Game" *button* is clicked, NOT when the game start as per a server's request!

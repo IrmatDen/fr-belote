@@ -270,8 +270,6 @@ void BeloteContext::AcceptAsset(const std::string &colourName)
 	NotifyTurnEvent(TE_TakeAsset, d->m_Players[d->m_CurrentPlayer]);
 
 	DealLastPart();
-
-	NotifyTurnEvent(TE_TurnStarting);
 }
 
 void BeloteContext::RefuseAsset()
@@ -309,7 +307,7 @@ void BeloteContext::DealLastPart()
 	OrderHands();
 	SendCurrentHands();
 
-	// TODO Should start playing, isn't it?
+	NotifyTurnEvent(TE_TurnStarting);
 }
 
 void BeloteContext::OrderHands()

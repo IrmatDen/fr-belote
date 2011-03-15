@@ -306,14 +306,16 @@ void BeloteContext::DealLastPart()
 
 	OrderHands();
 	SendCurrentHands();
+
+	// TODO Should start playing, isn't it?
 }
 
 void BeloteContext::OrderHands()
 {
 	auto compFunc = [](const std::string &c1, const std::string &c2) -> bool
 					{
-						if (c1 == "")					return false;
-						if (c2 == "")					return true;
+						if (c1 == "")	return false;
+						if (c2 == "")	return true;
 						
 						static const std::string colourOrder("HSDC");
 						const size_t	c1ColourIdx = colourOrder.find(c1.front()),

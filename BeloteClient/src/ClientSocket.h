@@ -211,6 +211,7 @@ public:
 	void	StartGame();
 	void	AcceptAsset(const std::string &assetColour);
 	void	RefuseAsset();
+	void	PlayCard(const std::string &cardName);
 
 private:
 	ClientSocketPrivate *	m_priv;

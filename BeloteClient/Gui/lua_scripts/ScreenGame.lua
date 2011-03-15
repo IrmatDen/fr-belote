@@ -101,7 +101,7 @@ function rearrangeCards()
 	local cardsCount		= playerHandArea:getChildCount() - 1
 	local cardVisibleWidth	= CardWidth / 3
 	local startX			= (playerHandArea:getWidth().offset / 2)
-	startX					= startX	- (cardVisibleWidth * cardsCount)
+	startX					= startX	- (cardVisibleWidth * (cardsCount + 1))
 	
 	for cardIdx = 0, cardsCount do
 		local card = playerHandArea:getChildAtIdx(cardIdx)
@@ -125,6 +125,17 @@ function updatePlayableCards()
 		else
 			cardImg:setProperty("ImageColours", "tl:FF808080 tr:FF808080 bl:FF808080 br:FF808080")
 		end
+	end
+end
+
+function resetPlayableCards()
+	local winMgr			= CEGUI.WindowManager:getSingleton()
+	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local cardsCount		= playerHandArea:getChildCount() - 1
+	
+	for cardIdx = 0, cardsCount do
+		local card = playerHandArea:getChildAtIdx(cardIdx)
+		card:setUserString(CardPlayablePropertyName, "0")
 	end
 end
 
@@ -302,14 +313,7 @@ function onWaitingPlay(args)
 	local winMgr			= CEGUI.WindowManager:getSingleton()
 	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
 	
-	print("onWaitingPlay")
-	
-	-- disable all cards
-	local cardsCount = playerHandArea:getChildCount() - 1
-	for cardIdx = 0, cardsCount do
-		local card = playerHandArea:getChildAtIdx(cardIdx)
-		card:setUserString(CardPlayablePropertyName, "0")
-	end
+	resetPlayableCards()
 	
 	-- and now enable only the ones authorized to play
 	for cardIdx = 0, 7 do
@@ -406,8 +410,24 @@ function onCardSelected(args)
 		return
 	end
 	
-	local cardName = window:getName()
-	print ("Selected " .. cardName)
+	resetPlayableCards()
+	
+	local cardName	= window:getName()
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:destroyWindow(window)
+	
+	local animMgr	= CEGUI.AnimationManager:getSingleton()
+	local hoverInAnimIdx = window:getUserString(CardHoverPropertyName)
+	local hoverOutAnimIdx = window:getUserString(CardHoverPropertyName) + 1
+	animMgr:destroyAnimationInstance(animInstances[tonumber(hoverInAnimIdx)])
+	animMgr:destroyAnimationInstance(animInstances[tonumber(hoverOutAnimIdx)])
+	
+	rearrangeCards()
+	updatePlayableCards()
+	
+	local client	= Game:getSingleton():GetClientSocket()
+	client:PlayCard(cardName)
 end
 
 -- UI panel events

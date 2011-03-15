@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/15/11 17:25:46.
+** Generated automatically by tolua++-1.0.92 on 03/15/11 17:56:30.
 */
 
 #ifndef __cplusplus
@@ -1203,6 +1203,40 @@ static int tolua_LuaInterface_ClientSocket_RefuseAsset00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: PlayCard of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_PlayCard00
+static int tolua_LuaInterface_ClientSocket_PlayCard00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+  const std::string cardName = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'PlayCard'",NULL);
+#endif
+ {
+  self->PlayCard(cardName);
+ tolua_pushcppstring(tolua_S,(const char*)cardName);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'PlayCard'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* Open function */
 int tolua_LuaInterface_open (lua_State* tolua_S)
 {
@@ -1307,6 +1341,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"StartGame",tolua_LuaInterface_ClientSocket_StartGame00);
   tolua_function(tolua_S,"AcceptAsset",tolua_LuaInterface_ClientSocket_AcceptAsset00);
   tolua_function(tolua_S,"RefuseAsset",tolua_LuaInterface_ClientSocket_RefuseAsset00);
+  tolua_function(tolua_S,"PlayCard",tolua_LuaInterface_ClientSocket_PlayCard00);
  tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);
  return 1;

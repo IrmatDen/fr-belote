@@ -46,6 +46,7 @@ namespace
 		NEC_AcceptAsset,
 		NEC_RefuseAsset,
 		NEC_DisconnectionRequest,
+		NEC_PlayCard,
 	};
 
 	namespace States
@@ -435,6 +436,24 @@ namespace
 			}
 		};
 
+		struct PlayCard : public ActionBase
+		{
+			PlayCard(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
+
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_GameContextPacket << BCPT_PlayCard << m_CardName;
+				sf::Socket::Status s = m_Socket.Send(p);
+
+				// Error checking
+				if (s != sf::Socket::Done)
+					std::cout << "[Client] Error sending card in Actions::PlayCard. Error code: " << s << std::endl;
+			}
+
+			std::string		m_CardName;
+		};
+
 		struct Disconnect : public ActionBase
 		{
 			Disconnect(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
@@ -479,6 +498,7 @@ public:
 		m_ActionStartGame	= new Actions::StartGame(m_Socket);
 		m_ActionAcceptAsset	= new Actions::AcceptAsset(m_Socket);
 		m_ActionRefuseAsset	= new Actions::RefuseAsset(m_Socket);
+		m_ActionPlayCard	= new Actions::PlayCard(m_Socket);
 		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
 		
 		// Transitions
@@ -493,6 +513,7 @@ public:
 		m_StateIdle			->AddTransition(NEC_StartGame,				m_StateIdle,			m_ActionStartGame	);
 		m_StateIdle			->AddTransition(NEC_AcceptAsset,			m_StateIdle,			m_ActionAcceptAsset	);
 		m_StateIdle			->AddTransition(NEC_RefuseAsset,			m_StateIdle,			m_ActionRefuseAsset	);
+		m_StateIdle			->AddTransition(NEC_PlayCard,				m_StateIdle,			m_ActionPlayCard	);
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
@@ -536,6 +557,12 @@ public:
 	void RefuseAsset()
 	{
 		m_StateMachine->Notify(NEC_RefuseAsset);
+	}
+
+	void PlayCard(const std::string &cardName)
+	{
+		m_ActionPlayCard->m_CardName = cardName;
+		m_StateMachine->Notify(NEC_PlayCard);
 	}
 
 	void Wait()
@@ -587,6 +614,7 @@ private:
 	Actions::AcceptAsset		* m_ActionAcceptAsset;
 	Action						* m_ActionRefuseAsset;
 	Action						* m_ActionDisconnect;
+	Actions::PlayCard			* m_ActionPlayCard;
 };
 
 ClientSocket::ClientSocket()
@@ -658,6 +686,11 @@ void ClientSocket::AcceptAsset(const std::string &assetColour)
 void ClientSocket::RefuseAsset()
 {
 	m_priv->RefuseAsset();
+}
+
+void ClientSocket::PlayCard(const std::string &cardName)
+{
+	m_priv->PlayCard(cardName);
 }
 
 void ClientSocket::Update()

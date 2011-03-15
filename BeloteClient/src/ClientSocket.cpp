@@ -28,6 +28,7 @@ const CEGUI::String ClientSocket::EventAskAnotherAsset("AskAnotherAsset");
 const CEGUI::String ClientSocket::EventPlayerRefusedAsset("PlayerRefusedAsset");
 const CEGUI::String ClientSocket::EventPlayerAcceptedAsset("PlayerAcceptedAsset");
 const CEGUI::String ClientSocket::EventTurnStarting("TurnStarting");
+const CEGUI::String ClientSocket::EventWaitingPlay("WaitingPlay");
 
 // Define network state machine stuff...
 namespace
@@ -260,6 +261,17 @@ namespace
 
 				case BCPT_TurnStarting:
 					m_Self->m_TurnStarting.push();
+					break;
+
+				case BCPT_WaitingPlay:
+					{
+						WaitingPlayArgs args;
+						int possibleCardsCount;
+						packet >> possibleCardsCount;
+						for (sf::Uint32 i = 0; i != possibleCardsCount; i++)
+							packet >> args.m_PossibleCards[i];
+						m_Self->m_WaitingPlay.push(args);
+					}
 					break;
 				}
 			}
@@ -592,7 +604,8 @@ ClientSocket::ClientSocket()
 	m_AskAnotherAsset			(EventAskAnotherAsset, EventNamespace),
 	m_PlayerRefusedAsset		(EventPlayerRefusedAsset, EventNamespace),
 	m_PlayerAcceptedAsset		(EventPlayerAcceptedAsset, EventNamespace),
-	m_TurnStarting				(EventTurnStarting, EventNamespace)
+	m_TurnStarting				(EventTurnStarting, EventNamespace),
+	m_WaitingPlay				(EventWaitingPlay, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -668,6 +681,7 @@ void ClientSocket::Update()
 	m_PlayerRefusedAsset.process(this);
 	m_PlayerAcceptedAsset.process(this);
 	m_TurnStarting.process(this);
+	m_WaitingPlay.process(this);
 }
 
 void ClientSocket::Wait()

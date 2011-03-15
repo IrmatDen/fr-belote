@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/15/11 17:08:24.
+** Generated automatically by tolua++-1.0.92 on 03/15/11 17:25:46.
 */
 
 #ifndef __cplusplus
@@ -41,10 +41,11 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventSet");
+ tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
  tolua_usertype(tolua_S,"PotentialAssetArgs");
- tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
+ tolua_usertype(tolua_S,"WaitingPlayArgs");
  tolua_usertype(tolua_S,"GUIManager");
  tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
@@ -918,6 +919,58 @@ static int tolua_set_PotentialAssetArgs_m_Card(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_PossibleCards of class  WaitingPlayArgs */
+#ifndef TOLUA_DISABLE_tolua_get_LuaInterface_WaitingPlayArgs_m_PossibleCards
+static int tolua_get_LuaInterface_WaitingPlayArgs_m_PossibleCards(lua_State* tolua_S)
+{
+ int tolua_index;
+  WaitingPlayArgs* self;
+ lua_pushstring(tolua_S,".self");
+ lua_rawget(tolua_S,1);
+ self = (WaitingPlayArgs*)  lua_touserdata(tolua_S,-1);
+#ifndef TOLUA_RELEASE
+ {
+ tolua_Error tolua_err;
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in array indexing.",&tolua_err);
+ }
+#endif
+ tolua_index = (int)tolua_tonumber(tolua_S,2,0);
+#ifndef TOLUA_RELEASE
+ if (tolua_index<0 || tolua_index>=8)
+ tolua_error(tolua_S,"array indexing out of range.",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_PossibleCards[tolua_index]);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_PossibleCards of class  WaitingPlayArgs */
+#ifndef TOLUA_DISABLE_tolua_set_LuaInterface_WaitingPlayArgs_m_PossibleCards
+static int tolua_set_LuaInterface_WaitingPlayArgs_m_PossibleCards(lua_State* tolua_S)
+{
+ int tolua_index;
+  WaitingPlayArgs* self;
+ lua_pushstring(tolua_S,".self");
+ lua_rawget(tolua_S,1);
+ self = (WaitingPlayArgs*)  lua_touserdata(tolua_S,-1);
+#ifndef TOLUA_RELEASE
+ {
+ tolua_Error tolua_err;
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in array indexing.",&tolua_err);
+ }
+#endif
+ tolua_index = (int)tolua_tonumber(tolua_S,2,0);
+#ifndef TOLUA_RELEASE
+ if (tolua_index<0 || tolua_index>=8)
+ tolua_error(tolua_S,"array indexing out of range.",NULL);
+#endif
+  self->m_PossibleCards[tolua_index] = ((std::string)  tolua_tocppstring(tolua_S,3,0));
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -1240,6 +1293,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_cclass(tolua_S,"PotentialAssetArgs","PotentialAssetArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"PotentialAssetArgs");
   tolua_variable(tolua_S,"m_Card",tolua_get_PotentialAssetArgs_m_Card,tolua_set_PotentialAssetArgs_m_Card);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"WaitingPlayArgs","WaitingPlayArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"WaitingPlayArgs");
+  tolua_array(tolua_S,"m_PossibleCards",tolua_get_LuaInterface_WaitingPlayArgs_m_PossibleCards,tolua_set_LuaInterface_WaitingPlayArgs_m_PossibleCards);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

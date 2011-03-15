@@ -338,11 +338,27 @@ void BeloteContext::DealLastPart()
 
 	// Give the shown card to the taker.
 	d->m_PlayersHand[taker][7] = d->m_PotentialAsset;
+	
+	for (int i = 0; i != _PP_Count; i++)
+		d->m_RemainingCards[i] = 8;
 
 	OrderHands();
 	SendCurrentHands();
 
+	StartTurn();
+}
+
+void BeloteContext::StartTurn()
+{
 	NotifyTurnEvent(TE_TurnStarting);
+
+	// Tell the player after the dealer to play a card, any card.
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_WaitingPlay << d->m_RemainingCards[d->m_CurrentPlayer];
+	for (int i = 0; i != d->m_RemainingCards[d->m_CurrentPlayer]; i++)
+		packet << d->m_PlayersHand[d->m_CurrentPlayer][i];
+
+	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
 }
 
 void BeloteContext::OrderHands()

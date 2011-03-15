@@ -77,6 +77,9 @@ private:
 	void	PreTurn();
 	void	DealFirstPart();
 	void	DealLastPart();
+
+	void	StartTurn();
+
 	void	OrderHands();
 	void	SendCurrentHands();
 
@@ -106,6 +109,7 @@ private:
 		PlayerPosition	m_CurrentDealer;
 		PlayerPosition	m_CurrentPlayer;
 		std::string		m_PlayersHand[_PP_Count][8];
+		int				m_RemainingCards[_PP_Count];
 		std::string		m_PotentialAsset;
 		bool			m_IsInFirstAnnouncePhase;
 		std::string		m_CurrentAsset;

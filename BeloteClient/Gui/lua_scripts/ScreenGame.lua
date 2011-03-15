@@ -52,6 +52,10 @@ function toPlayerAcceptedAssetArgs(e)
     return tolua.cast(e,"const PlayerAcceptedAssetArgs")
 end
 
+function toWaitingPlayArgs(e)
+    return tolua.cast(e,"const WaitingPlayArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -291,13 +295,29 @@ end
 function onTurnStarting(args)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(false)
-	
-	-- TEMP
+end
+
+function onWaitingPlay(args)
+	local possibleCards		= toWaitingPlayArgs(args).m_PossibleCards
+	local winMgr			= CEGUI.WindowManager:getSingleton()
 	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
-	local cardsCount		= playerHandArea:getChildCount() - 1
 	
+	print("onWaitingPlay")
+	
+	-- disable all cards
+	local cardsCount = playerHandArea:getChildCount() - 1
 	for cardIdx = 0, cardsCount do
 		local card = playerHandArea:getChildAtIdx(cardIdx)
+		card:setUserString(CardPlayablePropertyName, "0")
+	end
+	
+	-- and now enable only the ones authorized to play
+	for cardIdx = 0, 7 do
+		if possibleCards[cardIdx] == "" then
+			break
+		end
+		
+		local card = playerHandArea:getChild(possibleCards[cardIdx])
 		card:setUserString(CardPlayablePropertyName, "1")
 	end
 	
@@ -491,3 +511,4 @@ client:subscribeEvent("AskAnotherAsset", "onAskAnotherAsset")
 client:subscribeEvent("PlayerAcceptedAsset", "onPlayerAcceptedAsset")
 client:subscribeEvent("PlayerRefusedAsset", "onPlayerRefusedAsset")
 client:subscribeEvent("TurnStarting", "onTurnStarting")
+client:subscribeEvent("WaitingPlay", "onWaitingPlay")

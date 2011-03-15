@@ -332,15 +332,7 @@ void BeloteContext::OrderHands()
 					};
 
 	for (int p = 0; p != _PP_Count; p++)
-	{
-		std::cout << "Pre-sort: " << d->m_Players[p]->GetClientName() << ": " << std::endl;
-		std::copy(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), std::ostream_iterator<std::string>(std::cout, ","));
-		std::cout << std::endl;
 		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
-		std::cout << "Post-sort: " << d->m_Players[p]->GetClientName() << ": " << std::endl;
-		std::copy(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), std::ostream_iterator<std::string>(std::cout, ","));
-		std::cout << std::endl;
-	}
 }
 
 void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocket *player /* = 0 */)

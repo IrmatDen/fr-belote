@@ -81,6 +81,11 @@ private:
 	void	StartTurn();
 	void	AskToPlay();
 	void	CardPlayed(const std::string &card);
+	bool	PlayerHasColourInHand(const std::string &colour) const;
+	bool	PlayerHasHigherCardThan() const;
+	bool	PlayerMustCut() const;
+	bool	PlayerCanCut() const;
+	void	DumpAllCardsInHandTo(std::vector<std::string> &out) const;
 
 	void	OrderHands();
 	void	SendCurrentHands();

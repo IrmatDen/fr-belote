@@ -36,7 +36,7 @@ BeloteContext::~BeloteContext()
 void BeloteContext::Reset()
 {
 	std::fill(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), Players::value_type(0));
-	std::fill(d->m_Players.begin(),d-> m_Players.end(), Players::value_type(0));
+	std::fill(d->m_Players.begin(),d->m_Players.end(), Players::value_type(0));
 }
 
 void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocket *sourcePlayer)
@@ -173,8 +173,7 @@ void BeloteContext::StartGame()
 	// Init game state.
 	InitDeck();
 	ShuffleDeck();
-	for(size_t i = 0; i < countof(d->m_Scores); i++)
-		d->m_Scores[i] = 0;
+	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
 
 	d->m_CurrentDealer = PP_South;
 	PreTurn();
@@ -194,6 +193,7 @@ void BeloteContext::NotifyStarting()
 
 void BeloteContext::InitDeck()
 {
+	// FIXME generate this in a smarter way maybe?
 	d->m_Deck[0] = "C1";
 	d->m_Deck[1] = "C7";
 	d->m_Deck[2] = "C8";
@@ -370,20 +370,96 @@ void BeloteContext::StartTurn()
 void BeloteContext::AskToPlay()
 {
 	sf::Packet packet;
-	packet << PT_GameContextPacket << BCPT_WaitingPlay << d->m_RemainingCards[d->m_CurrentPlayer];
+	packet << PT_GameContextPacket << BCPT_WaitingPlay;
+
+	std::vector<std::string> playableCards;
 
 	// Search and specify which cards are playable this turn.
-	/*if (d->m_CurrentlyPlayedCards == 0)
-	{*/
-		// No cards played yet, so play what you want!
-		for (int i = 0; i != d->m_RemainingCards[d->m_CurrentPlayer]; i++)
-			packet << d->m_PlayersHand[d->m_CurrentPlayer][i];
-	/*}
+	if (d->m_CurrentlyPlayedCards == 0)
+	{
+		DumpAllCardsInHandTo(playableCards);
+	}
 	else
 	{
-	}*/
+		const bool hasAssetsInHand = PlayerHasColourInHand(d->m_CurrentAsset);
+
+		if (d->m_PlayedCards[0].front() == d->m_CurrentAsset.front())
+		{
+			if (hasAssetsInHand)
+			{
+				if (PlayerHasHigherCardThan())
+				{
+					DumpAllCardsInHandTo(playableCards);
+				}
+				else
+				{
+					DumpAllCardsInHandTo(playableCards);
+				}
+			}
+			else
+			{
+				DumpAllCardsInHandTo(playableCards);
+			}
+		}
+		else // Request colour is not the asset
+		{
+			if (PlayerHasColourInHand(std::string(1, d->m_PlayedCards[0].front())))
+			{
+				DumpAllCardsInHandTo(playableCards);
+			}
+			else
+			{
+				if (PlayerMustCut() && hasAssetsInHand)
+				{
+					if (PlayerCanCut())
+					{
+						DumpAllCardsInHandTo(playableCards);
+					}
+					else
+					{
+						DumpAllCardsInHandTo(playableCards);
+					}
+				}
+				else
+				{
+					DumpAllCardsInHandTo(playableCards);
+				}
+			}
+		}
+	}
+
+	packet << playableCards.size();
+	std::for_each(playableCards.begin(), playableCards.end(), [&] (const std::string &card) { packet << card; } );
 
 	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
+}
+
+void BeloteContext::DumpAllCardsInHandTo(std::vector<std::string> &out) const
+{
+	out.reserve(d->m_RemainingCards[d->m_CurrentPlayer]);
+	std::copy(	d->m_PlayersHand[d->m_CurrentPlayer],
+				d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
+				std::back_inserter(out));
+}
+
+bool BeloteContext::PlayerHasColourInHand(const std::string &/*colour*/) const
+{
+	return false;
+}
+
+bool BeloteContext::PlayerHasHigherCardThan() const
+{
+	return false;
+}
+
+bool BeloteContext::PlayerMustCut() const
+{
+	return false;
+}
+
+bool BeloteContext::PlayerCanCut() const
+{
+	return false;
 }
 
 void BeloteContext::CardPlayed(const std::string &card)

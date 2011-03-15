@@ -312,7 +312,7 @@ void BeloteContext::DealLastPart()
 
 void BeloteContext::OrderHands()
 {
-	auto compFunc = [](const std::string &c1, const std::string &c2) -> bool
+	auto compFunc = [&](const std::string &c1, const std::string &c2) -> bool
 					{
 						if (c1 == "")	return false;
 						if (c2 == "")	return true;
@@ -323,9 +323,11 @@ void BeloteContext::OrderHands()
 						if (c1ColourIdx < c2ColourIdx)	return true;
 						if (c2ColourIdx < c1ColourIdx)	return false;
 						
-						static const std::string valueOrder("78910JQK1");
-						const size_t	c1ValueIdx	= valueOrder.rfind(c1.c_str() + 1),
-										c2ValueIdx	= valueOrder.rfind(c2.c_str() + 1);
+						static const std::string valueOrder("789JQK101");
+						static const std::string valueOrderAtAsset("78QK1019J");
+						const bool		isAsset		= (d->m_CurrentAsset != "" && d->m_CurrentAsset.front() == c1.front());
+						const size_t	c1ValueIdx	= (isAsset ? valueOrderAtAsset : valueOrder).rfind(c1.c_str() + 1),
+										c2ValueIdx	= (isAsset ? valueOrderAtAsset : valueOrder).rfind(c2.c_str() + 1);
 						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
 					};
 

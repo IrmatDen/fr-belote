@@ -15,7 +15,7 @@ void SoundManager::Init()
 
 void SoundManager::PlayFX(SoundFX fx)
 {
-	m_FXSounds[fx].Play();
+	//m_FXSounds[fx].Play();
 }
 
 bool SoundManager::IsFXPlaying(SoundFX fx) const

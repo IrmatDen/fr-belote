@@ -194,9 +194,12 @@ end
 function onCardsReceived(args)
 	local handContent	= toCurrentCardsInHandArgs(args)
 	local winMgr		= CEGUI.WindowManager:getSingleton()
+	
+	-- FIXME destroying the cards each time seems quite brute force. Found a workaround!
 	for i = 0, 7 do
 		local name = handContent.m_Cards[i]
-		if name ~= "" and not winMgr:isWindowPresent(name) then
+		if name ~= "" then
+			winMgr:destroyWindow(name)
 			addCard(name)
 		end
 	end

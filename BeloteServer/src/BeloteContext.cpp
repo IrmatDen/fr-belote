@@ -326,14 +326,20 @@ void BeloteContext::OrderHands()
 						if (c2ColourIdx < c1ColourIdx)	return false;
 						
 						static const std::string valueOrder("78910JQK1");
-						const size_t	c1ValueIdx	= valueOrder.find_last_of(c1.c_str() + 1),
-										c2ValueIdx	= valueOrder.find_last_of(c2.c_str() + 1);
+						const size_t	c1ValueIdx	= valueOrder.rfind(c1.c_str() + 1),
+										c2ValueIdx	= valueOrder.rfind(c2.c_str() + 1);
 						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
 					};
 
 	for (int p = 0; p != _PP_Count; p++)
 	{
+		std::cout << "Pre-sort: " << d->m_Players[p]->GetClientName() << ": " << std::endl;
+		std::copy(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), std::ostream_iterator<std::string>(std::cout, ","));
+		std::cout << std::endl;
 		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
+		std::cout << "Post-sort: " << d->m_Players[p]->GetClientName() << ": " << std::endl;
+		std::copy(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), std::ostream_iterator<std::string>(std::cout, ","));
+		std::cout << std::endl;
 	}
 }
 

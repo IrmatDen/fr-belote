@@ -79,6 +79,8 @@ private:
 	void	DealLastPart();
 
 	void	StartTurn();
+	void	AskToPlay();
+	void	CardPlayed(const std::string &card);
 
 	void	OrderHands();
 	void	SendCurrentHands();
@@ -108,12 +110,17 @@ private:
 
 		PlayerPosition	m_CurrentDealer;
 		PlayerPosition	m_CurrentPlayer;
+
 		std::string		m_PlayersHand[_PP_Count][8];
 		int				m_RemainingCards[_PP_Count];
+
 		std::string		m_PotentialAsset;
 		bool			m_IsInFirstAnnouncePhase;
 		std::string		m_CurrentAsset;
 		TeamIndex		m_TeamAcceptingContract;
+
+		int				m_CurrentlyPlayedCards;
+		std::string		m_PlayedCards[_PP_Count];
 	};
 
 private:

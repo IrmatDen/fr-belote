@@ -16,6 +16,12 @@ local currentPositionning		= { }
 
 local AssetTranslation = { H = "Coeur", S = "Pique", D = "Carreau", C = "Trèfle" }
 
+local PlayedPositions = {	CEGUI.UVector2(CEGUI.UDim(0, 0),				CEGUI.UDim(0.5, -CardHeight / 2)),
+							CEGUI.UVector2(CEGUI.UDim(0.5, -CardWidth / 2),	CEGUI.UDim(0, 0)),
+							CEGUI.UVector2(CEGUI.UDim(1, -CardWidth),		CEGUI.UDim(0.5, -CardHeight / 2)),
+							CEGUI.UVector2(CEGUI.UDim(0.5, -CardWidth / 2),	CEGUI.UDim(1, -CardHeight)),
+						}
+
 function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
 end
@@ -54,6 +60,10 @@ end
 
 function toWaitingPlayArgs(e)
     return tolua.cast(e,"const WaitingPlayArgs")
+end
+
+function toPlayedCardArgs(e)
+    return tolua.cast(e,"const PlayedCardArgs")
 end
 
 -- Add a card to the player's current hand
@@ -306,6 +316,14 @@ end
 function onTurnStarting(args)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(false)
+	
+	-- Clean the area containing played cards
+	local winMgr		= CEGUI.WindowManager:getSingleton()
+	local playedArea	= winMgr:getWindow(GameArea/PlayedCards)
+	local playedCardsCount	= playedArea:getChildCount() - 1
+	for i = 0, playedCardsCount do
+		winMgr:destroyWindow(playedArea:getChildAtIdx(i))
+	end
 end
 
 function onWaitingPlay(args)
@@ -326,6 +344,27 @@ function onWaitingPlay(args)
 	end
 	
 	updatePlayableCards()
+end
+
+function onPlayedCard(args)
+	local pcArgs = toPlayedCardArgs(args)
+	
+	-- Search relative position to me
+	pcArgs.m_Player = pcArgs.m_Player + 1
+	local relativePos = pcArgs.m_Player - myPosition
+	if relativePos <= 0 then relativePos = 4 + relativePos end
+	
+	-- add card on the table
+	local winMgr		= CEGUI.WindowManager:getSingleton()
+	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
+	
+	local cardImg = winMgr:createWindow("OgreTray/StaticImage", pcArgs.m_Card .. "ImgPlayed")
+	cardImg:setSize(CEGUI.UVector2(CEGUI.UDim(0, CardWidth), CEGUI.UDim(0, CardHeight)))
+	cardImg:setPosition(PlayedPositions[relativePos])
+	cardImg:setProperty("FrameEnabled", "False")
+	cardImg:setProperty("Image", "PlayingCards/" .. pcArgs.m_Card)
+	
+	playedArea:addChild(cardImg)
 end
 
 -- Game zone events
@@ -410,10 +449,13 @@ function onCardSelected(args)
 		return
 	end
 	
+	-- forbid any more interactions on player's cards.
+	-- Calling that later might allow the player to trigger an action, or at least an hover in...
 	resetPlayableCards()
 	
-	local cardName	= window:getName()
+	local cardName = window:getName()
 	
+	-- Destroy the window as well as the hover in/out animation instances
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:destroyWindow(window)
 	
@@ -423,10 +465,12 @@ function onCardSelected(args)
 	animMgr:destroyAnimationInstance(animInstances[tonumber(hoverInAnimIdx)])
 	animMgr:destroyAnimationInstance(animInstances[tonumber(hoverOutAnimIdx)])
 	
+	-- Update the current player's cards
 	rearrangeCards()
 	updatePlayableCards()
 	
-	local client	= Game:getSingleton():GetClientSocket()
+	-- and (at least...) notify the server of the player's played card
+	local client = Game:getSingleton():GetClientSocket()
 	client:PlayCard(cardName)
 end
 
@@ -532,3 +576,4 @@ client:subscribeEvent("PlayerAcceptedAsset", "onPlayerAcceptedAsset")
 client:subscribeEvent("PlayerRefusedAsset", "onPlayerRefusedAsset")
 client:subscribeEvent("TurnStarting", "onTurnStarting")
 client:subscribeEvent("WaitingPlay", "onWaitingPlay")
+client:subscribeEvent("PlayedCard", "onPlayedCard")

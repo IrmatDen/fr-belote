@@ -136,6 +136,11 @@
 					<Property Name="HorzFormatting" Value="LeftAligned" />
 					<Property Name="UnifiedAreaRect" Value="{{0,10},{0,15},{0,160},{0,75}}" />
 				</Window>
+				<Window Type="DefaultWindow" Name="GameArea/PlayedCards" >
+					<Property Name="MousePassThroughEnabled" Value="True" />
+					<Property Name="UnifiedPosition" Value="{{0.5,-108},{0.5,-166}}" />
+					<Property Name="UnifiedSize" Value="{{0,216},{0,232}}" />
+				</Window>
 				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-193},{0.5, 400},{1,-15}}" />
 				</Window>

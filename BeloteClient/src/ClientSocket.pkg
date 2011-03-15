@@ -74,6 +74,13 @@ public:
 	std::string		m_PossibleCards[8];
 };
 
+class PlayedCardArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_Card;
+	int				m_Player;
+};
+
 class ClientSocket : public CEGUI::EventSet
 {
 public:

@@ -70,6 +70,14 @@ void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocket *so
 		RefuseAsset();
 		break;
 
+	case BCPT_PlayCard:
+		{
+			std::string cardName;
+			packet >> cardName;
+			CardPlayed(cardName);
+		}
+		break;
+
 	default:
 		break;
 	}
@@ -352,13 +360,57 @@ void BeloteContext::StartTurn()
 {
 	NotifyTurnEvent(TE_TurnStarting);
 
-	// Tell the player after the dealer to play a card, any card.
+	d->m_CurrentlyPlayedCards = 0;
+	for (int i = 0; i != countof(d->m_PlayedCards); i++)
+		std::swap(d->m_PlayedCards[i], std::string());
+
+	AskToPlay();
+}
+
+void BeloteContext::AskToPlay()
+{
 	sf::Packet packet;
 	packet << PT_GameContextPacket << BCPT_WaitingPlay << d->m_RemainingCards[d->m_CurrentPlayer];
-	for (int i = 0; i != d->m_RemainingCards[d->m_CurrentPlayer]; i++)
-		packet << d->m_PlayersHand[d->m_CurrentPlayer][i];
+
+	// Search and specify which cards are playable this turn.
+	/*if (d->m_CurrentlyPlayedCards == 0)
+	{*/
+		// No cards played yet, so play what you want!
+		for (int i = 0; i != d->m_RemainingCards[d->m_CurrentPlayer]; i++)
+			packet << d->m_PlayersHand[d->m_CurrentPlayer][i];
+	/*}
+	else
+	{
+	}*/
 
 	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
+}
+
+void BeloteContext::CardPlayed(const std::string &card)
+{
+	// Notify players that a card is played by current player
+	sf::Packet packet;
+	packet	<< PT_GameContextPacket << BCPT_CardPlayed
+			<< card << d->m_CurrentPlayer;
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player) { player->GetSocket().Send(packet); }
+	);
+
+	// Update internal state
+	for (int i = 0; i != countof(d->m_PlayersHand[0]); i++)
+	{
+		if (d->m_PlayersHand[d->m_CurrentPlayer][i] == card)
+		{
+			std::swap(d->m_PlayersHand[d->m_CurrentPlayer][i], std::string());
+			break;
+		}
+	}
+	d->m_RemainingCards[d->m_CurrentPlayer]--;
+	d->m_PlayedCards[d->m_CurrentlyPlayedCards] = card;
+	d->m_CurrentlyPlayedCards++;
+	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
+
+	AskToPlay();
 }
 
 void BeloteContext::OrderHands()

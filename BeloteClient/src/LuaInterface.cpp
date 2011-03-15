@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/15/11 17:56:30.
+** Generated automatically by tolua++-1.0.92 on 03/15/11 19:16:59.
 */
 
 #ifndef __cplusplus
@@ -35,6 +35,7 @@ static int tolua_collect_LeftWrappedListItem (lua_State* tolua_S)
 static void tolua_reg_types (lua_State* tolua_S)
 {
  tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"PlayedCardArgs");
  tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
  tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
  tolua_usertype(tolua_S,"ClientSocket");
@@ -971,6 +972,66 @@ static int tolua_set_LuaInterface_WaitingPlayArgs_m_PossibleCards(lua_State* tol
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_Card of class  PlayedCardArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayedCardArgs_m_Card
+static int tolua_get_PlayedCardArgs_m_Card(lua_State* tolua_S)
+{
+  PlayedCardArgs* self = (PlayedCardArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Card'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_Card);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Card of class  PlayedCardArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayedCardArgs_m_Card
+static int tolua_set_PlayedCardArgs_m_Card(lua_State* tolua_S)
+{
+  PlayedCardArgs* self = (PlayedCardArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Card'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Card = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_Player of class  PlayedCardArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayedCardArgs_m_Player
+static int tolua_get_PlayedCardArgs_m_Player(lua_State* tolua_S)
+{
+  PlayedCardArgs* self = (PlayedCardArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Player'",NULL);
+#endif
+ tolua_pushnumber(tolua_S,(lua_Number)self->m_Player);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Player of class  PlayedCardArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayedCardArgs_m_Player
+static int tolua_set_PlayedCardArgs_m_Player(lua_State* tolua_S)
+{
+  PlayedCardArgs* self = (PlayedCardArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Player'",NULL);
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Player = ((int)  tolua_tonumber(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -1331,6 +1392,11 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_cclass(tolua_S,"WaitingPlayArgs","WaitingPlayArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"WaitingPlayArgs");
   tolua_array(tolua_S,"m_PossibleCards",tolua_get_LuaInterface_WaitingPlayArgs_m_PossibleCards,tolua_set_LuaInterface_WaitingPlayArgs_m_PossibleCards);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"PlayedCardArgs","PlayedCardArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"PlayedCardArgs");
+  tolua_variable(tolua_S,"m_Card",tolua_get_PlayedCardArgs_m_Card,tolua_set_PlayedCardArgs_m_Card);
+  tolua_variable(tolua_S,"m_Player",tolua_get_PlayedCardArgs_m_Player,tolua_set_PlayedCardArgs_m_Player);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

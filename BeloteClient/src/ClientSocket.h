@@ -85,6 +85,13 @@ public:
 	std::string		m_PossibleCards[8];
 };
 
+class PlayedCardArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_Card;
+	int				m_Player;
+};
+
 class ClientSocketPrivate;
 
 template <typename ArgType = CEGUI::EventArgs>
@@ -159,6 +166,7 @@ public:
 	static const CEGUI::String EventPlayerAcceptedAsset;
 	static const CEGUI::String EventTurnStarting;
 	static const CEGUI::String EventWaitingPlay;
+	static const CEGUI::String EventPlayedCard;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
@@ -176,6 +184,7 @@ public:
 	ThreadSafeEventQueue<PlayerAcceptedAssetArgs>			m_PlayerAcceptedAsset;
 	ThreadSafeEventQueue<>									m_TurnStarting;
 	ThreadSafeEventQueue<WaitingPlayArgs>					m_WaitingPlay;
+	ThreadSafeEventQueue<PlayedCardArgs>					m_PlayedCard;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

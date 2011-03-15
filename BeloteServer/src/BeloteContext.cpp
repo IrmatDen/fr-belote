@@ -200,7 +200,7 @@ void BeloteContext::PreTurn()
 {
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 
-	NotifyPreTurnEvent(d->m_Players[d->m_CurrentDealer], PTE_Dealing);
+	NotifyTurnEvent(TE_Dealing, d->m_Players[d->m_CurrentDealer]);
 	DealFirstPart();
 	
 	d->m_IsInFirstAnnouncePhase = true;
@@ -267,9 +267,11 @@ void BeloteContext::AcceptAsset(const std::string &colourName)
 	d->m_CurrentAsset = colourName.front();
 	d->m_TeamAcceptingContract = (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North) ? TI_NorthSouth : TI_WestEast;
 
-	NotifyPreTurnEvent(d->m_Players[d->m_CurrentPlayer], PTE_TakeAsset);
+	NotifyTurnEvent(TE_TakeAsset, d->m_Players[d->m_CurrentPlayer]);
 
 	DealLastPart();
+
+	NotifyTurnEvent(TE_TurnStarting);
 }
 
 void BeloteContext::RefuseAsset()
@@ -277,7 +279,7 @@ void BeloteContext::RefuseAsset()
 	if (d->m_CurrentPlayer == d->m_CurrentDealer)
 		d->m_IsInFirstAnnouncePhase = false;
 
-	NotifyPreTurnEvent(d->m_Players[d->m_CurrentPlayer], PTE_RefuseAsset);
+	NotifyTurnEvent(TE_RefuseAsset, d->m_Players[d->m_CurrentPlayer]);
 
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 	
@@ -335,23 +337,27 @@ void BeloteContext::OrderHands()
 	}
 }
 
-void BeloteContext::NotifyPreTurnEvent(ServerSocket *player, PreTurnEvent event)
+void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocket *player /* = 0 */)
 {
 	sf::Packet packet;
 	packet << PT_GameContextPacket;
 
 	switch (event)
 	{
-	case PTE_Dealing:
+	case TE_Dealing:
 		packet << BCPT_Dealing << player->GetClientName().c_str();
 		break;
 
-	case PTE_TakeAsset:
+	case TE_TakeAsset:
 		packet << BCPT_AssetAccepted << player->GetClientName().c_str() << d->m_CurrentAsset;
 		break;
 
-	case PTE_RefuseAsset:
+	case TE_RefuseAsset:
 		packet << BCPT_AssetRefused << player->GetClientName().c_str();
+		break;
+
+	case TE_TurnStarting:
+		packet << BCPT_TurnStarting;
 		break;
 	}
 	

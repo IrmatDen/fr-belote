@@ -36,11 +36,12 @@ public:
 	static const std::string	PlayerPositionStrings[];
 
 private:
-	enum PreTurnEvent
+	enum TurnEvent
 	{
-		PTE_Dealing,
-		PTE_TakeAsset,
-		PTE_RefuseAsset,
+		TE_Dealing,
+		TE_TakeAsset,
+		TE_RefuseAsset,
+		TE_TurnStarting,
 	};
 
 public:
@@ -64,7 +65,7 @@ private:
 	void	SendCurrentPositioningTo(ServerSocket *player);
 
 	void	NotifyStarting();
-	void	NotifyPreTurnEvent(ServerSocket *player, PreTurnEvent event);
+	void	NotifyTurnEvent(TurnEvent event, ServerSocket *player = 0);
 	void	AskForAsset();
 
 	void	InitDeck();

@@ -27,6 +27,7 @@ const CEGUI::String ClientSocket::EventAskRevealedAsset("AskRevealedAsset");
 const CEGUI::String ClientSocket::EventAskAnotherAsset("AskAnotherAsset");
 const CEGUI::String ClientSocket::EventPlayerRefusedAsset("PlayerRefusedAsset");
 const CEGUI::String ClientSocket::EventPlayerAcceptedAsset("PlayerAcceptedAsset");
+const CEGUI::String ClientSocket::EventTurnStarting("TurnStarting");
 
 // Define network state machine stuff...
 namespace
@@ -255,6 +256,10 @@ namespace
 						packet >> args.m_ByPlayer;
 						m_Self->m_PlayerRefusedAsset.push(args);
 					}
+					break;
+
+				case BCPT_TurnStarting:
+					m_Self->m_TurnStarting.push();
 					break;
 				}
 			}
@@ -586,7 +591,8 @@ ClientSocket::ClientSocket()
 	m_AskRevealedAsset			(EventAskRevealedAsset, EventNamespace),
 	m_AskAnotherAsset			(EventAskAnotherAsset, EventNamespace),
 	m_PlayerRefusedAsset		(EventPlayerRefusedAsset, EventNamespace),
-	m_PlayerAcceptedAsset		(EventPlayerAcceptedAsset, EventNamespace)
+	m_PlayerAcceptedAsset		(EventPlayerAcceptedAsset, EventNamespace),
+	m_TurnStarting				(EventTurnStarting, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -661,6 +667,7 @@ void ClientSocket::Update()
 	m_AskAnotherAsset.process(this);
 	m_PlayerRefusedAsset.process(this);
 	m_PlayerAcceptedAsset.process(this);
+	m_TurnStarting.process(this);
 }
 
 void ClientSocket::Wait()

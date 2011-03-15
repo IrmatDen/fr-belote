@@ -20,6 +20,7 @@ enum BeloteContextPacketType
 	BCPT_RefuseAsset,
 	BCPT_AssetAccepted,
 	BCPT_AssetRefused,
+	BCPT_TurnStarting,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, BeloteContextPacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

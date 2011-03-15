@@ -267,6 +267,22 @@ function onPlayerRefusedAsset(args)
 	appendTextToChatBox(text)
 end
 
+function onTurnStarting(args)
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("GameArea/AssetProposal"):setVisible(false)
+	
+	-- TEMP
+	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local cardsCount		= playerHandArea:getChildCount() - 1
+	
+	for cardIdx = 0, cardsCount do
+		local card = playerHandArea:getChildAtIdx(cardIdx)
+		card:setUserString(CardPlayablePropertyName, "1")
+	end
+	
+	updatePlayableCards()
+end
+
 -- Game zone events
 function onChoosePosition(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
@@ -447,3 +463,4 @@ client:subscribeEvent("AskRevealedAsset", "onAskRevealedAsset")
 client:subscribeEvent("AskAnotherAsset", "onAskAnotherAsset")
 client:subscribeEvent("PlayerAcceptedAsset", "onPlayerAcceptedAsset")
 client:subscribeEvent("PlayerRefusedAsset", "onPlayerRefusedAsset")
+client:subscribeEvent("TurnStarting", "onTurnStarting")

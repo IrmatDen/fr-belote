@@ -393,7 +393,7 @@ void BeloteContext::AskToPlay()
 				}
 				else
 				{
-					DumpAllCardsInHandTo(playableCards);
+					DumpColoursInHandTo(d->m_CurrentAsset, playableCards);
 				}
 			}
 			else
@@ -403,9 +403,10 @@ void BeloteContext::AskToPlay()
 		}
 		else // Request colour is not the asset
 		{
-			if (PlayerHasColourInHand(std::string(1, d->m_PlayedCards[0].front())))
+			const std::string colourID(1, d->m_PlayedCards[0].front());
+			if (PlayerHasColourInHand(colourID))
 			{
-				DumpAllCardsInHandTo(playableCards);
+				DumpColoursInHandTo(colourID, playableCards);
 			}
 			else
 			{
@@ -442,9 +443,23 @@ void BeloteContext::DumpAllCardsInHandTo(std::vector<std::string> &out) const
 				std::back_inserter(out));
 }
 
-bool BeloteContext::PlayerHasColourInHand(const std::string &/*colour*/) const
+void BeloteContext::DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const
 {
-	return false;
+	out.reserve(d->m_RemainingCards[d->m_CurrentPlayer]);
+	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer],
+					d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
+					std::back_inserter(out),
+					std::bind1st(IsSameColour(), colour));
+}
+
+bool BeloteContext::PlayerHasColourInHand(const std::string &colour) const
+{
+	const std::string *handBegin		= d->m_PlayersHand[d->m_CurrentPlayer];
+	const std::string *absoluteHandEnd	= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
+	const std::string *result = std::find_if(handBegin,
+											 absoluteHandEnd,
+											 std::bind1st(IsSameColour(), colour));
+	return result != absoluteHandEnd;
 }
 
 bool BeloteContext::PlayerHasHigherCardThan() const

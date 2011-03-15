@@ -85,18 +85,30 @@ private:
 	bool	PlayerHasHigherCardThan() const;
 	bool	PlayerMustCut() const;
 	bool	PlayerCanCut() const;
+
 	void	DumpAllCardsInHandTo(std::vector<std::string> &out) const;
+	void	DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const;
 
 	void	OrderHands();
 	void	SendCurrentHands();
 
-	PlayerPosition	GetNextPlayer(PlayerPosition pp) const
+	// Tools
+private:
+	static PlayerPosition	GetNextPlayer(PlayerPosition pp)
 	{
 		if (PP_East == pp)
 			return PP_South;
 	
 		return (PlayerPosition)(pp + 1);
 	}
+
+	struct IsSameColour : public std::binary_function<std::string, std::string, bool>
+	{
+		bool operator()(const std::string &testedColour, const std::string &card) const
+		{
+			return card.front() == testedColour.front();
+		}
+	};
 
 private:
 	typedef std::vector<ServerSocket*>	Players;

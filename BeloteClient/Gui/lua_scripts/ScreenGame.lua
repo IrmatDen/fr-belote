@@ -319,10 +319,10 @@ function onTurnStarting(args)
 	
 	-- Clean the area containing played cards
 	local winMgr		= CEGUI.WindowManager:getSingleton()
-	local playedArea	= winMgr:getWindow(GameArea/PlayedCards)
+	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
 	local playedCardsCount	= playedArea:getChildCount() - 1
-	for i = 0, playedCardsCount do
-		winMgr:destroyWindow(playedArea:getChildAtIdx(i))
+	while playedArea:getChildCount() > 0 do
+		winMgr:destroyWindow(playedArea:getChildAtIdx(0))
 	end
 end
 

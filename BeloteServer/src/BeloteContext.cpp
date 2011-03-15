@@ -410,7 +410,10 @@ void BeloteContext::CardPlayed(const std::string &card)
 	d->m_CurrentlyPlayedCards++;
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 
-	AskToPlay();
+	if (d->m_CurrentlyPlayedCards == _PP_Count)
+		StartTurn();
+	else
+		AskToPlay();
 }
 
 void BeloteContext::OrderHands()

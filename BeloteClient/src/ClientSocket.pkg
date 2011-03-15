@@ -37,6 +37,25 @@ public:
 	std::string		m_Pos[4];
 };
 
+class PlayerDealingArgs : public CEGUI::EventArgs
+{
+public:
+	std::string	m_Who;
+};
+
+class PlayerRefusedAssetArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_ByPlayer;
+};
+
+class PlayerAcceptedAssetArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_Asset,
+					m_ByPlayer;
+};
+
 class CurrentCardsInHandArgs : public CEGUI::EventArgs
 {
 public:

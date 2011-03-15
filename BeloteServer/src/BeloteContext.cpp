@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <bitset>
+#include <functional>
 #include <iterator>
 
 #include <SFML/Network.hpp>
@@ -136,15 +137,6 @@ void BeloteContext::StartGame()
 	PreTurn();
 }
 
-void BeloteContext::PreTurn()
-{
-	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
-	DealFirstPart();
-	
-	d->m_IsInFirstAnnouncePhase = true;
-	AskForAsset();
-}
-
 void BeloteContext::NotifyStarting()
 {
 	sf::Packet packet;
@@ -202,6 +194,17 @@ void BeloteContext::ShuffleDeck()
 		int x = sf::Randomizer::Random(ct, countof(d->m_Deck) - 1);
 		std::swap(d->m_Deck[ct], d->m_Deck[x]);
 	}
+}
+
+void BeloteContext::PreTurn()
+{
+	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
+
+	NotifyPreTurnEvent(d->m_Players[d->m_CurrentDealer], PTE_Dealing);
+	DealFirstPart();
+	
+	d->m_IsInFirstAnnouncePhase = true;
+	AskForAsset();
 }
 
 void BeloteContext::DealFirstPart()
@@ -264,6 +267,8 @@ void BeloteContext::AcceptAsset(const std::string &colourName)
 	d->m_CurrentAsset = colourName.front();
 	d->m_TeamAcceptingContract = (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North) ? TI_NorthSouth : TI_WestEast;
 
+	NotifyPreTurnEvent(d->m_Players[d->m_CurrentPlayer], PTE_TakeAsset);
+
 	DealLastPart();
 }
 
@@ -271,6 +276,8 @@ void BeloteContext::RefuseAsset()
 {
 	if (d->m_CurrentPlayer == d->m_CurrentDealer)
 		d->m_IsInFirstAnnouncePhase = false;
+
+	NotifyPreTurnEvent(d->m_Players[d->m_CurrentPlayer], PTE_RefuseAsset);
 
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 	
@@ -324,6 +331,31 @@ void BeloteContext::OrderHands()
 	{
 		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
 	}
+}
+
+void BeloteContext::NotifyPreTurnEvent(ServerSocket *player, PreTurnEvent event)
+{
+	sf::Packet packet;
+	packet << PT_GameContextPacket;
+
+	switch (event)
+	{
+	case PTE_Dealing:
+		packet << BCPT_Dealing << player->GetClientName().c_str();
+		break;
+
+	case PTE_TakeAsset:
+		packet << BCPT_AssetAccepted << player->GetClientName().c_str() << d->m_CurrentAsset;
+		break;
+
+	case PTE_RefuseAsset:
+		packet << BCPT_AssetRefused << player->GetClientName().c_str();
+		break;
+	}
+	
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player) { player->GetSocket().Send(packet); }
+	);
 }
 
 void BeloteContext::SendCurrentHands()

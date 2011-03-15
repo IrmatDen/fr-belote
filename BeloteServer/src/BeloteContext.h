@@ -35,6 +35,14 @@ public:
 	static const size_t			ValidPlayerPositionCount = _PP_Count;
 	static const std::string	PlayerPositionStrings[];
 
+private:
+	enum PreTurnEvent
+	{
+		PTE_Dealing,
+		PTE_TakeAsset,
+		PTE_RefuseAsset,
+	};
+
 public:
 	BeloteContext(Server *server);
 	~BeloteContext();
@@ -56,6 +64,7 @@ private:
 	void	SendCurrentPositioningTo(ServerSocket *player);
 
 	void	NotifyStarting();
+	void	NotifyPreTurnEvent(ServerSocket *player, PreTurnEvent event);
 	void	AskForAsset();
 
 	void	InitDeck();

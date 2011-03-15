@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/15/11 00:45:41.
+** Generated automatically by tolua++-1.0.92 on 03/15/11 01:23:54.
 */
 
 #ifndef __cplusplus
@@ -41,16 +41,19 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventSet");
- tolua_usertype(tolua_S,"PotentialAssetArgs");
  tolua_usertype(tolua_S,"Game::GameVars");
+ tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
+ tolua_usertype(tolua_S,"PotentialAssetArgs");
+ tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"GUIManager");
+ tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"CurrentPositioningArgs");
  tolua_usertype(tolua_S,"SystemMessageBroadcastedEventArgs");
  tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
  tolua_usertype(tolua_S,"Game");
  tolua_usertype(tolua_S,"TextBroadcastedEventArgs");
- tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
+ tolua_usertype(tolua_S,"PlayerDealingArgs");
 }
 
 /* get function: m_GameMode of class  GameVars */
@@ -713,6 +716,126 @@ static int tolua_set_LuaInterface_CurrentPositioningArgs_m_Pos(lua_State* tolua_
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_Who of class  PlayerDealingArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerDealingArgs_m_Who
+static int tolua_get_PlayerDealingArgs_m_Who(lua_State* tolua_S)
+{
+  PlayerDealingArgs* self = (PlayerDealingArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Who'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_Who);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Who of class  PlayerDealingArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerDealingArgs_m_Who
+static int tolua_set_PlayerDealingArgs_m_Who(lua_State* tolua_S)
+{
+  PlayerDealingArgs* self = (PlayerDealingArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Who'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Who = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_ByPlayer of class  PlayerRefusedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerRefusedAssetArgs_m_ByPlayer
+static int tolua_get_PlayerRefusedAssetArgs_m_ByPlayer(lua_State* tolua_S)
+{
+  PlayerRefusedAssetArgs* self = (PlayerRefusedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ByPlayer'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_ByPlayer);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_ByPlayer of class  PlayerRefusedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerRefusedAssetArgs_m_ByPlayer
+static int tolua_set_PlayerRefusedAssetArgs_m_ByPlayer(lua_State* tolua_S)
+{
+  PlayerRefusedAssetArgs* self = (PlayerRefusedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ByPlayer'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_ByPlayer = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_Asset of class  PlayerAcceptedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerAcceptedAssetArgs_m_Asset
+static int tolua_get_PlayerAcceptedAssetArgs_m_Asset(lua_State* tolua_S)
+{
+  PlayerAcceptedAssetArgs* self = (PlayerAcceptedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Asset'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_Asset);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_Asset of class  PlayerAcceptedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerAcceptedAssetArgs_m_Asset
+static int tolua_set_PlayerAcceptedAssetArgs_m_Asset(lua_State* tolua_S)
+{
+  PlayerAcceptedAssetArgs* self = (PlayerAcceptedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_Asset'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_Asset = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_ByPlayer of class  PlayerAcceptedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerAcceptedAssetArgs_m_ByPlayer
+static int tolua_get_PlayerAcceptedAssetArgs_m_ByPlayer(lua_State* tolua_S)
+{
+  PlayerAcceptedAssetArgs* self = (PlayerAcceptedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ByPlayer'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_ByPlayer);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_ByPlayer of class  PlayerAcceptedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerAcceptedAssetArgs_m_ByPlayer
+static int tolua_set_PlayerAcceptedAssetArgs_m_ByPlayer(lua_State* tolua_S)
+{
+  PlayerAcceptedAssetArgs* self = (PlayerAcceptedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ByPlayer'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_ByPlayer = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_Cards of class  CurrentCardsInHandArgs */
 #ifndef TOLUA_DISABLE_tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards
 static int tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards(lua_State* tolua_S)
@@ -1096,6 +1219,19 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_cclass(tolua_S,"CurrentPositioningArgs","CurrentPositioningArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"CurrentPositioningArgs");
   tolua_array(tolua_S,"m_Pos",tolua_get_LuaInterface_CurrentPositioningArgs_m_Pos,tolua_set_LuaInterface_CurrentPositioningArgs_m_Pos);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"PlayerDealingArgs","PlayerDealingArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"PlayerDealingArgs");
+  tolua_variable(tolua_S,"m_Who",tolua_get_PlayerDealingArgs_m_Who,tolua_set_PlayerDealingArgs_m_Who);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"PlayerRefusedAssetArgs","PlayerRefusedAssetArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"PlayerRefusedAssetArgs");
+  tolua_variable(tolua_S,"m_ByPlayer",tolua_get_PlayerRefusedAssetArgs_m_ByPlayer,tolua_set_PlayerRefusedAssetArgs_m_ByPlayer);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"PlayerAcceptedAssetArgs","PlayerAcceptedAssetArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"PlayerAcceptedAssetArgs");
+  tolua_variable(tolua_S,"m_Asset",tolua_get_PlayerAcceptedAssetArgs_m_Asset,tolua_set_PlayerAcceptedAssetArgs_m_Asset);
+  tolua_variable(tolua_S,"m_ByPlayer",tolua_get_PlayerAcceptedAssetArgs_m_ByPlayer,tolua_set_PlayerAcceptedAssetArgs_m_ByPlayer);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"CurrentCardsInHandArgs","CurrentCardsInHandArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"CurrentCardsInHandArgs");

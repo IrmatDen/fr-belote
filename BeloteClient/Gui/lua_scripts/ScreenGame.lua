@@ -36,6 +36,18 @@ function toPotentialAssetArgs(e)
     return tolua.cast(e,"const PotentialAssetArgs")
 end
 
+function toPlayerDealingArgs(e)
+    return tolua.cast(e,"const PlayerDealingArgs")
+end
+
+function toPlayerRefusedAssetArgs(e)
+    return tolua.cast(e,"const PlayerRefusedAssetArgs")
+end
+
+function toPlayerAcceptedAssetArgs(e)
+    return tolua.cast(e,"const PlayerAcceptedAssetArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -172,6 +184,13 @@ function onGameStarting(args)
 	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 end
 
+function onPlayerDealing(args)
+	local dealerArgs	= toPlayerDealingArgs(args)
+	local text			= "[font='DejaVuSans-8-Bold']" .. dealerArgs.m_Who .. " distribue"
+	
+	appendTextToChatBox(text)
+end
+
 function onCardsReceived(args)
 	local handContent	= toCurrentCardsInHandArgs(args)
 	local winMgr		= CEGUI.WindowManager:getSingleton()
@@ -222,6 +241,30 @@ function onAskAnotherAsset(args)
 		local assetImg = winMgr:getWindow("AssetImgAlternate" .. i)
 		assetImg:setProperty("Image", allAssets[i])
 	end
+end
+
+function onPlayerAcceptedAsset(args)
+	local a		= toPlayerAcceptedAssetArgs(args)
+	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " prend à "
+	
+	if a.m_Asset == "H" then
+		text = text .. "Coeur"
+	elseif a.m_Asset == "S" then
+		text = text .. "Pique"
+	elseif a.m_Asset == "D" then
+		text = text .. "Carreau"
+	else -- "C"
+		text = text .. "Trèfle"
+	end
+	
+	appendTextToChatBox(text)
+end
+
+function onPlayerRefusedAsset(args)
+	local a		= toPlayerRefusedAssetArgs(args)
+	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " passe"
+	
+	appendTextToChatBox(text)
 end
 
 -- Game zone events
@@ -397,7 +440,10 @@ client:subscribeEvent("TextBroadcasted", "onTextBroadcasted")
 client:subscribeEvent("SystemMessageBroadcasted", "onSystemMessageBroadcasted")
 client:subscribeEvent("CurrentPositioningSent", "onCurrentPositioningSent")
 client:subscribeEvent("GameStarting", "onGameStarting")
+client:subscribeEvent("PlayerDealing", "onPlayerDealing")
 client:subscribeEvent("CardsReceived", "onCardsReceived")
 client:subscribeEvent("PotentialAsset", "onPotentialAsset")
 client:subscribeEvent("AskRevealedAsset", "onAskRevealedAsset")
 client:subscribeEvent("AskAnotherAsset", "onAskAnotherAsset")
+client:subscribeEvent("PlayerAcceptedAsset", "onPlayerAcceptedAsset")
+client:subscribeEvent("PlayerRefusedAsset", "onPlayerRefusedAsset")

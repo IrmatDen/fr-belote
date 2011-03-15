@@ -20,10 +20,13 @@ const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
 const CEGUI::String ClientSocket::EventSystemMessageBroadcasted("SystemMessageBroadcasted");
 const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
 const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
+const CEGUI::String ClientSocket::EventPlayerDealing("PlayerDealing");
 const CEGUI::String ClientSocket::EventCardsReceived("CardsReceived");
 const CEGUI::String ClientSocket::EventPotentialAsset("PotentialAsset");
 const CEGUI::String ClientSocket::EventAskRevealedAsset("AskRevealedAsset");
 const CEGUI::String ClientSocket::EventAskAnotherAsset("AskAnotherAsset");
+const CEGUI::String ClientSocket::EventPlayerRefusedAsset("PlayerRefusedAsset");
+const CEGUI::String ClientSocket::EventPlayerAcceptedAsset("PlayerAcceptedAsset");
 
 // Define network state machine stuff...
 namespace
@@ -205,6 +208,14 @@ namespace
 					m_Self->m_GameStarting.push();
 					break;
 
+				case BCPT_Dealing:
+					{
+						PlayerDealingArgs args;
+						packet >> args.m_Who;
+						m_Self->m_PlayerDealing.push(args);
+					}
+					break;
+
 				case BCPT_CardsDealt:
 					{
 						CurrentCardsInHandArgs args;
@@ -228,6 +239,22 @@ namespace
 
 				case BCPT_AskAnotherAsset:
 					m_Self->m_AskAnotherAsset.push();
+					break;
+
+				case BCPT_AssetAccepted:
+					{
+						PlayerAcceptedAssetArgs args;
+						packet >> args.m_ByPlayer >> args.m_Asset;
+						m_Self->m_PlayerAcceptedAsset.push(args);
+					}
+					break;
+
+				case BCPT_AssetRefused:
+					{
+						PlayerRefusedAssetArgs args;
+						packet >> args.m_ByPlayer;
+						m_Self->m_PlayerRefusedAsset.push(args);
+					}
 					break;
 				}
 			}
@@ -553,10 +580,13 @@ ClientSocket::ClientSocket()
 	m_CardsReceived				(EventCardsReceived, EventNamespace),
 	m_CurrentPositioningSent	(EventCurrentPositioningSent, EventNamespace),
 	m_GameStarting				(EventGameStarting, EventNamespace),
+	m_PlayerDealing				(EventPlayerDealing, EventNamespace),
 	m_ConnectionStatus			(EventConnectionStatusUpdated, EventNamespace),
 	m_PotentialAsset			(EventPotentialAsset, EventNamespace),
 	m_AskRevealedAsset			(EventAskRevealedAsset, EventNamespace),
-	m_AskAnotherAsset			(EventAskAnotherAsset, EventNamespace)
+	m_AskAnotherAsset			(EventAskAnotherAsset, EventNamespace),
+	m_PlayerRefusedAsset		(EventPlayerRefusedAsset, EventNamespace),
+	m_PlayerAcceptedAsset		(EventPlayerAcceptedAsset, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -620,6 +650,7 @@ void ClientSocket::Update()
 		m_ConnectionStatus.process(this);
 
 	m_GameStarting.process(this);
+	m_PlayerDealing.process(this);
 	m_PlayerConnected.process(this);
 	m_TextBroadcasted.process(this);
 	m_SystemMessageBroadcasted.process(this);
@@ -628,6 +659,8 @@ void ClientSocket::Update()
 	m_PotentialAsset.process(this);
 	m_AskRevealedAsset.process(this);
 	m_AskAnotherAsset.process(this);
+	m_PlayerRefusedAsset.process(this);
+	m_PlayerAcceptedAsset.process(this);
 }
 
 void ClientSocket::Wait()

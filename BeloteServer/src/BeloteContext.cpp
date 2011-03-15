@@ -396,18 +396,19 @@ void BeloteContext::CardPlayed(const std::string &card)
 		[&] (Players::reference player) { player->GetSocket().Send(packet); }
 	);
 
-	// Update internal state
-	for (int i = 0; i != countof(d->m_PlayersHand[0]); i++)
-	{
-		if (d->m_PlayersHand[d->m_CurrentPlayer][i] == card)
-		{
-			std::swap(d->m_PlayersHand[d->m_CurrentPlayer][i], std::string());
-			break;
-		}
-	}
+	// Remove card from player's hand
+	// NB: the out of range index is *intentional*! We want the element past the end, to conform with STL iterators.
+	std::string *absoluteHandEnd	= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
+	std::string *end				= std::remove(d->m_PlayersHand[d->m_CurrentPlayer], absoluteHandEnd, card);
+	std::fill(end, absoluteHandEnd, std::string());
+
+	// Update played cards
 	d->m_RemainingCards[d->m_CurrentPlayer]--;
 	d->m_PlayedCards[d->m_CurrentlyPlayedCards] = card;
 	d->m_CurrentlyPlayedCards++;
+
+	// Next player!
+	// FIXME not the actual player in plenty of cases...
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 
 	if (d->m_CurrentlyPlayedCards == _PP_Count)

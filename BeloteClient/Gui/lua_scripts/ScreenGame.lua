@@ -14,6 +14,8 @@ local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "Butt
 local myPosition				= 0
 local currentPositionning		= { }
 
+local AssetTranslation = { H = "Coeur", S = "Pique", D = "Carreau", C = "Trèfle" }
+
 function toTextBroadcastedEventArgs(e)
     return tolua.cast(e,"const TextBroadcastedEventArgs")
 end
@@ -267,19 +269,16 @@ end
 
 function onPlayerAcceptedAsset(args)
 	local a		= toPlayerAcceptedAssetArgs(args)
-	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " prend à "
-	
-	if a.m_Asset == "H" then
-		text = text .. "Coeur"
-	elseif a.m_Asset == "S" then
-		text = text .. "Pique"
-	elseif a.m_Asset == "D" then
-		text = text .. "Carreau"
-	else -- "C"
-		text = text .. "Trèfle"
-	end
+	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer
+	text 		= text .. " prend à " .. AssetTranslation[a.m_Asset]
 	
 	appendTextToChatBox(text)
+	
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local ti		= winMgr:getWindow("TurnInfo")
+	local tiText	= "Preneur : " .. a.m_ByPlayer .. "\n"
+	tiText			= tiText .. "Atout : " .. AssetTranslation[a.m_Asset]
+	ti:setText(tiText)
 end
 
 function onPlayerRefusedAsset(args)

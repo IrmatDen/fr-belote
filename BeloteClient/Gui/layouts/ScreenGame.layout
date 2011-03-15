@@ -128,6 +128,14 @@
 						<Property Name="UnifiedAreaRect" Value="{{0.9,-60},{0.5,-20.5},{0.9,50},{0.5,20.5}}" />
 					</Window>
 				</Window>
+				<Window Type="OgreTray/StaticText" Name="TurnInfo" >
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="Text" >Preneur:
+					Atout:</Property>
+					<Property Name="FrameEnabled" Value="True" />
+					<Property Name="HorzFormatting" Value="LeftAligned" />
+					<Property Name="UnifiedAreaRect" Value="{{0,10},{0,15},{0,160},{0,75}}" />
+				</Window>
 				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-193},{0.5, 400},{1,-15}}" />
 				</Window>

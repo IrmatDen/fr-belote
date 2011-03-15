@@ -4,7 +4,6 @@
 #include <functional>
 #include <iterator>
 
-#include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 
 #include "Tools.h"
@@ -38,6 +37,42 @@ void BeloteContext::Reset()
 {
 	std::fill(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), Players::value_type(0));
 	std::fill(d->m_Players.begin(),d-> m_Players.end(), Players::value_type(0));
+}
+
+void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocket *sourcePlayer)
+{
+	BeloteContextPacketType bcpt;
+	packet >> bcpt;
+
+	switch(bcpt)
+	{
+	case BCPT_PlayerChoosePos:
+		{
+			std::string posName;
+			packet >> posName;
+			SetPlayerPos(sourcePlayer, posName);
+		}
+		break;
+					
+	case BCPT_StartGameRequest:
+		StartGame();
+		break;
+
+	case BCPT_AcceptAsset:
+		{
+			std::string colour;
+			packet >> colour;
+			AcceptAsset(colour);
+		}
+		break;
+					
+	case BCPT_RefuseAsset:
+		RefuseAsset();
+		break;
+
+	default:
+		break;
+	}
 }
 
 // Player management methods

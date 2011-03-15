@@ -108,7 +108,7 @@ namespace
 						break;
 
 					case PT_GameContextPacket:
-						HandleGameContextPacket(packet);
+						m_ServerSocket->GetBeloteContext()->HandleGameContextPacket(packet, m_ServerSocket);
 						break;
 
 					default:
@@ -120,43 +120,6 @@ namespace
 
 			Server			* m_Server;
 			ServerSocket	* m_ServerSocket;
-
-		private:
-			void HandleGameContextPacket(sf::Packet &packet)
-			{
-				BeloteContextPacketType bcpt;
-				packet >> bcpt;
-
-				switch(bcpt)
-				{
-				case BCPT_PlayerChoosePos:
-					{
-						std::string posName;
-						packet >> posName;
-						m_ServerSocket->GetBeloteContext()->SetPlayerPos(m_ServerSocket, posName);
-					}
-					break;
-					
-				case BCPT_StartGameRequest:
-					m_ServerSocket->GetBeloteContext()->StartGame();
-					break;
-
-				case BCPT_AcceptAsset:
-					{
-						std::string colour;
-						packet >> colour;
-						m_ServerSocket->GetBeloteContext()->AcceptAsset(colour);
-					}
-					break;
-					
-				case BCPT_RefuseAsset:
-					m_ServerSocket->GetBeloteContext()->RefuseAsset();
-					break;
-
-				default:
-					break;
-				}
-			}
 		};
 
 		struct Disconnected : public State

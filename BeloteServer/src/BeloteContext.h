@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <SFML/Config.hpp>
+#include <SFML/Network.hpp>
 
 #include "ServerSocket.h"
 #include "BeloteContextPackets.h"
@@ -49,6 +50,9 @@ public:
 	~BeloteContext();
 
 	void	Reset();
+
+	// Network reactions
+	void	HandleGameContextPacket(sf::Packet &packet, ServerSocket *sourcePlayer);
 
 	// Players' management
 	void	AddPlayer(ServerSocket *player);

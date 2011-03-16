@@ -564,9 +564,7 @@ void BeloteContext::CardPlayed(const std::string &card)
 		}
 		assert(winner < 4);
 
-		int winnerPos = GetNextPlayer(d->m_CurrentPlayer) + winner;
-		while (winnerPos >= _PP_Count)
-			winnerPos -= _PP_Count;
+		const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
 
 		d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
 

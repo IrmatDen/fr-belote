@@ -1,10 +1,15 @@
 #ifndef BELOTESERVER_SERVER_H
 #define BELOTESERVER_SERVER_H
 
+#include <boost/shared_ptr.hpp>
+
 #include <SFML/Network.hpp>
 
 class ServerSocket;
+typedef boost::shared_ptr<ServerSocket> ServerSocketPtr;
+
 class BeloteContext;
+typedef boost::shared_ptr<BeloteContext> BeloteContextPtr;
 
 class Server
 {
@@ -27,16 +32,17 @@ public:
 	void	Stop();
 
 private:
-	typedef std::vector<ServerSocket*>	Clients;
-	typedef Clients::iterator			ClientsIt;
-	typedef Clients::const_iterator		ClientsConstIt;
+	typedef std::vector<ServerSocketPtr>	Clients;
+	typedef Clients::iterator				ClientsIt;
+	typedef Clients::const_iterator			ClientsConstIt;
 
 	bool				m_Running;
 	sf::TcpListener		m_Listener;
 	Clients				m_Clients;
 	unsigned int		m_ClientsCount;
 
-	BeloteContext		* m_BeloteContext;
+	BeloteContextPtr	m_BeloteContext;
 };
+typedef boost::shared_ptr<Server>	ServerPtr;
 
 #endif

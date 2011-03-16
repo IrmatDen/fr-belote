@@ -54,14 +54,14 @@ namespace
 	{
 		struct WaitingForConnection : public State
 		{
-			WaitingForConnection(StateMachine *sm) : State(sm)	{ ; }
+			WaitingForConnection(StateMachinePtr sm) : State(sm)	{ ; }
 
 			virtual void	Enter()		{ m_StateMachine->Notify(NEC_ConnectionRequest); }
 		};
 	
 		struct Connecting : public State
 		{
-			Connecting(StateMachine *sm, sf::TcpSocket &socket)
+			Connecting(StateMachinePtr sm, sf::TcpSocket &socket)
 				: State(sm), m_Socket(socket)
 			{ ; }
 
@@ -98,7 +98,7 @@ namespace
 
 		struct Connected : public State
 		{
-			Connected(StateMachine *sm, ClientSocket *self)
+			Connected(StateMachinePtr sm, ClientSocket *self)
 				: State(sm), m_Self(self)
 			{ ; }
 
@@ -116,7 +116,7 @@ namespace
 
 		struct Idle : public State
 		{
-			Idle(StateMachine *sm, sf::TcpSocket &socket, ClientSocket *self)
+			Idle(StateMachinePtr sm, sf::TcpSocket &socket, ClientSocket *self)
 				: State(sm), m_Socket(socket), m_Self(self)
 			{ ; }
 
@@ -289,7 +289,7 @@ namespace
 
 		struct LobbyFull : public State
 		{
-			LobbyFull(StateMachine *sm, ClientSocket *self)
+			LobbyFull(StateMachinePtr sm, ClientSocket *self)
 				: State(sm), m_Self(self)
 			{ ; }
 
@@ -307,7 +307,7 @@ namespace
 
 		struct Disconnected : public State
 		{
-			Disconnected(StateMachine *sm, ClientSocket *self)
+			Disconnected(StateMachinePtr sm, ClientSocket *self)
 				: State(sm), m_Self(self)
 			{ ; }
 
@@ -332,6 +332,7 @@ namespace
 
 			sf::TcpSocket &	m_Socket;
 		};
+		typedef boost::shared_ptr<ActionBase>	ActionBasePtr;
 
 		struct Connect : public ActionBase
 		{
@@ -346,6 +347,7 @@ namespace
 
 			sf::IpAddress m_HostIP;
 		};
+		typedef boost::shared_ptr<Connect>	ConnectPtr;
 
 		struct SendName : public ActionBase
 		{
@@ -366,6 +368,7 @@ namespace
 
 			std::string		m_Utf8EncodedName;
 		};
+		typedef boost::shared_ptr<SendName>	SendNamePtr;
 
 		struct SendTextMessage : public ActionBase
 		{
@@ -386,6 +389,7 @@ namespace
 
 			std::string		m_Utf8EncodedText;
 		};
+		typedef boost::shared_ptr<SendTextMessage>	SendTextMessagePtr;
 
 		struct SendPosition : public ActionBase
 		{
@@ -404,6 +408,7 @@ namespace
 
 			std::string		m_PosName;
 		};
+		typedef boost::shared_ptr<SendPosition>	SendPositionPtr;
 
 		struct StartGame : public ActionBase
 		{
@@ -433,6 +438,7 @@ namespace
 
 			std::string		m_AssetColour;
 		};
+		typedef boost::shared_ptr<AcceptAsset>	AcceptAssetPtr;
 
 		struct RefuseAsset : public ActionBase
 		{
@@ -462,6 +468,7 @@ namespace
 
 			std::string		m_CardName;
 		};
+		typedef boost::shared_ptr<PlayCard>	PlayCardPtr;
 
 		struct Disconnect : public ActionBase
 		{
@@ -489,26 +496,26 @@ public:
 		m_Thread = new sf::Thread(&ClientSocketPrivate::ThreadEP, this);
 
 		// State machine definition
-		m_StateMachine = new StateMachine();
+		m_StateMachine = StateMachinePtr(new StateMachine());
 		
 		// States
-		m_StateWfc			= new States::WaitingForConnection(m_StateMachine);
-		m_StateConnecting	= new States::Connecting(m_StateMachine, m_Socket);
-		m_StateLobbyFull	= new States::LobbyFull(m_StateMachine, m_Self);
-		m_StateConnected	= new States::Connected(m_StateMachine, m_Self);
-		m_StateIdle			= new States::Idle(m_StateMachine, m_Socket, m_Self);
-		m_StateDisconnected	= new States::Disconnected(m_StateMachine, m_Self);
+		m_StateWfc			= StatePtr(new States::WaitingForConnection(m_StateMachine));
+		m_StateConnecting	= StatePtr(new States::Connecting(m_StateMachine, m_Socket));
+		m_StateLobbyFull	= StatePtr(new States::LobbyFull(m_StateMachine, m_Self));
+		m_StateConnected	= StatePtr(new States::Connected(m_StateMachine, m_Self));
+		m_StateIdle			= StatePtr(new States::Idle(m_StateMachine, m_Socket, m_Self));
+		m_StateDisconnected	= StatePtr(new States::Disconnected(m_StateMachine, m_Self));
 
 		// Actions
-		m_ActionConnect		= new Actions::Connect(m_Socket);
-		m_ActionSendName	= new Actions::SendName(m_Socket);
-		m_ActionSendTxtMsg	= new Actions::SendTextMessage(m_Socket);
-		m_ActionSendPos		= new Actions::SendPosition(m_Socket);
-		m_ActionStartGame	= new Actions::StartGame(m_Socket);
-		m_ActionAcceptAsset	= new Actions::AcceptAsset(m_Socket);
-		m_ActionRefuseAsset	= new Actions::RefuseAsset(m_Socket);
-		m_ActionPlayCard	= new Actions::PlayCard(m_Socket);
-		m_ActionDisconnect	= new Actions::Disconnect(m_Socket);
+		m_ActionConnect		= Actions::ConnectPtr			(new Actions::Connect(m_Socket));
+		m_ActionSendName	= Actions::SendNamePtr			(new Actions::SendName(m_Socket));
+		m_ActionSendTxtMsg	= Actions::SendTextMessagePtr	(new Actions::SendTextMessage(m_Socket));
+		m_ActionSendPos		= Actions::SendPositionPtr		(new Actions::SendPosition(m_Socket));
+		m_ActionStartGame	= ActionPtr						(new Actions::StartGame(m_Socket));
+		m_ActionAcceptAsset	= Actions::AcceptAssetPtr		(new Actions::AcceptAsset(m_Socket));
+		m_ActionRefuseAsset	= ActionPtr						(new Actions::RefuseAsset(m_Socket));
+		m_ActionPlayCard	= Actions::PlayCardPtr			(new Actions::PlayCard(m_Socket));
+		m_ActionDisconnect	= ActionPtr						(new Actions::Disconnect(m_Socket));
 		
 		// Transitions
 		m_StateWfc			->AddTransition(NEC_ConnectionRequest,		m_StateConnecting,		m_ActionConnect		);
@@ -606,24 +613,24 @@ private:
 	bool	m_DisconnectRequested;
 
 	// State machine
-	StateMachine	* m_StateMachine;
+	StateMachinePtr	m_StateMachine;
 
-	State		* m_StateWfc,
-				* m_StateConnecting,
-				* m_StateConnected,
-				* m_StateLobbyFull,
-				* m_StateIdle,
-				* m_StateDisconnected;
+	StatePtr	m_StateWfc,
+				m_StateConnecting,
+				m_StateConnected,
+				m_StateLobbyFull,
+				m_StateIdle,
+				m_StateDisconnected;
 	
-	Actions::Connect			* m_ActionConnect;
-	Actions::SendName			* m_ActionSendName;
-	Actions::SendTextMessage	* m_ActionSendTxtMsg;
-	Actions::SendPosition		* m_ActionSendPos;
-	Action						* m_ActionStartGame;
-	Actions::AcceptAsset		* m_ActionAcceptAsset;
-	Action						* m_ActionRefuseAsset;
-	Action						* m_ActionDisconnect;
-	Actions::PlayCard			* m_ActionPlayCard;
+	Actions::ConnectPtr			m_ActionConnect;
+	Actions::SendNamePtr		m_ActionSendName;
+	Actions::SendTextMessagePtr	m_ActionSendTxtMsg;
+	Actions::SendPositionPtr	m_ActionSendPos;
+	ActionPtr					m_ActionStartGame;
+	Actions::AcceptAssetPtr		m_ActionAcceptAsset;
+	ActionPtr					m_ActionRefuseAsset;
+	ActionPtr					m_ActionDisconnect;
+	Actions::PlayCardPtr		m_ActionPlayCard;
 };
 
 ClientSocket::ClientSocket()

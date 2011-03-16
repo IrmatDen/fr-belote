@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
+
 #include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
 
@@ -11,6 +13,7 @@
 #include "BeloteContextPackets.h"
 
 class Server;
+typedef boost::shared_ptr<Server> ServerPtr;
 
 class BeloteContext
 {
@@ -49,18 +52,18 @@ private:
 	static const std::string ValueOrderAtAsset;
 
 public:
-	BeloteContext(Server *server);
+	BeloteContext(ServerPtr server);
 	~BeloteContext();
 
 	void	Reset();
 
 	// Network reactions
-	void	HandleGameContextPacket(sf::Packet &packet, ServerSocket *sourcePlayer);
+	void	HandleGameContextPacket(sf::Packet &packet, ServerSocketPtr sourcePlayer);
 
 	// Players' management
-	void	AddPlayer(ServerSocket *player);
-	void	DropPlayer(ServerSocket *player);
-	void	SetPlayerPos(ServerSocket *player, const std::string &posName);
+	void	AddPlayer(ServerSocketPtr player);
+	void	DropPlayer(ServerSocketPtr player);
+	void	SetPlayerPos(ServerSocketPtr player, const std::string &posName);
 
 	// Game management
 	void	StartGame();
@@ -69,10 +72,10 @@ public:
 
 private:
 	void	SendCurrentPositioningToAll();
-	void	SendCurrentPositioningTo(ServerSocket *player);
+	void	SendCurrentPositioningTo(ServerSocketPtr player);
 
 	void	NotifyStarting();
-	void	NotifyTurnEvent(TurnEvent event, ServerSocket *player = 0);
+	void	NotifyTurnEvent(TurnEvent event, ServerSocketPtr player = ServerSocketPtr());
 	void	AskForAsset();
 
 	void	InitDeck();
@@ -98,13 +101,13 @@ private:
 	void	SendCurrentHands();
 
 private:
-	typedef std::vector<ServerSocket*>	Players;
-	typedef Players::iterator			PlayersIt;
-	typedef Players::const_iterator		PlayersConstIt;
+	typedef std::vector<ServerSocketPtr>	Players;
+	typedef Players::iterator				PlayersIt;
+	typedef Players::const_iterator			PlayersConstIt;
 
 	struct ContextData
 	{
-		Server		* m_Server;
+		ServerPtr	m_Server;
 		Players		m_UnplacedPlayers;
 		Players		m_Players;
 
@@ -126,6 +129,7 @@ private:
 		int				m_CurrentlyPlayedCards;
 		std::string		m_PlayedCards[_PP_Count];
 	};
+	typedef boost::shared_ptr<ContextData>	ContextDataPtr;
 
 	// Tools
 private:
@@ -145,9 +149,9 @@ private:
 		}
 	};
 
-	struct CardDefToScore : public std::binary_function<ContextData*, std::string, size_t>
+	struct CardDefToScore : public std::binary_function<ContextDataPtr, std::string, size_t>
 	{
-		size_t operator()(const ContextData * d, const std::string &card) const
+		size_t operator()(const ContextDataPtr d, const std::string &card) const
 		{
 			if (card.size() == 0)
 				return 0;
@@ -163,7 +167,9 @@ private:
 	};
 
 private:
-	ContextData *d;
+	ContextDataPtr d;
 };
+
+typedef boost::shared_ptr<BeloteContext> BeloteContextPtr;
 
 #endif

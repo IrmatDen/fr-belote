@@ -19,10 +19,9 @@ const std::string	BeloteContext::ValueOrder("789JQK101");
 const std::string	BeloteContext::ValueOrderAtAsset("78QK1019J");
 const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "North", "East", "Unknown" };
 
-BeloteContext::BeloteContext(Server *server)
-	: d(0)
+BeloteContext::BeloteContext(ServerPtr server)
 {
-	d = new ContextData();
+	d = ContextDataPtr(new ContextData());
 
 	d->m_Server = server;
 
@@ -34,16 +33,17 @@ BeloteContext::BeloteContext(Server *server)
 
 BeloteContext::~BeloteContext()
 {
-	delete d;
 }
 
 void BeloteContext::Reset()
 {
-	std::fill(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), Players::value_type(0));
-	std::fill(d->m_Players.begin(),d->m_Players.end(), Players::value_type(0));
+	auto resetPlayerPtr = [] (ServerSocketPtr p) { p.reset(); } ;
+
+	std::for_each(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), resetPlayerPtr);
+	std::for_each(d->m_Players.begin(),d->m_Players.end(), resetPlayerPtr);
 }
 
-void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocket *sourcePlayer)
+void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocketPtr sourcePlayer)
 {
 	BeloteContextPacketType bcpt;
 	packet >> bcpt;
@@ -88,19 +88,19 @@ void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocket *so
 }
 
 // Player management methods
-void BeloteContext::AddPlayer(ServerSocket *player)
+void BeloteContext::AddPlayer(ServerSocketPtr player)
 {
 	d->m_UnplacedPlayers.push_back(player);
 	SendCurrentPositioningTo(player);
 }
 
-void BeloteContext::DropPlayer(ServerSocket *player)
+void BeloteContext::DropPlayer(ServerSocketPtr player)
 {
 	PlayersIt playerIt = std::find(d->m_Players.begin(), d->m_Players.end(), player);
 	if (playerIt != d->m_Players.end())
 	{
 		const size_t posIdx = std::distance(d->m_Players.begin(), playerIt);
-		d->m_Players[posIdx]	= 0;
+		d->m_Players[posIdx].reset();
 	
 		// TODO Setup phase only? replace by IA in game?
 		SendCurrentPositioningToAll();
@@ -112,7 +112,7 @@ void BeloteContext::DropPlayer(ServerSocket *player)
 	}
 }
 
-void BeloteContext::SetPlayerPos(ServerSocket *player, const std::string &posName)
+void BeloteContext::SetPlayerPos(ServerSocketPtr player, const std::string &posName)
 {
 	// Find position index.
 	const std::string* posPtr	= std::find(PlayerPositionStrings, PlayerPositionStrings + sizeof(PlayerPositionStrings), posName);
@@ -132,8 +132,8 @@ void BeloteContext::SetPlayerPos(ServerSocket *player, const std::string &posNam
 		playerIt = std::find(d->m_Players.begin(), d->m_Players.end(), player);
 		if (playerIt != d->m_Players.end())
 		{
-			(*playerIt)			= Players::value_type(0);
-			d->m_Players[posIdx]	= player;
+			(*playerIt).reset();
+			d->m_Players[posIdx] = player;
 		}
 		else
 		{
@@ -152,7 +152,7 @@ void BeloteContext::SendCurrentPositioningToAll()
 	std::for_each(d->m_Players.begin(),			d->m_Players.end(),			action);
 }
 
-void BeloteContext::SendCurrentPositioningTo(ServerSocket *player)
+void BeloteContext::SendCurrentPositioningTo(ServerSocketPtr player)
 {
 	sf::Packet packet;
 	packet << PT_GameContextPacket << BCPT_CurrentPositionning;
@@ -600,7 +600,7 @@ void BeloteContext::OrderHands()
 		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
 }
 
-void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocket *player /* = 0 */)
+void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 {
 	sf::Packet packet;
 	packet << PT_GameContextPacket;

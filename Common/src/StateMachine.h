@@ -4,43 +4,53 @@
 #include <queue>
 #include <map>
 
-// Saying it is a state machine is somewhat pompous. It's an overly
-// simplified one, just to handle network protocols.
+#include <boost/shared_ptr.hpp>
+
+// Forward decl
+struct State;
+typedef boost::shared_ptr<State>	StatePtr;
+
+class StateMachine;
+typedef boost::shared_ptr<StateMachine>	StateMachinePtr;
 
 typedef unsigned int EventCode;
 
+//! Action performed while transitionning from state s1 to state s2.
 struct Action
 {
 	virtual ~Action()		{ ; }
 
 	virtual void operator()() = 0;
 };
+typedef boost::shared_ptr<Action>	ActionPtr;
 
-struct State;
+//! Transition defines how the SM goes from state s1 to state s2.
 struct Transition
 {
-	virtual ~Transition()		{ ; }
+	Transition()				{ ; }
 
-	Transition() : m_Source(0), m_Target(0), m_Action(0)	{ ; }
-	Transition(State *src, State *dst, Action *a) : m_Source(src), m_Target(dst), m_Action(a)	{ ; }
+	Transition(StatePtr src, StatePtr dst, ActionPtr a) : m_Source(src), m_Target(dst), m_Action(a)	{ ; }
 
 	void	Execute();
 
-	State *		m_Source;
-	State *		m_Target;
-	Action *	m_Action;
+	StatePtr	m_Source;
+	StatePtr	m_Target;
+	ActionPtr	m_Action;
 };
+typedef boost::shared_ptr<Transition>	TransitionPtr;
 
-class StateMachine;
+//! The state class is responsible of the main job: eventual enter/leave reaction, as well as eventually performing some stuff while the state is active.
 struct State
 {
 public:
-	State(StateMachine *sm) : m_StateMachine(sm)	{ ; }
+	State(StateMachinePtr sm) : m_StateMachine(sm)	{ ; }
 	virtual ~State()								{ ; }
 
 	// Setup
-	void		AddTransition(EventCode evt, State *target)				{ AddTransition(evt, target, 0); }
-	void		AddTransition(EventCode evt, State *target, Action *a)	{ m_EventMapping[evt] = new Transition(this, target, a); }
+	void		AddTransition(EventCode evt, StatePtr target, ActionPtr a = ActionPtr())
+	{
+		m_EventMapping[evt] = TransitionPtr(new Transition(StatePtr(this), target, a));
+	}
 
 	// Infos
 	bool		CanHandleEvent(EventCode evt) const				{ return m_EventMapping.find(evt) != m_EventMapping.end(); }
@@ -52,12 +62,12 @@ public:
 	virtual void	Leave()						{ ; }
 
 protected:
-	StateMachine *		m_StateMachine;
+	StateMachinePtr		m_StateMachine;
 
 private:
-	typedef std::map<EventCode, Transition*>					EventMap;
-	typedef std::map<EventCode, Transition*>::iterator			EventMapIter;
-	typedef std::map<EventCode, Transition*>::const_iterator	EventMapConstIter;
+	typedef std::map<EventCode, TransitionPtr>					EventMap;
+	typedef std::map<EventCode, TransitionPtr>::iterator		EventMapIter;
+	typedef std::map<EventCode, TransitionPtr>::const_iterator	EventMapConstIter;
 
 	EventMap			m_EventMapping;
 };
@@ -65,10 +75,10 @@ private:
 class StateMachine
 {
 public:
-	StateMachine() : m_CurrentState(0)	{ ; }
-	virtual ~StateMachine()				{ ; }
+	StateMachine()				{ ; }
+	virtual ~StateMachine()		{ ; }
 
-	void	Start(State *startState)
+	void	Start(StatePtr startState)
 	{
 		m_StopFlag		= false;
 		m_CurrentState	= startState;
@@ -83,7 +93,7 @@ public:
 	bool	IsStopped() const			{ return m_StopFlag; }
 
 private:
-	State *					m_CurrentState;
+	StatePtr				m_CurrentState;
 	std::queue<EventCode>	m_EventQueue;
 	bool					m_StopFlag;
 };

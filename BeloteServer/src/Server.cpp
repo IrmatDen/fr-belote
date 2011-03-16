@@ -12,18 +12,17 @@
 
 Server::Server()
 {
-	m_BeloteContext = new BeloteContext(this);
+	m_BeloteContext = BeloteContextPtr(new BeloteContext(ServerPtr(this)));
 
 	m_Clients.resize(MAX_CLIENTS);
 	std::generate(m_Clients.begin(), m_Clients.end(),
 			[&] () -> Clients::value_type
-			{ return new ServerSocket(this, m_BeloteContext); }
+			{ return ServerSocketPtr(new ServerSocket(ServerPtr(this), m_BeloteContext)); }
 		);
 }
 
 Server::~Server()
 {
-	std::for_each(m_Clients.begin(), m_Clients.end(), [] (Clients::reference ref) { delete ref; } );
 }
 
 void Server::Start()

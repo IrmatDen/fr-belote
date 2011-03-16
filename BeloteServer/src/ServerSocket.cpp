@@ -31,7 +31,7 @@ namespace
 		
 			sf::TcpSocketPtr	m_Socket;
 		};
-		typedef boost::shared_ptr<Base>	BasePtr;
+		typedef std::shared_ptr<Base>	BasePtr;
 
 		struct ConnectionRequest : public Base
 		{
@@ -139,7 +139,7 @@ namespace
 
 			sf::TcpSocketPtr	m_Socket;
 		};
-		typedef boost::shared_ptr<Base>	BasePtr;
+		typedef std::shared_ptr<Base>	BasePtr;
 
 		struct AcceptConnection : public Base
 		{
@@ -183,7 +183,7 @@ namespace
 
 			std::string		m_ClientName;
 		};
-		typedef boost::shared_ptr<BroadcastClientConnected>	BroadcastClientConnectedPtr;
+		typedef std::shared_ptr<BroadcastClientConnected>	BroadcastClientConnectedPtr;
 
 		struct BroadcastClientDisconnected : public Base
 		{
@@ -196,7 +196,7 @@ namespace
 
 			std::string		m_ClientName;
 		};
-		typedef boost::shared_ptr<BroadcastClientDisconnected>	BroadcastClientDisconnectedPtr;
+		typedef std::shared_ptr<BroadcastClientDisconnected>	BroadcastClientDisconnectedPtr;
 
 		struct BroadcastTextMessage : public Base
 		{
@@ -213,7 +213,7 @@ namespace
 			std::string		m_ClientName,
 							m_Message;
 		};
-		typedef boost::shared_ptr<BroadcastTextMessage>	BroadcastTextMessagePtr;
+		typedef std::shared_ptr<BroadcastTextMessage>	BroadcastTextMessagePtr;
 
 		struct Disconnect : public Base
 		{
@@ -226,7 +226,7 @@ namespace
 
 			std::string		m_ClientName;
 		};
-		typedef boost::shared_ptr<Disconnect>	DisconnectPtr;
+		typedef std::shared_ptr<Disconnect>	DisconnectPtr;
 	}
 }
 
@@ -361,7 +361,6 @@ private:
 ServerSocket::ServerSocket(ServerPtr server, BeloteContextPtr beloteContext)
 	: m_BeloteContext(beloteContext)
 {
-	m_Socket	= sf::TcpSocketPtr(new sf::TcpSocket);
 	m_priv		= ServerSocketPrivatePtr(new ServerSocketPrivate(server, ServerSocketPtr(this)));
 }
 
@@ -374,11 +373,11 @@ bool ServerSocket::CheckConnection(sf::TcpListener &listener)
 	if (IsConnected())
 		return true;
 
-	if (listener.Accept(*m_Socket) != sf::Socket::Done)
+	if (listener.Accept(m_Socket) != sf::Socket::Done)
 		return false;
 
-	m_Socket->SetBlocking(false);
-	m_priv->SetSocket(m_Socket);
+	m_Socket.SetBlocking(false);
+	m_priv->SetSocket(sf::TcpSocketPtr(&m_Socket, null_deleter()));
 	m_priv->Start();
 
 	return true;
@@ -412,6 +411,6 @@ void ServerSocket::SendSystemMessage(const std::string &msg)
 void ServerSocket::CloseConnection()
 {
 	// We want to be sure that the clients will get his disconnection message.
-	m_Socket->SetBlocking(true);
+	m_Socket.SetBlocking(true);
 	m_priv->Abort();
 }

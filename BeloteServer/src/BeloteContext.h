@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
-
 #include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
 
@@ -13,7 +11,7 @@
 #include "BeloteContextPackets.h"
 
 class Server;
-typedef boost::shared_ptr<Server> ServerPtr;
+typedef std::shared_ptr<Server> ServerPtr;
 
 class BeloteContext
 {
@@ -129,7 +127,7 @@ private:
 		int				m_CurrentlyPlayedCards;
 		std::string		m_PlayedCards[_PP_Count];
 	};
-	typedef boost::shared_ptr<ContextData>	ContextDataPtr;
+	typedef std::shared_ptr<ContextData>	ContextDataPtr;
 
 	// Tools
 private:
@@ -170,6 +168,6 @@ private:
 	ContextDataPtr d;
 };
 
-typedef boost::shared_ptr<BeloteContext> BeloteContextPtr;
+typedef std::shared_ptr<BeloteContext> BeloteContextPtr;
 
 #endif

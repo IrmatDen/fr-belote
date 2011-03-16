@@ -332,7 +332,7 @@ namespace
 
 			sf::TcpSocket &	m_Socket;
 		};
-		typedef boost::shared_ptr<ActionBase>	ActionBasePtr;
+		typedef std::shared_ptr<ActionBase>	ActionBasePtr;
 
 		struct Connect : public ActionBase
 		{
@@ -347,7 +347,7 @@ namespace
 
 			sf::IpAddress m_HostIP;
 		};
-		typedef boost::shared_ptr<Connect>	ConnectPtr;
+		typedef std::shared_ptr<Connect>	ConnectPtr;
 
 		struct SendName : public ActionBase
 		{
@@ -368,7 +368,7 @@ namespace
 
 			std::string		m_Utf8EncodedName;
 		};
-		typedef boost::shared_ptr<SendName>	SendNamePtr;
+		typedef std::shared_ptr<SendName>	SendNamePtr;
 
 		struct SendTextMessage : public ActionBase
 		{
@@ -389,7 +389,7 @@ namespace
 
 			std::string		m_Utf8EncodedText;
 		};
-		typedef boost::shared_ptr<SendTextMessage>	SendTextMessagePtr;
+		typedef std::shared_ptr<SendTextMessage>	SendTextMessagePtr;
 
 		struct SendPosition : public ActionBase
 		{
@@ -408,7 +408,7 @@ namespace
 
 			std::string		m_PosName;
 		};
-		typedef boost::shared_ptr<SendPosition>	SendPositionPtr;
+		typedef std::shared_ptr<SendPosition>	SendPositionPtr;
 
 		struct StartGame : public ActionBase
 		{
@@ -438,7 +438,7 @@ namespace
 
 			std::string		m_AssetColour;
 		};
-		typedef boost::shared_ptr<AcceptAsset>	AcceptAssetPtr;
+		typedef std::shared_ptr<AcceptAsset>	AcceptAssetPtr;
 
 		struct RefuseAsset : public ActionBase
 		{
@@ -468,7 +468,7 @@ namespace
 
 			std::string		m_CardName;
 		};
-		typedef boost::shared_ptr<PlayCard>	PlayCardPtr;
+		typedef std::shared_ptr<PlayCard>	PlayCardPtr;
 
 		struct Disconnect : public ActionBase
 		{

@@ -4,14 +4,12 @@
 #include <queue>
 #include <map>
 
-#include <boost/shared_ptr.hpp>
-
 // Forward decl
 struct State;
-typedef boost::shared_ptr<State>	StatePtr;
+typedef std::shared_ptr<State>	StatePtr;
 
 class StateMachine;
-typedef boost::shared_ptr<StateMachine>	StateMachinePtr;
+typedef std::shared_ptr<StateMachine>	StateMachinePtr;
 
 typedef unsigned int EventCode;
 
@@ -22,7 +20,7 @@ struct Action
 
 	virtual void operator()() = 0;
 };
-typedef boost::shared_ptr<Action>	ActionPtr;
+typedef std::shared_ptr<Action>	ActionPtr;
 
 //! Transition defines how the SM goes from state s1 to state s2.
 struct Transition
@@ -37,7 +35,7 @@ struct Transition
 	StatePtr	m_Target;
 	ActionPtr	m_Action;
 };
-typedef boost::shared_ptr<Transition>	TransitionPtr;
+typedef std::shared_ptr<Transition>	TransitionPtr;
 
 //! The state class is responsible of the main job: eventual enter/leave reaction, as well as eventually performing some stuff while the state is active.
 struct State

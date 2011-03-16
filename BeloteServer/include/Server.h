@@ -1,15 +1,13 @@
 #ifndef BELOTESERVER_SERVER_H
 #define BELOTESERVER_SERVER_H
 
-#include <boost/shared_ptr.hpp>
-
 #include <SFML/Network.hpp>
 
 class ServerSocket;
-typedef boost::shared_ptr<ServerSocket> ServerSocketPtr;
+typedef std::shared_ptr<ServerSocket> ServerSocketPtr;
 
 class BeloteContext;
-typedef boost::shared_ptr<BeloteContext> BeloteContextPtr;
+typedef std::shared_ptr<BeloteContext> BeloteContextPtr;
 
 class Server
 {
@@ -43,6 +41,6 @@ private:
 
 	BeloteContextPtr	m_BeloteContext;
 };
-typedef boost::shared_ptr<Server>	ServerPtr;
+typedef std::shared_ptr<Server>	ServerPtr;
 
 #endif

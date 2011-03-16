@@ -2,3 +2,5 @@
 * Les clients devraient pinger le serveur régulièrement
 * Permettre aux joueurs de se déplacer une fois placé sur la table
 * Ne faire disparaître le tas de cartes jouées qu'une fois que le gagnant du tour joue
+* utiliser boost.shared_ptr
+* utiliser boost.array

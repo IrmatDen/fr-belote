@@ -1,8 +1,11 @@
 #include <iostream>
 #include <algorithm>
 #include <bitset>
+#include <cassert>
 #include <functional>
 #include <iterator>
+#include <limits>
+#include <numeric>
 
 #include <SFML/System.hpp>
 
@@ -13,6 +16,8 @@
 #include "BeloteContextPackets.h"
 #include "Server.h"
 
+const std::string	BeloteContext::ValueOrder("789JQK101");
+const std::string	BeloteContext::ValueOrderAtAsset("78QK1019J");
 const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "North", "East", "Unknown" };
 
 BeloteContext::BeloteContext(Server *server)
@@ -389,6 +394,7 @@ void BeloteContext::AskToPlay()
 			{
 				if (PlayerHasHigherCardThan())
 				{
+					//FIXME
 					DumpAllCardsInHandTo(playableCards);
 				}
 				else
@@ -410,15 +416,16 @@ void BeloteContext::AskToPlay()
 			}
 			else
 			{
-				if (PlayerMustCut() && hasAssetsInHand)
+				if (hasAssetsInHand && PlayerMustCut())
 				{
-					if (PlayerCanCut())
+					if (PlayerCanOvercut())
 					{
+						//FIXME
 						DumpAllCardsInHandTo(playableCards);
 					}
 					else
 					{
-						DumpAllCardsInHandTo(playableCards);
+						DumpColoursInHandTo(d->m_CurrentAsset, playableCards);
 					}
 				}
 				else
@@ -456,9 +463,9 @@ bool BeloteContext::PlayerHasColourInHand(const std::string &colour) const
 {
 	const std::string *handBegin		= d->m_PlayersHand[d->m_CurrentPlayer];
 	const std::string *absoluteHandEnd	= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
-	const std::string *result = std::find_if(handBegin,
-											 absoluteHandEnd,
-											 std::bind1st(IsSameColour(), colour));
+	const std::string *result			= std::find_if(	handBegin,
+														absoluteHandEnd,
+														std::bind1st(IsSameColour(), colour));
 	return result != absoluteHandEnd;
 }
 
@@ -469,10 +476,40 @@ bool BeloteContext::PlayerHasHigherCardThan() const
 
 bool BeloteContext::PlayerMustCut() const
 {
-	return false;
+	assert(d->m_CurrentlyPlayedCards > 0);
+	assert(d->m_PlayedCards[0].front() != d->m_CurrentAsset.front());
+
+	// If only an opponent has played, then player should cut.
+	if (d->m_CurrentlyPlayedCards == 1)
+		return true;
+
+	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
+	const std::string *begin	= d->m_PlayedCards;
+	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
+
+	// Transform played card in a "standard" score.
+	size_t cardScores[3]		= { 0 };
+	std::transform(begin, end, cardScores,
+					[&] (const std::string &c) -> size_t
+					{
+						if (c.front() != d->m_PlayedCards[0].front())
+						{
+							if (c.front() != d->m_CurrentAsset.front())
+								return 0;
+							else
+								return 100 + ValueOrderAtAsset.rfind(c.c_str() + 1);
+						}
+						return ValueOrder.rfind(c.c_str() + 1);
+					} );
+	
+	// Check if partner's card is not the master.
+	if (partnerCardIndex == 0)
+		return cardScores[0] < cardScores[1];
+
+	return !(cardScores[1] > cardScores[0] && cardScores[1] > cardScores[2]);
 }
 
-bool BeloteContext::PlayerCanCut() const
+bool BeloteContext::PlayerCanOvercut() const
 {
 	return false;
 }
@@ -521,11 +558,9 @@ void BeloteContext::OrderHands()
 						if (c1ColourIdx < c2ColourIdx)	return true;
 						if (c2ColourIdx < c1ColourIdx)	return false;
 						
-						static const std::string valueOrder("789JQK101");
-						static const std::string valueOrderAtAsset("78QK1019J");
 						const bool		isAsset		= (d->m_CurrentAsset != "" && d->m_CurrentAsset.front() == c1.front());
-						const size_t	c1ValueIdx	= (isAsset ? valueOrderAtAsset : valueOrder).rfind(c1.c_str() + 1),
-										c2ValueIdx	= (isAsset ? valueOrderAtAsset : valueOrder).rfind(c2.c_str() + 1);
+						const size_t	c1ValueIdx	= (isAsset ? ValueOrderAtAsset : ValueOrder).rfind(c1.c_str() + 1),
+										c2ValueIdx	= (isAsset ? ValueOrderAtAsset : ValueOrder).rfind(c2.c_str() + 1);
 						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
 					};
 

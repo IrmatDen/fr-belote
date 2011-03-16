@@ -45,6 +45,9 @@ private:
 		TE_TurnStarting,
 	};
 
+	static const std::string ValueOrder;
+	static const std::string ValueOrderAtAsset;
+
 public:
 	BeloteContext(Server *server);
 	~BeloteContext();
@@ -84,7 +87,7 @@ private:
 	bool	PlayerHasColourInHand(const std::string &colour) const;
 	bool	PlayerHasHigherCardThan() const;
 	bool	PlayerMustCut() const;
-	bool	PlayerCanCut() const;
+	bool	PlayerCanOvercut() const;
 
 	void	DumpAllCardsInHandTo(std::vector<std::string> &out) const;
 	void	DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const;
@@ -106,7 +109,7 @@ private:
 	{
 		bool operator()(const std::string &testedColour, const std::string &card) const
 		{
-			return card.front() == testedColour.front();
+			return card.size() > 0 && card.front() == testedColour.front();
 		}
 	};
 

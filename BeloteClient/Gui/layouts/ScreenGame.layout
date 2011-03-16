@@ -5,6 +5,23 @@
 	<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
 		<Window Type="DefaultWindow" Name="UIPanel" >
 			<Property Name="UnifiedAreaRect" Value="{{1,-240},{0,0},{1,0},{1,0}}" />
+			<Window Type="OgreTray/FrameWindow" Name="UIPanel/Scores" >
+				<Property Name="Text" Value="Scores" />
+				<Property Name="CaptionFont" Value="DejaVuSans-10" />
+				<Property Name="InheritsAlpha" Value="False" />
+				<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
+				<Property Name="TitlebarEnabled" Value="True" />
+				<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.99,0},{0.5,0}}" />
+				<Window Type="OgreTray/MultiColumnList" Name="UIPanel/Scores/Table" >
+					<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.98,0},{1,0}}" />
+					<Property Name="ColumnHeader" Value="text:[font='DejaVuSans-8']          Eux width:{0.499,0} id:0" />
+					<Property Name="ColumnHeader" Value="text:[font='DejaVuSans-8']          Nous width:{0.499,0} id:1" />
+					<Property Name="ColumnsMovable" Value="True" />
+					<Property Name="ColumnsSizable" Value="False" />
+					<Property Name="HorizontalAlignment" Value="CentreAligned" />
+					<Property Name="SortSettingEnabled" Value="False" />
+				</Window>
+			</Window>
             <Window Type="OgreTray/Button" Name="UIPanel/ButtonQuitTable" >
                 <Property Name="Text" Value="Retour au menu" />
                 <Property Name="Font" Value="DejaVuSans-8" />

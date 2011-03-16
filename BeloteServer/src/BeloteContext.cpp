@@ -249,6 +249,7 @@ void BeloteContext::ShuffleDeck()
 void BeloteContext::PreTurn()
 {
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
+	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
 
 	NotifyTurnEvent(TE_Dealing, d->m_Players[d->m_CurrentDealer]);
 	DealFirstPart();
@@ -573,7 +574,15 @@ void BeloteContext::CardPlayed(const std::string &card)
 
 		ComputeAndReportTurnScore(d->m_CurrentPlayer);
 
-		StartTurn();
+		if (d->m_RemainingCards[0] != 0)
+		{
+			StartTurn();
+		}
+		else
+		{
+			d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
+			PreTurn();
+		}
 	}
 	else
 	{

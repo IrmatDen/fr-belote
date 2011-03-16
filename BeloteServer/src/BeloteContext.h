@@ -121,6 +121,7 @@ private:
 		Players		m_Players;
 
 		sf::Uint32		m_Scores[_TI_Count];
+
 		Deck			m_Deck;
 		int				m_CurrentDeckPos;
 

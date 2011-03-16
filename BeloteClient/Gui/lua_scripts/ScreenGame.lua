@@ -193,6 +193,15 @@ function updateTurnInfoBox(ourScore, theirScore)
 	ti:setText(tiText)
 end
 
+function cleanedPlayedCardsArea()
+	local winMgr		= CEGUI.WindowManager:getSingleton()
+	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
+	local playedCardsCount	= playedArea:getChildCount() - 1
+	while playedArea:getChildCount() > 0 do
+		winMgr:destroyWindow(playedArea:getChildAtIdx(0))
+	end
+end
+
 -----------------------------------------
 -- Start of handler functions
 -----------------------------------------
@@ -241,9 +250,6 @@ function onGameStarting(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameSetup"):setVisible(false)
 	winMgr:getWindow("GameInProgress"):setVisible(true)
-	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
-	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
-	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 	
 	setupPlayersName()
 end
@@ -253,6 +259,13 @@ function onPlayerDealing(args)
 	local text			= "[font='DejaVuSans-8-Bold']" .. dealerArgs.m_Who .. " distribue"
 	
 	appendTextToChatBox(text)
+	
+	cleanedPlayedCardsArea()
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
+	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
+	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 end
 
 function onCardsReceived(args)
@@ -333,13 +346,7 @@ function onTurnStarting(args)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(false)
 	
-	-- Clean the area containing played cards
-	local winMgr		= CEGUI.WindowManager:getSingleton()
-	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
-	local playedCardsCount	= playedArea:getChildCount() - 1
-	while playedArea:getChildCount() > 0 do
-		winMgr:destroyWindow(playedArea:getChildAtIdx(0))
-	end
+	cleanedPlayedCardsArea()
 end
 
 function onWaitingPlay(args)
@@ -385,12 +392,56 @@ end
 
 function onCurrentScores(args)
 	local scores = toCurrentScoresArgs(args)
+	local ourScore		= 0
+	local theirScore	= 0
 	
 	if myPosition == 1 or myPosition == 3 then
-		updateTurnInfoBox(scores.m_NorthSouthScore, scores.m_WestEastScore)
+		ourScore = scores.m_NorthSouthScore
+		theirScore = scores.m_WestEastScore
 	else
-		updateTurnInfoBox(scores.m_WestEastScore, scores.m_NorthSouthScore)
+		ourScore = scores.m_WestEastScore
+		theirScore = scores.m_NorthSouthScore
 	end
+	updateTurnInfoBox(ourScore, theirScore)
+	
+	if scores.m_PlayedLastTurn then
+		local winMgr = CEGUI.WindowManager:getSingleton()
+		local scoresTable = CEGUI.toMultiColumnList(winMgr:getWindow("UIPanel/Scores/Table"))
+		local row = scoresTable:addRow()
+		
+		local theirScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. theirScore)
+		local ourScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. ourScore)
+		scoresTable:setItem(theirScoreItem, 0, row);
+		scoresTable:setItem(ourScoreItem, 1, row);
+	end
+end
+
+function onTextBroadcasted(args)
+	local textArgs	= toTextBroadcastedEventArgs(args)
+	local text		= "[font='DejaVuSans-8-Bold']" .. textArgs.m_Teller
+	text			= text .. ": [font='DejaVuSans-8']" .. textArgs.m_Message
+	
+	appendTextToChatBox(text)
+end
+
+function onSystemMessageBroadcasted(args)
+	local sysMsgArgs	= toSystemMessageBroadcastedEventArgs(args)
+	local text			= "[font='DejaVuSans-8']" .. sysMsgArgs.m_Message
+	
+	appendTextToChatBox(text)
+end
+
+function onPlayerConnectedStateChange(args)
+	local playerCoArgs	= toPlayerConnectedEventArgs(args)
+	local text			= "[font='DejaVuSans-8-Bold']" .. playerCoArgs.m_PlayerName
+	
+	if playerCoArgs.m_Connected then
+		text = text .. " s'est connecté"
+	else
+		text = text .. " s'est déconnecté"
+	end
+	
+	appendTextToChatBox(text)
 end
 
 -- Game zone events
@@ -508,34 +559,6 @@ function onSendChatText(args)
 	
 	client:SendChatMessage(we.window:getText())
 	we.window:setText("")
-end
-
-function onPlayerConnectedStateChange(args)
-	local playerCoArgs	= toPlayerConnectedEventArgs(args)
-	local text			= "[font='DejaVuSans-8-Bold']" .. playerCoArgs.m_PlayerName
-	
-	if playerCoArgs.m_Connected then
-		text = text .. " s'est connecté"
-	else
-		text = text .. " s'est déconnecté"
-	end
-	
-	appendTextToChatBox(text)
-end
-
-function onTextBroadcasted(args)
-	local textArgs	= toTextBroadcastedEventArgs(args)
-	local text		= "[font='DejaVuSans-8-Bold']" .. textArgs.m_Teller
-	text			= text .. ": [font='DejaVuSans-8']" .. textArgs.m_Message
-	
-	appendTextToChatBox(text)
-end
-
-function onSystemMessageBroadcasted(args)
-	local sysMsgArgs	= toSystemMessageBroadcastedEventArgs(args)
-	local text			= "[font='DejaVuSans-8']" .. sysMsgArgs.m_Message
-	
-	appendTextToChatBox(text)
 end
 
 function onQuitTable(args)

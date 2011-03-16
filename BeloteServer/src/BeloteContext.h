@@ -48,10 +48,12 @@ private:
 		TE_TurnStarting,
 	};
 
-	static const std::string ValueOrder;
-	static const std::string ValueOrderAtAsset;
-
 	typedef boost::array<size_t, 8>	Scores;
+
+	static const std::string	ValueOrder;
+	static const int			NormalScores[];
+	static const std::string	ValueOrderAtAsset;
+	static const int			AssetScores[];
 
 public:
 	BeloteContext(ServerPtr server);
@@ -92,6 +94,7 @@ private:
 	bool	PlayerHasColourInHand(const std::string &colour) const;
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
+	void	ComputeTurnScore(PlayerPosition winner);
 
 	void	EvaluatePlayedCards(Scores &scores) const;
 	size_t	GetMaxScoreFromPlayedCards() const;
@@ -155,7 +158,7 @@ private:
 		}
 	};
 
-	struct CardDefToScore : public std::binary_function<ContextDataPtr, std::string, size_t>
+	struct CardDefToValue : public std::binary_function<ContextDataPtr, std::string, size_t>
 	{
 		size_t operator()(const ContextDataPtr d, const std::string &card) const
 		{
@@ -169,6 +172,19 @@ private:
 				return ValueOrder.rfind(card.c_str() + 1);
 
 			return 0;
+		}
+	};
+
+	struct CardDefToScore : public std::binary_function<ContextDataPtr, std::string, size_t>
+	{
+		size_t operator()(const ContextDataPtr d, const std::string &card) const
+		{
+			assert(card.size() > 0);
+
+			if (card.front() == d->m_CurrentAsset.front())
+				return AssetScores[ValueOrderAtAsset.rfind(card.c_str() + 1)];
+
+			return NormalScores[ValueOrder.rfind(card.c_str() + 1)];
 		}
 	};
 

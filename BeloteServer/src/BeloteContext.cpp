@@ -4,6 +4,7 @@
 #include <cassert>
 #include <functional>
 #include <iterator>
+#include <numeric>
 
 #include <SFML/System.hpp>
 
@@ -16,7 +17,9 @@
 #include "Server.h"
 
 const std::string					BeloteContext::ValueOrder("789JQK101");
+const int							BeloteContext::NormalScores[] = {0, 0, 0, 2, 3, 4, 10, 0xFFFF, 11};
 const std::string					BeloteContext::ValueOrderAtAsset("78QK1019J");
+const int							BeloteContext::AssetScores[] = {0, 0, 3, 4, 10, 0xFFFF, 11, 14, 20};
 const BeloteContext::StringArray5	BeloteContext::PlayerPositionStrings = { "South", "West", "North", "East", "Unknown" };
 
 BeloteContext::BeloteContext(ServerPtr server)
@@ -444,7 +447,7 @@ void BeloteContext::EvaluatePlayedCards(Scores &scores) const
 	std::fill(scores.begin(), scores.end(), 0);
 	std::transform(	d->m_PlayedCards.begin(), d->m_PlayedCards.end(),
 					boost_array_iterator(scores),
-					std::bind1st(CardDefToScore(), d));
+					std::bind1st(CardDefToValue(), d));
 }
 
 size_t BeloteContext::GetMaxScoreFromPlayedCards() const
@@ -475,7 +478,7 @@ void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
 	const size_t maxPlayedScore	= GetMaxScoreFromPlayedCards();
 
 	// And use it to filter which cards from player's hand is playable.
-	CardDefToScore scoringFunc;
+	CardDefToValue scoringFunc;
 
 	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
 					d->m_PlayersHand[d->m_CurrentPlayer].begin() + d->m_RemainingCards[d->m_CurrentPlayer],
@@ -489,10 +492,10 @@ void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
 
 bool BeloteContext::PlayerHasColourInHand(const std::string &colour) const
 {
-	const std::string *result = std::find_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
-												d->m_PlayersHand[d->m_CurrentPlayer].end(),
-												std::bind1st(IsSameColour(), colour));
-	return result != d->m_PlayersHand[d->m_CurrentPlayer].end();
+	PlayerHand::const_iterator it = std::find_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+													d->m_PlayersHand[d->m_CurrentPlayer].end(),
+													std::bind1st(IsSameColour(), colour));
+	return it != d->m_PlayersHand[d->m_CurrentPlayer].end();
 }
 
 bool BeloteContext::PlayerMustCut() const
@@ -520,7 +523,7 @@ bool BeloteContext::PlayerCanOvercut() const
 	std::transform(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
 					d->m_PlayersHand[d->m_CurrentPlayer].end(),
 					boost_array_iterator(handScores),
-					std::bind1st(CardDefToScore(), d));
+					std::bind1st(CardDefToValue(), d));
 
 	const size_t maxHandScore = *std::max_element(handScores.begin(), handScores.end());
 
@@ -566,6 +569,8 @@ void BeloteContext::CardPlayed(const std::string &card)
 
 		const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
 
+		ComputeTurnScore(winnerPos);
+
 		d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
 
 		StartTurn();
@@ -575,6 +580,26 @@ void BeloteContext::CardPlayed(const std::string &card)
 		d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 		AskToPlay();
 	}
+}
+
+void BeloteContext::ComputeTurnScore(PlayerPosition winner)
+{
+	Scores scores;
+	std::fill(scores.begin(), scores.end(), 0);
+	std::transform(	d->m_PlayedCards.begin(), d->m_PlayedCards.end(),
+					boost_array_iterator(scores),
+					std::bind1st(CardDefToScore(), d));
+
+	Scores::value_type score = std::accumulate(scores.begin(), scores.end(), 0);
+
+	// Add 10 points for last turn.
+	if (d->m_RemainingCards[0] == 0)
+		score += 10;
+
+	if (winner == PP_South || winner == PP_North)
+		d->m_Scores[TI_NorthSouth] += score;
+	else
+		d->m_Scores[TI_WestEast] += score;
 }
 
 void BeloteContext::OrderHands()

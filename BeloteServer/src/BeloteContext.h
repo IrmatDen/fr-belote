@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/array.hpp>
+
 #include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
 
@@ -34,8 +36,8 @@ public:
 		_TI_Count
 	};
 
-	static const size_t			ValidPlayerPositionCount = _PP_Count;
-	static const std::string	PlayerPositionStrings[];
+	typedef boost::array<std::string, 5> StringArray5;
+	static const StringArray5	PlayerPositionStrings;
 
 private:
 	enum TurnEvent
@@ -48,6 +50,8 @@ private:
 
 	static const std::string ValueOrder;
 	static const std::string ValueOrderAtAsset;
+
+	typedef boost::array<size_t, 8>	Scores;
 
 public:
 	BeloteContext(ServerPtr server);
@@ -89,7 +93,7 @@ private:
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
 
-	void	EvaluatePlayedCards(size_t *scores) const;
+	void	EvaluatePlayedCards(Scores &scores) const;
 	size_t	GetMaxScoreFromPlayedCards() const;
 	void	DumpAllCardsInHandTo(std::vector<std::string> &out) const;
 	void	DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const;
@@ -103,6 +107,10 @@ private:
 	typedef Players::iterator				PlayersIt;
 	typedef Players::const_iterator			PlayersConstIt;
 
+	typedef boost::array<std::string, 32>			Deck;
+	typedef boost::array<std::string, 8>			PlayerHand;
+	typedef boost::array<std::string, _PP_Count>	PlayedCards;
+
 	struct ContextData
 	{
 		ServerPtr	m_Server;
@@ -110,13 +118,13 @@ private:
 		Players		m_Players;
 
 		sf::Uint32		m_Scores[_TI_Count];
-		std::string		m_Deck[32];
+		Deck			m_Deck;
 		int				m_CurrentDeckPos;
 
 		PlayerPosition	m_CurrentDealer;
 		PlayerPosition	m_CurrentPlayer;
 
-		std::string		m_PlayersHand[_PP_Count][8];
+		PlayerHand		m_PlayersHand[_PP_Count];
 		int				m_RemainingCards[_PP_Count];
 
 		std::string		m_PotentialAsset;
@@ -125,7 +133,7 @@ private:
 		TeamIndex		m_TeamAcceptingContract;
 
 		int				m_CurrentlyPlayedCards;
-		std::string		m_PlayedCards[_PP_Count];
+		PlayedCards		m_PlayedCards;
 	};
 	typedef std::shared_ptr<ContextData>	ContextDataPtr;
 

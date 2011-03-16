@@ -4,20 +4,20 @@
 #include <cassert>
 #include <functional>
 #include <iterator>
-#include <valarray>
 
 #include <SFML/System.hpp>
 
 #include "Tools.h"
+#include "typedefs.h"
 
 #include "BeloteContext.h"
 #include "Packets.h"
 #include "BeloteContextPackets.h"
 #include "Server.h"
 
-const std::string	BeloteContext::ValueOrder("789JQK101");
-const std::string	BeloteContext::ValueOrderAtAsset("78QK1019J");
-const std::string	BeloteContext::PlayerPositionStrings[] = { "South", "West", "North", "East", "Unknown" };
+const std::string					BeloteContext::ValueOrder("789JQK101");
+const std::string					BeloteContext::ValueOrderAtAsset("78QK1019J");
+const BeloteContext::StringArray5	BeloteContext::PlayerPositionStrings = { "South", "West", "North", "East", "Unknown" };
 
 BeloteContext::BeloteContext(ServerPtr server)
 {
@@ -25,8 +25,8 @@ BeloteContext::BeloteContext(ServerPtr server)
 
 	d->m_Server = server;
 
-	d->m_UnplacedPlayers.reserve(ValidPlayerPositionCount);
-	d->m_Players.resize(ValidPlayerPositionCount);
+	d->m_UnplacedPlayers.reserve(_PP_Count);
+	d->m_Players.resize(_PP_Count);
 
 	Reset();
 }
@@ -115,8 +115,8 @@ void BeloteContext::DropPlayer(ServerSocketPtr player)
 void BeloteContext::SetPlayerPos(ServerSocketPtr player, const std::string &posName)
 {
 	// Find position index.
-	const std::string* posPtr	= std::find(PlayerPositionStrings, PlayerPositionStrings + sizeof(PlayerPositionStrings), posName);
-	const size_t posIdx			= posPtr - PlayerPositionStrings;
+	StringArray5::const_iterator posPtr	= std::find(PlayerPositionStrings.begin(), PlayerPositionStrings.end(), posName);
+	const size_t posIdx					= std::distance(PlayerPositionStrings.begin(), posPtr);
 
 	// Place or move player
 	PlayersIt playerIt = std::find(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player);
@@ -236,9 +236,9 @@ void BeloteContext::ShuffleDeck()
 {
 	// more info available @ http://www.cigital.com/papers/download/developer_gambling.php
 	// of course, the "safe seed" is not so safe here, at least at the moment.
-	for(int ct = 0; ct != countof(d->m_Deck); ct++)
+	for(size_t ct = 0; ct != d->m_Deck.size(); ct++)
 	{
-		int x = sf::Randomizer::Random(ct, countof(d->m_Deck) - 1);
+		int x = sf::Randomizer::Random((int)ct, (int)d->m_Deck.size() - 1);
 		std::swap(d->m_Deck[ct], d->m_Deck[x]);
 	}
 }
@@ -365,8 +365,7 @@ void BeloteContext::StartTurn()
 	NotifyTurnEvent(TE_TurnStarting);
 
 	d->m_CurrentlyPlayedCards = 0;
-	for (int i = 0; i != countof(d->m_PlayedCards); i++)
-		std::swap(d->m_PlayedCards[i], std::string());
+	std::fill(d->m_PlayedCards.begin(), d->m_PlayedCards.end(), std::string());
 
 	AskToPlay();
 }
@@ -440,32 +439,33 @@ void BeloteContext::AskToPlay()
 	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
 }
 
-void BeloteContext::EvaluatePlayedCards(size_t *scores) const
+void BeloteContext::EvaluatePlayedCards(Scores &scores) const
 {
-	const std::string *begin	= d->m_PlayedCards;
-	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
-	std::transform(begin, end, stdext::checked_array_iterator<size_t*>(scores, d->m_CurrentlyPlayedCards), std::bind1st(CardDefToScore(), d));
+	std::fill(scores.begin(), scores.end(), 0);
+	std::transform(	d->m_PlayedCards.begin(), d->m_PlayedCards.end(),
+					boost_array_iterator(scores),
+					std::bind1st(CardDefToScore(), d));
 }
 
 size_t BeloteContext::GetMaxScoreFromPlayedCards() const
 {
-	size_t playedCardScores[3] = { 0 };
+	Scores playedCardScores;
 	EvaluatePlayedCards(playedCardScores);
 
-	return std::valarray<size_t>(playedCardScores, 3).max();
+	return *std::max_element(playedCardScores.begin(), playedCardScores.end());
 }
 
 void BeloteContext::DumpAllCardsInHandTo(std::vector<std::string> &out) const
 {
-	std::copy(	d->m_PlayersHand[d->m_CurrentPlayer],
-				d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
+	std::copy(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+				d->m_PlayersHand[d->m_CurrentPlayer].begin() + d->m_RemainingCards[d->m_CurrentPlayer],
 				std::back_inserter(out));
 }
 
 void BeloteContext::DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const
 {
-	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer],
-					d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
+	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+					d->m_PlayersHand[d->m_CurrentPlayer].begin() + d->m_RemainingCards[d->m_CurrentPlayer],
 					std::back_inserter(out),
 					std::bind1st(IsSameColour(), colour));
 }
@@ -477,8 +477,8 @@ void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
 	// And use it to filter which cards from player's hand is playable.
 	CardDefToScore scoringFunc;
 
-	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer],
-					d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
+	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+					d->m_PlayersHand[d->m_CurrentPlayer].begin() + d->m_RemainingCards[d->m_CurrentPlayer],
 					std::back_inserter(out),
 					[&] (const std::string &card) -> bool
 					{
@@ -489,12 +489,10 @@ void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
 
 bool BeloteContext::PlayerHasColourInHand(const std::string &colour) const
 {
-	const std::string *handBegin		= d->m_PlayersHand[d->m_CurrentPlayer];
-	const std::string *absoluteHandEnd	= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
-	const std::string *result			= std::find_if(	handBegin,
-														absoluteHandEnd,
-														std::bind1st(IsSameColour(), colour));
-	return result != absoluteHandEnd;
+	const std::string *result = std::find_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+												d->m_PlayersHand[d->m_CurrentPlayer].end(),
+												std::bind1st(IsSameColour(), colour));
+	return result != d->m_PlayersHand[d->m_CurrentPlayer].end();
 }
 
 bool BeloteContext::PlayerMustCut() const
@@ -506,24 +504,25 @@ bool BeloteContext::PlayerMustCut() const
 	if (d->m_CurrentlyPlayedCards == 1)
 		return true;
 	
-	size_t scores[4] = { 0 };
+	Scores scores;
 	EvaluatePlayedCards(scores);
-	const size_t maxPlayedScore	= std::valarray<size_t>(scores, 4).max();
 	
 	// Check if partner's card is not the master.
 	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
-	return scores[partnerCardIndex] != maxPlayedScore;
+	return scores[partnerCardIndex] != *std::max_element(scores.begin(), scores.end());
 }
 
 bool BeloteContext::PlayerCanOvercut() const
 {
 	const size_t maxPlayedScore	= GetMaxScoreFromPlayedCards();
 	
-	const std::string *handBegin	= d->m_PlayersHand[d->m_CurrentPlayer];
-	const std::string *handEnd		= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
-	size_t handScores[8]			= { 0 };
-	std::transform(handBegin, handEnd, handScores, std::bind1st(CardDefToScore(), d));
-	const size_t maxHandScore		= std::valarray<size_t>(handScores, 8).max();
+	Scores handScores;
+	std::transform(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+					d->m_PlayersHand[d->m_CurrentPlayer].end(),
+					boost_array_iterator(handScores),
+					std::bind1st(CardDefToScore(), d));
+
+	const size_t maxHandScore = *std::max_element(handScores.begin(), handScores.end());
 
 	return maxHandScore > maxPlayedScore;
 }
@@ -540,9 +539,10 @@ void BeloteContext::CardPlayed(const std::string &card)
 
 	// Remove card from player's hand
 	// NB: the out of range index is *intentional*! We want the element past the end, to conform with STL iterators.
-	std::string *absoluteHandEnd	= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
-	std::string *end				= std::remove(d->m_PlayersHand[d->m_CurrentPlayer], absoluteHandEnd, card);
-	std::fill(end, absoluteHandEnd, std::string());
+	PlayerHand::iterator newEnd	= std::remove(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+												d->m_PlayersHand[d->m_CurrentPlayer].end(),
+												card);
+	std::fill(newEnd, d->m_PlayersHand[d->m_CurrentPlayer].end(), std::string());
 
 	// Update played cards
 	d->m_RemainingCards[d->m_CurrentPlayer]--;
@@ -552,10 +552,10 @@ void BeloteContext::CardPlayed(const std::string &card)
 	// Next player!
 	if (d->m_CurrentlyPlayedCards == _PP_Count)
 	{
-		size_t scores[4] = { 0 };
+		Scores scores;
 		EvaluatePlayedCards(scores);
+		const size_t maxScore = *std::max_element(scores.begin(), scores.end());
 
-		const size_t maxScore	= std::valarray<size_t>(scores, 4).max();
 		size_t winner			= 0;
 		for(; winner != 4; winner++)
 		{
@@ -597,7 +597,7 @@ void BeloteContext::OrderHands()
 					};
 
 	for (int p = 0; p != _PP_Count; p++)
-		std::sort(d->m_PlayersHand[p], d->m_PlayersHand[p] + countof(d->m_PlayersHand[p]), compFunc);
+		std::sort(d->m_PlayersHand[p].begin(), d->m_PlayersHand[p].end(), compFunc);
 }
 
 void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)

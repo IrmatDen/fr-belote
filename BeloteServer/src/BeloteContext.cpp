@@ -40,7 +40,7 @@ BeloteContext::~BeloteContext()
 
 void BeloteContext::Reset()
 {
-	auto resetPlayerPtr = [] (ServerSocketPtr p) { p.reset(); } ;
+	auto resetPlayerPtr = [] (ServerSocketPtr &p) { p.reset(); } ;
 
 	std::for_each(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), resetPlayerPtr);
 	std::for_each(d->m_Players.begin(),d->m_Players.end(), resetPlayerPtr);
@@ -569,9 +569,9 @@ void BeloteContext::CardPlayed(const std::string &card)
 
 		const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
 
-		ComputeTurnScore(winnerPos);
-
 		d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
+
+		ComputeTurnScore(d->m_CurrentPlayer);
 
 		StartTurn();
 	}
@@ -600,6 +600,16 @@ void BeloteContext::ComputeTurnScore(PlayerPosition winner)
 		d->m_Scores[TI_NorthSouth] += score;
 	else
 		d->m_Scores[TI_WestEast] += score;
+
+	// Notify each player of current score
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_CurrentScores;
+	packet << d->m_Scores[TI_NorthSouth];
+	packet << d->m_Scores[TI_WestEast];
+	
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player) { player->GetSocket().Send(packet); }
+	);
 }
 
 void BeloteContext::OrderHands()

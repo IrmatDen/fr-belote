@@ -92,6 +92,13 @@ public:
 	int				m_Player;
 };
 
+class CurrentScoresArgs : public CEGUI::EventArgs
+{
+public:
+	int		m_NorthSouthScore,
+			m_WestEastScore;
+};
+
 class ClientSocketPrivate;
 
 template <typename ArgType = CEGUI::EventArgs>
@@ -167,6 +174,7 @@ public:
 	static const CEGUI::String EventTurnStarting;
 	static const CEGUI::String EventWaitingPlay;
 	static const CEGUI::String EventPlayedCard;
+	static const CEGUI::String EventCurrentScores;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
@@ -185,6 +193,7 @@ public:
 	ThreadSafeEventQueue<>									m_TurnStarting;
 	ThreadSafeEventQueue<WaitingPlayArgs>					m_WaitingPlay;
 	ThreadSafeEventQueue<PlayedCardArgs>					m_PlayedCard;
+	ThreadSafeEventQueue<CurrentScoresArgs>					m_CurrentScores;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

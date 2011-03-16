@@ -30,6 +30,7 @@ const CEGUI::String ClientSocket::EventPlayerAcceptedAsset("PlayerAcceptedAsset"
 const CEGUI::String ClientSocket::EventTurnStarting("TurnStarting");
 const CEGUI::String ClientSocket::EventWaitingPlay("WaitingPlay");
 const CEGUI::String ClientSocket::EventPlayedCard("PlayedCard");
+const CEGUI::String ClientSocket::EventCurrentScores("CurrentScores");
 
 // Define network state machine stuff...
 namespace
@@ -281,6 +282,14 @@ namespace
 						PlayedCardArgs args;
 						packet >> args.m_Card >> args.m_Player;
 						m_Self->m_PlayedCard.push(args);
+					}
+					break;
+
+				case BCPT_CurrentScores:
+					{
+						CurrentScoresArgs args;
+						packet >> args.m_NorthSouthScore >> args.m_WestEastScore;
+						m_Self->m_CurrentScores.push(args);
 					}
 					break;
 				}
@@ -650,7 +659,8 @@ ClientSocket::ClientSocket()
 	m_PlayerAcceptedAsset		(EventPlayerAcceptedAsset, EventNamespace),
 	m_TurnStarting				(EventTurnStarting, EventNamespace),
 	m_WaitingPlay				(EventWaitingPlay, EventNamespace),
-	m_PlayedCard				(EventPlayedCard, EventNamespace)
+	m_PlayedCard				(EventPlayedCard, EventNamespace),
+	m_CurrentScores				(EventCurrentScores, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -733,6 +743,7 @@ void ClientSocket::Update()
 	m_TurnStarting.process(this);
 	m_WaitingPlay.process(this);
 	m_PlayedCard.process(this);
+	m_CurrentScores.process(this);
 }
 
 void ClientSocket::Wait()

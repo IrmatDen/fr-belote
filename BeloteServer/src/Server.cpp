@@ -58,6 +58,8 @@ void Server::Start()
 		);
 
 	m_Listener.Close();
+
+	m_BeloteContext->Reset();
 }
 
 void Server::Stop()

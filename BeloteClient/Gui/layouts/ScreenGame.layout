@@ -130,11 +130,13 @@
 				</Window>
 				<Window Type="OgreTray/StaticText" Name="TurnInfo" >
 					<Property Name="Font" Value="DejaVuSans-8" />
-					<Property Name="Text" >Preneur:
-					Atout:</Property>
+					<Property Name="Text" >Preneur :
+					Atout :
+					Eux :
+					Nous :</Property>
 					<Property Name="FrameEnabled" Value="True" />
 					<Property Name="HorzFormatting" Value="LeftAligned" />
-					<Property Name="UnifiedAreaRect" Value="{{0,10},{0,15},{0,160},{0,75}}" />
+					<Property Name="UnifiedAreaRect" Value="{{0,10},{0,15},{0,160},{0,90}}" />
 				</Window>
 				<Window Type="DefaultWindow" Name="GameArea/PlayedCards" >
 					<Property Name="MousePassThroughEnabled" Value="True" />

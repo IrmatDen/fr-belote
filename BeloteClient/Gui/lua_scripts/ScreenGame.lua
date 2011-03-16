@@ -14,7 +14,11 @@ local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "Butt
 local myPosition				= 0
 local currentPositionning		= { }
 
-local AssetTranslation = { H = "Coeur", S = "Pique", D = "Carreau", C = "Trèfle" }
+local AssetTranslation		= { H = "Coeur", S = "Pique", D = "Carreau", C = "Trèfle" }
+
+local taker = ""
+local asset = ""
+
 
 local PlayedPositions = {	CEGUI.UVector2(CEGUI.UDim(0, 0),				CEGUI.UDim(0.5, -CardHeight / 2)),
 							CEGUI.UVector2(CEGUI.UDim(0.5, -CardWidth / 2),	CEGUI.UDim(0, 0)),
@@ -64,6 +68,10 @@ end
 
 function toPlayedCardArgs(e)
     return tolua.cast(e,"const PlayedCardArgs")
+end
+
+function toCurrentScoresArgs(e)
+    return tolua.cast(e,"const CurrentScoresArgs")
 end
 
 -- Add a card to the player's current hand
@@ -173,6 +181,16 @@ function appendTextToChatBox(text)
 	chatBox:addItem(chatItem);
 	chatBox:ensureItemIsVisible(chatBox:getItemCount());
 	tolua.releaseownership(chatItem)
+end
+
+function updateTurnInfoBox(ourScore, theirScore)
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local ti		= winMgr:getWindow("TurnInfo")
+	local tiText	= "Preneur : " .. taker
+	tiText			= tiText .. "\nAtout : " .. asset
+	tiText			= tiText .. "\nEux : " .. theirScore
+	tiText			= tiText .. "\nNous : " .. ourScore
+	ti:setText(tiText)
 end
 
 -----------------------------------------
@@ -299,11 +317,9 @@ function onPlayerAcceptedAsset(args)
 	
 	appendTextToChatBox(text)
 	
-	local winMgr	= CEGUI.WindowManager:getSingleton()
-	local ti		= winMgr:getWindow("TurnInfo")
-	local tiText	= "Preneur : " .. a.m_ByPlayer .. "\n"
-	tiText			= tiText .. "Atout : " .. AssetTranslation[a.m_Asset]
-	ti:setText(tiText)
+	taker = a.m_ByPlayer
+	asset = AssetTranslation[a.m_Asset]
+	updateTurnInfoBox(0, 0)
 end
 
 function onPlayerRefusedAsset(args)
@@ -365,6 +381,16 @@ function onPlayedCard(args)
 	cardImg:setProperty("Image", "PlayingCards/" .. pcArgs.m_Card)
 	
 	playedArea:addChild(cardImg)
+end
+
+function onCurrentScores(args)
+	local scores = toCurrentScoresArgs(args)
+	
+	if myPosition == 1 or myPosition == 3 then
+		updateTurnInfoBox(scores.m_NorthSouthScore, scores.m_WestEastScore)
+	else
+		updateTurnInfoBox(scores.m_WestEastScore, scores.m_NorthSouthScore)
+	end
 end
 
 -- Game zone events
@@ -577,3 +603,4 @@ client:subscribeEvent("PlayerRefusedAsset", "onPlayerRefusedAsset")
 client:subscribeEvent("TurnStarting", "onTurnStarting")
 client:subscribeEvent("WaitingPlay", "onWaitingPlay")
 client:subscribeEvent("PlayedCard", "onPlayedCard")
+client:subscribeEvent("CurrentScores", "onCurrentScores")

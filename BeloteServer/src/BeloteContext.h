@@ -85,33 +85,15 @@ private:
 	void	AskToPlay();
 	void	CardPlayed(const std::string &card);
 	bool	PlayerHasColourInHand(const std::string &colour) const;
-	bool	PlayerHasHigherCardThan() const;
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
 
 	void	DumpAllCardsInHandTo(std::vector<std::string> &out) const;
 	void	DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const;
+	void	DumpOvercuttingCardsTo(std::vector<std::string> &out) const;
 
 	void	OrderHands();
 	void	SendCurrentHands();
-
-	// Tools
-private:
-	static PlayerPosition	GetNextPlayer(PlayerPosition pp)
-	{
-		if (PP_East == pp)
-			return PP_South;
-	
-		return (PlayerPosition)(pp + 1);
-	}
-
-	struct IsSameColour : public std::binary_function<std::string, std::string, bool>
-	{
-		bool operator()(const std::string &testedColour, const std::string &card) const
-		{
-			return card.size() > 0 && card.front() == testedColour.front();
-		}
-	};
 
 private:
 	typedef std::vector<ServerSocket*>	Players;
@@ -141,6 +123,41 @@ private:
 
 		int				m_CurrentlyPlayedCards;
 		std::string		m_PlayedCards[_PP_Count];
+	};
+
+	// Tools
+private:
+	static PlayerPosition	GetNextPlayer(PlayerPosition pp)
+	{
+		if (PP_East == pp)
+			return PP_South;
+	
+		return (PlayerPosition)(pp + 1);
+	}
+
+	struct IsSameColour : public std::binary_function<std::string, std::string, bool>
+	{
+		bool operator()(const std::string &testedColour, const std::string &card) const
+		{
+			return card.size() > 0 && card.front() == testedColour.front();
+		}
+	};
+
+	struct CardDefToScore : public std::binary_function<ContextData*, std::string, size_t>
+	{
+		size_t operator()(const ContextData * d, const std::string &card) const
+		{
+			if (card.size() == 0)
+				return 0;
+
+			if (card.front() == d->m_CurrentAsset.front())
+				return 100 + ValueOrderAtAsset.rfind(card.c_str() + 1);
+
+			if (card.front() == d->m_PlayedCards[0].front())
+				return ValueOrder.rfind(card.c_str() + 1);
+
+			return 0;
+		}
 	};
 
 private:

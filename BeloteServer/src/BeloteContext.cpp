@@ -4,8 +4,7 @@
 #include <cassert>
 #include <functional>
 #include <iterator>
-#include <limits>
-#include <numeric>
+#include <valarray>
 
 #include <SFML/System.hpp>
 
@@ -378,6 +377,7 @@ void BeloteContext::AskToPlay()
 	packet << PT_GameContextPacket << BCPT_WaitingPlay;
 
 	std::vector<std::string> playableCards;
+	playableCards.reserve(d->m_RemainingCards[d->m_CurrentPlayer]);
 
 	// Search and specify which cards are playable this turn.
 	if (d->m_CurrentlyPlayedCards == 0)
@@ -392,10 +392,9 @@ void BeloteContext::AskToPlay()
 		{
 			if (hasAssetsInHand)
 			{
-				if (PlayerHasHigherCardThan())
+				if (PlayerCanOvercut())
 				{
-					//FIXME
-					DumpAllCardsInHandTo(playableCards);
+					DumpOvercuttingCardsTo(playableCards);
 				}
 				else
 				{
@@ -420,8 +419,7 @@ void BeloteContext::AskToPlay()
 				{
 					if (PlayerCanOvercut())
 					{
-						//FIXME
-						DumpAllCardsInHandTo(playableCards);
+						DumpOvercuttingCardsTo(playableCards);
 					}
 					else
 					{
@@ -444,7 +442,6 @@ void BeloteContext::AskToPlay()
 
 void BeloteContext::DumpAllCardsInHandTo(std::vector<std::string> &out) const
 {
-	out.reserve(d->m_RemainingCards[d->m_CurrentPlayer]);
 	std::copy(	d->m_PlayersHand[d->m_CurrentPlayer],
 				d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
 				std::back_inserter(out));
@@ -452,11 +449,32 @@ void BeloteContext::DumpAllCardsInHandTo(std::vector<std::string> &out) const
 
 void BeloteContext::DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const
 {
-	out.reserve(d->m_RemainingCards[d->m_CurrentPlayer]);
 	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer],
 					d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
 					std::back_inserter(out),
 					std::bind1st(IsSameColour(), colour));
+}
+
+void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
+{
+	// Compute currently played cards' max score.
+	const std::string *begin	= d->m_PlayedCards;
+	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
+	size_t playedCardScores[3]	= { 0 };
+	std::transform(begin, end, playedCardScores, std::bind1st(CardDefToScore(), d));
+	const size_t maxPlayedScore	= std::valarray<size_t>(playedCardScores, 3).max();
+
+	// And use it to filter which cards from player's hand is playable.
+	CardDefToScore scoringFunc;
+
+	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer],
+					d->m_PlayersHand[d->m_CurrentPlayer] + d->m_RemainingCards[d->m_CurrentPlayer],
+					std::back_inserter(out),
+					[&] (const std::string &card) -> bool
+					{
+						const size_t score = scoringFunc(d, card);
+						return score > maxPlayedScore;
+					} );
 }
 
 bool BeloteContext::PlayerHasColourInHand(const std::string &colour) const
@@ -467,11 +485,6 @@ bool BeloteContext::PlayerHasColourInHand(const std::string &colour) const
 														absoluteHandEnd,
 														std::bind1st(IsSameColour(), colour));
 	return result != absoluteHandEnd;
-}
-
-bool BeloteContext::PlayerHasHigherCardThan() const
-{
-	return false;
 }
 
 bool BeloteContext::PlayerMustCut() const
@@ -486,21 +499,8 @@ bool BeloteContext::PlayerMustCut() const
 	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
 	const std::string *begin	= d->m_PlayedCards;
 	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
-
-	// Transform played card in a "standard" score.
 	size_t cardScores[3]		= { 0 };
-	std::transform(begin, end, cardScores,
-					[&] (const std::string &c) -> size_t
-					{
-						if (c.front() != d->m_PlayedCards[0].front())
-						{
-							if (c.front() != d->m_CurrentAsset.front())
-								return 0;
-							else
-								return 100 + ValueOrderAtAsset.rfind(c.c_str() + 1);
-						}
-						return ValueOrder.rfind(c.c_str() + 1);
-					} );
+	std::transform(begin, end, cardScores, std::bind1st(CardDefToScore(), d));
 	
 	// Check if partner's card is not the master.
 	if (partnerCardIndex == 0)
@@ -511,7 +511,19 @@ bool BeloteContext::PlayerMustCut() const
 
 bool BeloteContext::PlayerCanOvercut() const
 {
-	return false;
+	const std::string *begin	= d->m_PlayedCards;
+	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
+	size_t playedCardScores[3]	= { 0 };
+	std::transform(begin, end, playedCardScores, std::bind1st(CardDefToScore(), d));
+	const size_t maxPlayedScore	= std::valarray<size_t>(playedCardScores, 3).max();
+	
+	const std::string *handBegin	= d->m_PlayersHand[d->m_CurrentPlayer];
+	const std::string *handEnd		= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
+	size_t handScores[8]			= { 0 };
+	std::transform(handBegin, handEnd, handScores, std::bind1st(CardDefToScore(), d));
+	const size_t maxHandScore		= std::valarray<size_t>(handScores, 8).max();
+
+	return maxHandScore > maxPlayedScore;
 }
 
 void BeloteContext::CardPlayed(const std::string &card)

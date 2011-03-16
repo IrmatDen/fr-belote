@@ -94,7 +94,7 @@ private:
 	bool	PlayerHasColourInHand(const std::string &colour) const;
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
-	void	ComputeTurnScore(PlayerPosition winner);
+	void	ComputeAndReportTurnScore(PlayerPosition winner);
 
 	void	EvaluatePlayedCards(Scores &scores) const;
 	size_t	GetMaxScoreFromPlayedCards() const;

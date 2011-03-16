@@ -288,7 +288,7 @@ namespace
 				case BCPT_CurrentScores:
 					{
 						CurrentScoresArgs args;
-						packet >> args.m_NorthSouthScore >> args.m_WestEastScore;
+						packet >> args.m_NorthSouthScore >> args.m_WestEastScore >> args.m_PlayedLastTurn;
 						m_Self->m_CurrentScores.push(args);
 					}
 					break;

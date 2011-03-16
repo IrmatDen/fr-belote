@@ -571,7 +571,7 @@ void BeloteContext::CardPlayed(const std::string &card)
 
 		d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
 
-		ComputeTurnScore(d->m_CurrentPlayer);
+		ComputeAndReportTurnScore(d->m_CurrentPlayer);
 
 		StartTurn();
 	}
@@ -582,7 +582,7 @@ void BeloteContext::CardPlayed(const std::string &card)
 	}
 }
 
-void BeloteContext::ComputeTurnScore(PlayerPosition winner)
+void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 {
 	Scores scores;
 	std::fill(scores.begin(), scores.end(), 0);
@@ -606,6 +606,7 @@ void BeloteContext::ComputeTurnScore(PlayerPosition winner)
 	packet << PT_GameContextPacket << BCPT_CurrentScores;
 	packet << d->m_Scores[TI_NorthSouth];
 	packet << d->m_Scores[TI_WestEast];
+	packet << (d->m_RemainingCards[0] == 0);
 	
 	std::for_each(d->m_Players.begin(), d->m_Players.end(),
 		[&] (Players::reference player) { player->GetSocket().Send(packet); }

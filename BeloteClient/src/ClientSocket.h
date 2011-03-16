@@ -97,6 +97,7 @@ class CurrentScoresArgs : public CEGUI::EventArgs
 public:
 	int		m_NorthSouthScore,
 			m_WestEastScore;
+	bool	m_PlayedLastTurn;
 };
 
 class ClientSocketPrivate;

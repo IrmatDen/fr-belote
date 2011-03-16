@@ -440,6 +440,21 @@ void BeloteContext::AskToPlay()
 	d->m_Players[d->m_CurrentPlayer]->GetSocket().Send(packet);
 }
 
+void BeloteContext::EvaluatePlayedCards(size_t *scores) const
+{
+	const std::string *begin	= d->m_PlayedCards;
+	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
+	std::transform(begin, end, stdext::checked_array_iterator<size_t*>(scores, d->m_CurrentlyPlayedCards), std::bind1st(CardDefToScore(), d));
+}
+
+size_t BeloteContext::GetMaxScoreFromPlayedCards() const
+{
+	size_t playedCardScores[3] = { 0 };
+	EvaluatePlayedCards(playedCardScores);
+
+	return std::valarray<size_t>(playedCardScores, 3).max();
+}
+
 void BeloteContext::DumpAllCardsInHandTo(std::vector<std::string> &out) const
 {
 	std::copy(	d->m_PlayersHand[d->m_CurrentPlayer],
@@ -457,12 +472,7 @@ void BeloteContext::DumpColoursInHandTo(const std::string &colour, std::vector<s
 
 void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
 {
-	// Compute currently played cards' max score.
-	const std::string *begin	= d->m_PlayedCards;
-	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
-	size_t playedCardScores[3]	= { 0 };
-	std::transform(begin, end, playedCardScores, std::bind1st(CardDefToScore(), d));
-	const size_t maxPlayedScore	= std::valarray<size_t>(playedCardScores, 3).max();
+	const size_t maxPlayedScore	= GetMaxScoreFromPlayedCards();
 
 	// And use it to filter which cards from player's hand is playable.
 	CardDefToScore scoringFunc;
@@ -495,27 +505,19 @@ bool BeloteContext::PlayerMustCut() const
 	// If only an opponent has played, then player should cut.
 	if (d->m_CurrentlyPlayedCards == 1)
 		return true;
-
-	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
-	const std::string *begin	= d->m_PlayedCards;
-	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
-	size_t cardScores[3]		= { 0 };
-	std::transform(begin, end, cardScores, std::bind1st(CardDefToScore(), d));
+	
+	size_t scores[4] = { 0 };
+	EvaluatePlayedCards(scores);
+	const size_t maxPlayedScore	= std::valarray<size_t>(scores, 4).max();
 	
 	// Check if partner's card is not the master.
-	if (partnerCardIndex == 0)
-		return cardScores[0] < cardScores[1];
-
-	return !(cardScores[1] > cardScores[0] && cardScores[1] > cardScores[2]);
+	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
+	return scores[partnerCardIndex] != maxPlayedScore;
 }
 
 bool BeloteContext::PlayerCanOvercut() const
 {
-	const std::string *begin	= d->m_PlayedCards;
-	const std::string *end		= &d->m_PlayedCards[d->m_CurrentlyPlayedCards];
-	size_t playedCardScores[3]	= { 0 };
-	std::transform(begin, end, playedCardScores, std::bind1st(CardDefToScore(), d));
-	const size_t maxPlayedScore	= std::valarray<size_t>(playedCardScores, 3).max();
+	const size_t maxPlayedScore	= GetMaxScoreFromPlayedCards();
 	
 	const std::string *handBegin	= d->m_PlayersHand[d->m_CurrentPlayer];
 	const std::string *handEnd		= &(d->m_PlayersHand[d->m_CurrentPlayer][8]);
@@ -548,13 +550,33 @@ void BeloteContext::CardPlayed(const std::string &card)
 	d->m_CurrentlyPlayedCards++;
 
 	// Next player!
-	// FIXME not the actual player in plenty of cases...
-	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
-
 	if (d->m_CurrentlyPlayedCards == _PP_Count)
+	{
+		size_t scores[4] = { 0 };
+		EvaluatePlayedCards(scores);
+
+		const size_t maxScore	= std::valarray<size_t>(scores, 4).max();
+		size_t winner			= 0;
+		for(; winner != 4; winner++)
+		{
+			if (scores[winner] == maxScore)
+				break;
+		}
+		assert(winner < 4);
+
+		int winnerPos = GetNextPlayer(d->m_CurrentPlayer) + winner;
+		while (winnerPos >= _PP_Count)
+			winnerPos -= _PP_Count;
+
+		d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
+
 		StartTurn();
+	}
 	else
+	{
+		d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 		AskToPlay();
+	}
 }
 
 void BeloteContext::OrderHands()

@@ -88,6 +88,8 @@ private:
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
 
+	void	EvaluatePlayedCards(size_t *scores) const;
+	size_t	GetMaxScoreFromPlayedCards() const;
 	void	DumpAllCardsInHandTo(std::vector<std::string> &out) const;
 	void	DumpColoursInHandTo(const std::string &colour, std::vector<std::string> &out) const;
 	void	DumpOvercuttingCardsTo(std::vector<std::string> &out) const;

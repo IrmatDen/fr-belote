@@ -249,7 +249,9 @@ void BeloteContext::ShuffleDeck()
 void BeloteContext::PreTurn()
 {
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
+	
 	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
+	d->m_TeamOwningBelote = TI_None;
 
 	NotifyTurnEvent(TE_Dealing, d->m_Players[d->m_CurrentDealer]);
 	DealFirstPart();
@@ -592,7 +594,7 @@ void BeloteContext::CardPlayed(const std::string &card)
 
 void BeloteContext::CheckForBelote(const std::string &playedCard)
 {
-	if (playedCard.front() != d->m_CurrentAsset.front())
+	if (playedCard.front() != d->m_CurrentAsset.front() || d->m_TeamOwningBelote != TI_None)
 		return;
 
 	const bool isQueen = 'Q' == playedCard.at(1);
@@ -613,9 +615,15 @@ void BeloteContext::CheckForBelote(const std::string &playedCard)
 
 	// Adds 20 points and report Belote
 	if (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North)
+	{
 		d->m_Scores[TI_NorthSouth] += BeloteScore;
+		d->m_TeamOwningBelote = TI_NorthSouth;
+	}
 	else
+	{
 		d->m_Scores[TI_WestEast] += BeloteScore;
+		d->m_TeamOwningBelote = TI_WestEast;
+	}
 
 	NotifyTurnEvent(TE_BeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
 }
@@ -647,8 +655,19 @@ void BeloteContext::TurnEnded()
 	else
 	{
 		// Update total scores
-		d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
-		d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
+		if (d->m_Scores[d->m_TeamAcceptingContract] >= 82)
+		{
+			d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
+			d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
+		}
+		else
+		{
+			const TeamIndex winningTeam = static_cast<TeamIndex>(d->m_TeamAcceptingContract ^ 1);
+			d->m_TotalScores[winningTeam] += 162;
+
+			if (d->m_TeamOwningBelote != TI_None)
+				d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
+		}
 		NotifyTurnEvent(TE_TotalScoresUpdated);
 
 		// and start a new turn

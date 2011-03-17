@@ -30,6 +30,7 @@ public:
 
 	enum TeamIndex
 	{
+		TI_None = -1,
 		TI_NorthSouth,
 		TI_WestEast,
 
@@ -142,6 +143,7 @@ private:
 		bool			m_IsInFirstAnnouncePhase;
 		std::string		m_CurrentAsset;
 		TeamIndex		m_TeamAcceptingContract;
+		TeamIndex		m_TeamOwningBelote;
 
 		int				m_CurrentlyPlayedCards;
 		PlayedCards		m_PlayedCards;

@@ -70,12 +70,8 @@ function toPlayedCardArgs(e)
     return tolua.cast(e,"const PlayedCardArgs")
 end
 
-function toCurrentScoresArgs(e)
-    return tolua.cast(e,"const CurrentScoresArgs")
-end
-
-function toTotalScoresArgs(e)
-    return tolua.cast(e,"const TotalScoresArgs")
+function toScoresArgs(e)
+    return tolua.cast(e,"const ScoresArgs")
 end
 
 function toBeloteAnnouncedArgs(e)
@@ -409,7 +405,7 @@ function onPlayedCard(args)
 end
 
 function onCurrentScores(args)
-	local scores = toCurrentScoresArgs(args)
+	local scores = toScoresArgs(args)
 	local ourScore		= 0
 	local theirScore	= 0
 	
@@ -424,7 +420,7 @@ function onCurrentScores(args)
 end
 
 function onTotalScores(args)
-	local scores = toTotalScoresArgs(args)
+	local scores = toScoresArgs(args)
 	local ourScore		= 0
 	local theirScore	= 0
 	

@@ -201,12 +201,10 @@ function updateTurnInfoBox(ourScore, theirScore)
 	ti:setText(tiText)
 end
 
-function cleanedPlayedCardsArea()
+function deleteAllChildFromWindow(w)
 	local winMgr		= CEGUI.WindowManager:getSingleton()
-	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
-	local playedCardsCount	= playedArea:getChildCount() - 1
-	while playedArea:getChildCount() > 0 do
-		winMgr:destroyWindow(playedArea:getChildAtIdx(0))
+	while w:getChildCount() > 0 do
+		winMgr:destroyWindow(w:getChildAtIdx(0))
 	end
 end
 
@@ -272,9 +270,12 @@ function onPlayerDealing(args)
 	
 	appendTextToChatBox(text)
 	
-	cleanedPlayedCardsArea()
-	
 	local winMgr = CEGUI.WindowManager:getSingleton()
+	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCards"))
+	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCardsLastTurn"))
+	
+	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
+	
 	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
 	while playerHandArea:getChildCount() > 0 do
 		local cardWnd = playerHandArea:getChildAtIdx(0)
@@ -291,11 +292,11 @@ function onCardsReceived(args)
 	local handContent	= toCurrentCardsInHandArgs(args)
 	local winMgr		= CEGUI.WindowManager:getSingleton()
 	
-	-- FIXME destroying the cards each time seems quite brute force. Found a workaround!
+	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayerCards"))
+	
 	for i = 0, 7 do
 		local name = handContent.m_Cards[i]
 		if name ~= "" then
-			winMgr:destroyWindow(name)
 			addCard(name)
 		end
 	end
@@ -405,9 +406,17 @@ function onPlayedCard(args)
 	local winMgr		= CEGUI.WindowManager:getSingleton()
 	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
 	
-	-- Check if 4 cards are currently in the played area; if so, empty it
+	-- Check if 4 cards are currently in the played area; if so, move 'em to last turn area
 	if playedArea:getChildCount() == 4 then
-		cleanedPlayedCardsArea()
+		winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):enable()
+		local playedLastTurnArea = winMgr:getWindow("GameArea/PlayedCardsLastTurn")
+		deleteAllChildFromWindow(playedLastTurnArea)
+		
+		while playedArea:getChildCount() > 0 do
+			local cardImg = playedArea:getChildAtIdx(0)
+			playedArea:removeChild(cardImg)
+			playedLastTurnArea:addChild(cardImg)
+		end
 	end
 	
 	-- Search relative position to me
@@ -655,6 +664,17 @@ function onSendChatText(args)
 	we.window:setText("")
 end
 
+function onSeeLastTurn(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local lastTurnWndVis = winMgr:getWindow("LastTurnWindow"):isVisible()
+	winMgr:getWindow("LastTurnWindow"):setVisible(not lastTurnWndVis)
+end
+
+function onDoneSeeingLastTurn(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("LastTurnWindow"):setVisible(false)
+end
+
 function onQuitTable(args)
 	SoundManager:getSingleton():PlayFX(SoundManager.FX_CLICK)
 
@@ -691,6 +711,8 @@ guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
 winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
+winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):subscribeEvent("Clicked", "onSeeLastTurn")
+winMgr:getWindow("ButtonDoneSeeingLastTurn"):subscribeEvent("Clicked", "onDoneSeeingLastTurn")
 winMgr:getWindow("ButtonSouth"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
 winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")

@@ -57,10 +57,15 @@ private:
 	typedef boost::array<size_t, 8>	Scores;
 
 	static const std::string	ValueOrder;
-	static const int			NormalScores[];
 	static const std::string	ValueOrderAtAsset;
+
+	static const int			NormalScores[];
 	static const int			AssetScores[];
-	static const sf::Uint32		BeloteScore			= 20;
+	static const sf::Uint32		LastTurnScore	= 10;
+	static const sf::Uint32		BeloteScore		= 20;
+	static const sf::Uint32		MinScoreToWin	= 82;
+	static const sf::Uint32		CapotScore		= 252;
+	static const sf::Uint32		PointsSumScore	= 162;
 
 public:
 	BeloteContext(ServerPtr server);

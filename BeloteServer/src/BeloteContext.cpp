@@ -681,15 +681,25 @@ void BeloteContext::TurnEnded()
 	else
 	{
 		// Update total scores
-		if (d->m_Scores[d->m_TeamAcceptingContract] >= 82)
+		if (d->m_Scores[d->m_TeamAcceptingContract] >= MinScoreToWin)
 		{
-			d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
-			d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
+			if (d->m_Scores[d->m_TeamAcceptingContract] >= PointsSumScore)
+			{
+				d->m_TotalScores[d->m_TeamAcceptingContract] += CapotScore;
+
+				if (d->m_TeamOwningBelote != TI_None)
+					d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
+			}
+			else
+			{
+				d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
+				d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
+			}
 		}
 		else
 		{
 			const TeamIndex winningTeam = static_cast<TeamIndex>(d->m_TeamAcceptingContract ^ 1);
-			d->m_TotalScores[winningTeam] += 162;
+			d->m_TotalScores[winningTeam] += PointsSumScore;
 
 			if (d->m_TeamOwningBelote != TI_None)
 				d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
@@ -714,7 +724,7 @@ void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 
 	// Add 10 points for last turn.
 	if (d->m_RemainingCards[0] == 0)
-		score += 10;
+		score += LastTurnScore;
 
 	if (winner == PP_South || winner == PP_North)
 		d->m_Scores[TI_NorthSouth] += score;

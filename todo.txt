@@ -5,4 +5,4 @@
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
 * Le tas de cartes jouées devient le nouveau paquet!
 * Voir le dernier pli
-* stocker le jeu
+* stocker le jeu pour replay/debug?

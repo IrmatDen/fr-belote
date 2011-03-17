@@ -3,5 +3,6 @@
 * Permettre aux joueurs de se déplacer une fois placé sur la table
 * Supporter les litiges
 * Supporter les capots
+* Notifier les dedans/gagné
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
 * Le tas de cartes jouées devient le nouveau paquet!

@@ -31,7 +31,9 @@ protected:
 public:
 	typedef Container container_type;
 
-	explicit BoostArrayOutputIterator (Container& x) : container(&x), it(container->begin()) {}
+	explicit BoostArrayOutputIterator (Container& x, typename Container::iterator startIter)
+		: container(&x), it(startIter)
+	{}
 	BoostArrayOutputIterator(const BoostArrayOutputIterator &other) : container(other.container), it(other.it) {}
 
 	BoostArrayOutputIterator<Container>& operator= (typename Container::const_reference value)
@@ -58,7 +60,13 @@ namespace std
 template<class Container> inline
 BoostArrayOutputIterator<Container> boost_array_iterator(Container& array)
 {
-	return (BoostArrayOutputIterator<Container>(array));
+	return (BoostArrayOutputIterator<Container>(array, array.begin()));
+}
+
+template<class Container> inline
+BoostArrayOutputIterator<Container> boost_array_iterator(Container& array, typename Container::iterator startIter)
+{
+	return (BoostArrayOutputIterator<Container>(array, startIter));
 }
 
 #endif

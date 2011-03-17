@@ -4,5 +4,4 @@
 * Ne faire disparaître le tas de cartes jouées qu'une fois que le gagnant du tour joue
 * Supporter les litiges
 * Supporter la belote
-* Simuler la coupe
 * Supporter les contrats

@@ -260,6 +260,14 @@ void BeloteContext::PreTurn()
 
 void BeloteContext::DealFirstPart()
 {
+	// Cut the deck
+	// FIXME this random is uniform, plug in some Poisson distribution please....
+	int cutPos = sf::Randomizer::Random(1, Deck::static_size - 1);
+	Deck cuttedPart;
+	std::copy(d->m_Deck.begin(), d->m_Deck.begin() + cutPos, boost_array_iterator(cuttedPart));
+	std::copy(d->m_Deck.begin() + cutPos, d->m_Deck.end(), boost_array_iterator(d->m_Deck));
+	std::copy(cuttedPart.begin(), cuttedPart.begin() + cutPos, boost_array_iterator(d->m_Deck, d->m_Deck.end() - cutPos));
+
 	// TODO customize dealing with 3-2 / 2-3
 	// Only supporting 3-2 for now
 	int currentCardsCountToGive	= 3;

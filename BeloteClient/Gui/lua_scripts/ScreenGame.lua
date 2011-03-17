@@ -343,10 +343,8 @@ function onPlayerRefusedAsset(args)
 end
 
 function onTurnStarting(args)
-	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(false)
-	
-	cleanedPlayedCardsArea()
 end
 
 function onWaitingPlay(args)
@@ -372,15 +370,20 @@ end
 function onPlayedCard(args)
 	local pcArgs = toPlayedCardArgs(args)
 	
+	local winMgr		= CEGUI.WindowManager:getSingleton()
+	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
+	
+	-- Check if 4 cards are currently in the played area; if so, empty it
+	if playedArea:getChildCount() == 4 then
+		cleanedPlayedCardsArea()
+	end
+	
 	-- Search relative position to me
 	pcArgs.m_Player = pcArgs.m_Player + 1
 	local relativePos = pcArgs.m_Player - myPosition
 	if relativePos <= 0 then relativePos = 4 + relativePos end
 	
 	-- add card on the table
-	local winMgr		= CEGUI.WindowManager:getSingleton()
-	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
-	
 	local cardImg = winMgr:createWindow("OgreTray/StaticImage", pcArgs.m_Card .. "ImgPlayed")
 	cardImg:setSize(CEGUI.UVector2(CEGUI.UDim(0, CardWidth), CEGUI.UDim(0, CardHeight)))
 	cardImg:setPosition(PlayedPositions[relativePos])

@@ -1,7 +1,6 @@
 * Message box pour signifier une connexion en cours, une impossibilité de connexion, une connexion perdue
 * Les clients devraient pinger le serveur régulièrement
 * Permettre aux joueurs de se déplacer une fois placé sur la table
-* Ne faire disparaître le tas de cartes jouées qu'une fois que le gagnant du tour joue
 * Supporter les litiges
 * Supporter la belote
 * Supporter les contrats

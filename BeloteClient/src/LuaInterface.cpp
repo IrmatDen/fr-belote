@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/17/11 01:08:51.
+** Generated automatically by tolua++-1.0.92 on 03/17/11 18:01:28.
 */
 
 #ifndef __cplusplus
@@ -42,6 +42,7 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventSet");
+ tolua_usertype(tolua_S,"BeloteAnnouncedArgs");
  tolua_usertype(tolua_S,"CurrentScoresArgs");
  tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"Game::GameVars");
@@ -1123,6 +1124,36 @@ static int tolua_set_CurrentScoresArgs_m_PlayedLastTurn(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_ByPlayer of class  BeloteAnnouncedArgs */
+#ifndef TOLUA_DISABLE_tolua_get_BeloteAnnouncedArgs_m_ByPlayer
+static int tolua_get_BeloteAnnouncedArgs_m_ByPlayer(lua_State* tolua_S)
+{
+  BeloteAnnouncedArgs* self = (BeloteAnnouncedArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ByPlayer'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_ByPlayer);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_ByPlayer of class  BeloteAnnouncedArgs */
+#ifndef TOLUA_DISABLE_tolua_set_BeloteAnnouncedArgs_m_ByPlayer
+static int tolua_set_BeloteAnnouncedArgs_m_ByPlayer(lua_State* tolua_S)
+{
+  BeloteAnnouncedArgs* self = (BeloteAnnouncedArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ByPlayer'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_ByPlayer = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -1494,6 +1525,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_variable(tolua_S,"m_NorthSouthScore",tolua_get_CurrentScoresArgs_m_NorthSouthScore,tolua_set_CurrentScoresArgs_m_NorthSouthScore);
   tolua_variable(tolua_S,"m_WestEastScore",tolua_get_CurrentScoresArgs_m_WestEastScore,tolua_set_CurrentScoresArgs_m_WestEastScore);
   tolua_variable(tolua_S,"m_PlayedLastTurn",tolua_get_CurrentScoresArgs_m_PlayedLastTurn,tolua_set_CurrentScoresArgs_m_PlayedLastTurn);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"BeloteAnnouncedArgs","BeloteAnnouncedArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"BeloteAnnouncedArgs");
+  tolua_variable(tolua_S,"m_ByPlayer",tolua_get_BeloteAnnouncedArgs_m_ByPlayer,tolua_set_BeloteAnnouncedArgs_m_ByPlayer);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

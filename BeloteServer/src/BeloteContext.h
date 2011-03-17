@@ -46,6 +46,7 @@ private:
 		TE_TakeAsset,
 		TE_RefuseAsset,
 		TE_TurnStarting,
+		TE_BeloteAnnounced,
 	};
 
 	typedef boost::array<size_t, 8>	Scores;
@@ -54,6 +55,7 @@ private:
 	static const int			NormalScores[];
 	static const std::string	ValueOrderAtAsset;
 	static const int			AssetScores[];
+	static const sf::Uint32		BeloteScore			= 20;
 
 public:
 	BeloteContext(ServerPtr server);
@@ -91,6 +93,7 @@ private:
 	void	StartTurn();
 	void	AskToPlay();
 	void	CardPlayed(const std::string &card);
+	void	CheckForBelote(const std::string &playedCard);
 	bool	PlayerHasColourInHand(const std::string &colour) const;
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;

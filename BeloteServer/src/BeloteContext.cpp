@@ -549,6 +549,9 @@ void BeloteContext::CardPlayed(const std::string &card)
 		[&] (Players::reference player) { player->GetSocket().Send(packet); }
 	);
 
+	// Check if the card is asset's Q or K, then check if player has both for the Belote.
+	CheckForBelote(card);
+
 	// Remove card from player's hand
 	// NB: the out of range index is *intentional*! We want the element past the end, to conform with STL iterators.
 	PlayerHand::iterator newEnd	= std::remove(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
@@ -597,6 +600,36 @@ void BeloteContext::CardPlayed(const std::string &card)
 		d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 		AskToPlay();
 	}
+}
+
+void BeloteContext::CheckForBelote(const std::string &playedCard)
+{
+	if (playedCard.front() != d->m_CurrentAsset.front())
+		return;
+
+	const bool isQueen = 'Q' == playedCard.at(1);
+	std::string searchedCard;
+	if (isQueen)
+		searchedCard = d->m_CurrentAsset + 'K';
+	else if ('K' == playedCard.at(1))
+		searchedCard = d->m_CurrentAsset + 'Q';
+
+	if (searchedCard == "")
+		return;
+
+	PlayerHand::const_iterator secondPart = std::find(d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+													  d->m_PlayersHand[d->m_CurrentPlayer].end(),
+													  searchedCard);
+	if (secondPart == d->m_PlayersHand[d->m_CurrentPlayer].end())
+		return;
+
+	// Adds 20 points and report Belote
+	if (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North)
+		d->m_Scores[TI_NorthSouth] += BeloteScore;
+	else
+		d->m_Scores[TI_WestEast] += BeloteScore;
+
+	NotifyTurnEvent(TE_BeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
 }
 
 void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
@@ -674,6 +707,10 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 
 	case TE_TurnStarting:
 		packet << BCPT_TurnStarting;
+		break;
+
+	case TE_BeloteAnnounced:
+		packet << BCPT_BeloteAnnounced << player->GetClientName().c_str();
 		break;
 	}
 	

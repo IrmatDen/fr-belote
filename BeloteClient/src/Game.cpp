@@ -3,6 +3,7 @@
 #include <CEGUI.h>
 
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/System/Randomizer.hpp>
 
 #include "Game.h"
 #include "SoundManager.h"
@@ -33,6 +34,8 @@ void Game::Init()
 {
 	new Game();
 	SoundManager::Init();
+
+	sf::Randomizer::SetSeed(time(0));
 }
 
 void Game::Run()

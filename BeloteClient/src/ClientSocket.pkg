@@ -89,6 +89,12 @@ public:
 	bool	m_PlayedLastTurn;
 };
 
+class BeloteAnnouncedArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_ByPlayer;
+};
+
 class ClientSocket : public CEGUI::EventSet
 {
 public:

@@ -74,6 +74,10 @@ function toCurrentScoresArgs(e)
     return tolua.cast(e,"const CurrentScoresArgs")
 end
 
+function toBeloteAnnouncedArgs(e)
+    return tolua.cast(e,"const BeloteAnnouncedArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -447,6 +451,13 @@ function onPlayerConnectedStateChange(args)
 	appendTextToChatBox(text)
 end
 
+function onBeloteAnnounced(args)
+	local a		= toBeloteAnnouncedArgs(args)
+	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " annonce Belote"
+	
+	appendTextToChatBox(text)
+end
+
 -- Game zone events
 function onChoosePosition(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
@@ -630,3 +641,4 @@ client:subscribeEvent("TurnStarting", "onTurnStarting")
 client:subscribeEvent("WaitingPlay", "onWaitingPlay")
 client:subscribeEvent("PlayedCard", "onPlayedCard")
 client:subscribeEvent("CurrentScores", "onCurrentScores")
+client:subscribeEvent("BeloteAnnounced", "onBeloteAnnounced")

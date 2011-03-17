@@ -100,6 +100,12 @@ public:
 	bool	m_PlayedLastTurn;
 };
 
+class BeloteAnnouncedArgs : public CEGUI::EventArgs
+{
+public:
+	std::string		m_ByPlayer;
+};
+
 class ClientSocketPrivate;
 
 template <typename ArgType = CEGUI::EventArgs>
@@ -176,6 +182,7 @@ public:
 	static const CEGUI::String EventWaitingPlay;
 	static const CEGUI::String EventPlayedCard;
 	static const CEGUI::String EventCurrentScores;
+	static const CEGUI::String EventBeloteAnnounced;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
@@ -195,6 +202,7 @@ public:
 	ThreadSafeEventQueue<WaitingPlayArgs>					m_WaitingPlay;
 	ThreadSafeEventQueue<PlayedCardArgs>					m_PlayedCard;
 	ThreadSafeEventQueue<CurrentScoresArgs>					m_CurrentScores;
+	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_BeloteAnnounced;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

@@ -29,6 +29,7 @@ enum BeloteContextPacketType
 	BCPT_TotalScores,
 	BCPT_BeloteAnnounced,
 	BCPT_RebeloteAnnounced,
+	BCPT_ContractingTeamResult,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, BeloteContextPacketType pt)		{ packet << (sf::Uint32)pt; return packet; }

@@ -675,41 +675,9 @@ void BeloteContext::TurnEnded()
 	ComputeAndReportTurnScore(d->m_CurrentPlayer);
 
 	if (d->m_RemainingCards[0] != 0)
-	{
 		StartTurn();
-	}
 	else
-	{
-		// Update total scores
-		if (d->m_Scores[d->m_TeamAcceptingContract] >= MinScoreToWin)
-		{
-			if (d->m_Scores[d->m_TeamAcceptingContract] >= PointsSumScore)
-			{
-				d->m_TotalScores[d->m_TeamAcceptingContract] += CapotScore;
-
-				if (d->m_TeamOwningBelote != TI_None)
-					d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
-			}
-			else
-			{
-				d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
-				d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
-			}
-		}
-		else
-		{
-			const TeamIndex winningTeam = static_cast<TeamIndex>(d->m_TeamAcceptingContract ^ 1);
-			d->m_TotalScores[winningTeam] += PointsSumScore;
-
-			if (d->m_TeamOwningBelote != TI_None)
-				d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
-		}
-		NotifyTurnEvent(TE_TotalScoresUpdated);
-
-		// and start a new turn
-		d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
-		PreTurn();
-	}
+		GameEnded();
 }
 
 void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
@@ -733,6 +701,56 @@ void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 
 	// Notify each player of current score
 	NotifyTurnEvent(TE_ScoresUpdated);
+}
+
+void BeloteContext::GameEnded()
+{
+	bool contractingTeamWin = false;
+
+	// Update total scores
+	if (d->m_Scores[d->m_TeamAcceptingContract] >= MinScoreToWin)
+	{
+		// Check if the winning team scored a capot
+		if (d->m_Scores[d->m_TeamAcceptingContract] >= PointsSumScore)
+		{
+			d->m_TotalScores[d->m_TeamAcceptingContract] += CapotScore;
+
+			if (d->m_TeamOwningBelote != TI_None)
+				d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
+		}
+		else
+		{
+			d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
+			d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
+		}
+
+		contractingTeamWin = true;
+	}
+	else
+	{
+		const TeamIndex winningTeam = static_cast<TeamIndex>(d->m_TeamAcceptingContract ^ 1);
+		d->m_TotalScores[winningTeam] += PointsSumScore;
+
+		if (d->m_TeamOwningBelote != TI_None)
+			d->m_TotalScores[d->m_TeamOwningBelote] += BeloteScore;
+
+		contractingTeamWin = false;
+	}
+
+	NotifyTurnEvent(TE_TotalScoresUpdated);
+
+	// Report what happened about the team accepting the asset
+	sf::Packet packet;
+	packet << PT_GameContextPacket << BCPT_ContractingTeamResult;
+	packet << (d->m_TeamAcceptingContract == TI_NorthSouth) << contractingTeamWin;
+	
+	std::for_each(d->m_Players.begin(), d->m_Players.end(),
+		[&] (Players::reference player) { player->GetSocket().Send(packet); }
+	);
+
+	// and start a new turn
+	d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
+	PreTurn();
 }
 
 void BeloteContext::OrderHands()

@@ -105,6 +105,13 @@ public:
 	std::string		m_ByPlayer;
 };
 
+class ContractingTeamResultArgs : public CEGUI::EventArgs
+{
+public:
+	bool	m_IsNorthSouthTeam,
+			m_HasWon;
+};
+
 class ClientSocketPrivate;
 
 template <typename ArgType = CEGUI::EventArgs>
@@ -185,6 +192,7 @@ public:
 	static const CEGUI::String EventBeloteAnnounced;
 	static const CEGUI::String EventRebeloteAnnounced;
 	static const CEGUI::String EventNoAssetTaken;
+	static const CEGUI::String EventContractingTeamResult;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
@@ -208,6 +216,7 @@ public:
 	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_BeloteAnnounced;
 	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_RebeloteAnnounced;
 	ThreadSafeEventQueue<>									m_NoAssetTaken;
+	ThreadSafeEventQueue<ContractingTeamResultArgs>			m_ContractingTeamResult;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

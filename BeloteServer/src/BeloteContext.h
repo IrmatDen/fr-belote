@@ -109,6 +109,7 @@ private:
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
 	void	ComputeAndReportTurnScore(PlayerPosition winner);
+	void	GameEnded();
 
 	void	EvaluatePlayedCards(Scores &scores) const;
 	size_t	GetMaxScoreFromPlayedCards() const;

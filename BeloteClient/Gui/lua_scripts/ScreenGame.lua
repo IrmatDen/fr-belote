@@ -78,6 +78,10 @@ function toBeloteAnnouncedArgs(e)
     return tolua.cast(e,"const BeloteAnnouncedArgs")
 end
 
+function toContractingTeamResultArgs(e)
+    return tolua.cast(e,"const ContractingTeamResultArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -489,6 +493,35 @@ function onNoAssetTaken(args)
 	appendTextToChatBox(text)
 end
 
+function onContractingTeamResult(args)
+	local results = toContractingTeamResultArgs(args)
+	
+	local playerPartOfNSTeam = myPosition == 1 or myPosition == 3
+	local text	= "[font='DejaVuSans-8-Bold']"
+	
+	if playerPartOfNSTeam then
+		if results.m_IsNorthSouthTeam then
+			text = text .. "Nous avons"
+		else
+			text = text .. "Ils ont"
+		end
+	else
+		if results.m_IsNorthSouthTeam then
+			text = text .. "Ils ont"
+		else
+			text = text .. "Nous avons"
+		end
+	end
+	
+	if results.m_HasWon then
+		text = text .. " gagné"
+	else
+		text = text .. " perdu"
+	end
+	
+	appendTextToChatBox(text)
+end
+
 -- Game zone events
 function onChoosePosition(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
@@ -676,3 +709,4 @@ client:subscribeEvent("TotalScores", "onTotalScores")
 client:subscribeEvent("BeloteAnnounced", "onBeloteAnnounced")
 client:subscribeEvent("RebeloteAnnounced", "onRebeloteAnnounced")
 client:subscribeEvent("NoAssetTaken", "onNoAssetTaken")
+client:subscribeEvent("ContractingTeamResult", "onContractingTeamResult")

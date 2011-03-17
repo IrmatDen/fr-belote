@@ -94,6 +94,13 @@ public:
 	std::string		m_ByPlayer;
 };
 
+class ContractingTeamResultArgs : public CEGUI::EventArgs
+{
+public:
+	bool	m_IsNorthSouthTeam,
+			m_HasWon;
+};
+
 class ClientSocket : public CEGUI::EventSet
 {
 public:

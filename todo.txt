@@ -3,5 +3,6 @@
 * Permettre aux joueurs de se déplacer une fois placé sur la table
 * Supporter les litiges
 * Supporter les contrats
+* Supporter les capots
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
 * Compter la belote correctement (=> même si l'équipe est dedans, elle a ses 20 pts)

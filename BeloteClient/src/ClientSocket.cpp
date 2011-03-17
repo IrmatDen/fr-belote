@@ -33,6 +33,7 @@ const CEGUI::String ClientSocket::EventPlayedCard("PlayedCard");
 const CEGUI::String ClientSocket::EventCurrentScores("CurrentScores");
 const CEGUI::String ClientSocket::EventTotalScores("TotalScores");
 const CEGUI::String ClientSocket::EventBeloteAnnounced("BeloteAnnounced");
+const CEGUI::String ClientSocket::EventRebeloteAnnounced("RebeloteAnnounced");
 const CEGUI::String ClientSocket::EventNoAssetTaken("NoAssetTaken");
 
 // Define network state machine stuff...
@@ -309,6 +310,14 @@ namespace
 						BeloteAnnouncedArgs args;
 						packet >> args.m_ByPlayer;
 						m_Self->m_BeloteAnnounced.push(args);
+					}
+					break;
+
+				case BCPT_RebeloteAnnounced:
+					{
+						BeloteAnnouncedArgs args;
+						packet >> args.m_ByPlayer;
+						m_Self->m_RebeloteAnnounced.push(args);
 					}
 					break;
 
@@ -686,6 +695,7 @@ ClientSocket::ClientSocket()
 	m_CurrentScores				(EventCurrentScores, EventNamespace),
 	m_TotalScores				(EventTotalScores, EventNamespace),
 	m_BeloteAnnounced			(EventBeloteAnnounced, EventNamespace),
+	m_RebeloteAnnounced			(EventRebeloteAnnounced, EventNamespace),
 	m_NoAssetTaken				(EventNoAssetTaken, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
@@ -772,6 +782,7 @@ void ClientSocket::Update()
 	m_CurrentScores.process(this);
 	m_TotalScores.process(this);
 	m_BeloteAnnounced.process(this);
+	m_RebeloteAnnounced.process(this);
 	m_NoAssetTaken.process(this);
 }
 

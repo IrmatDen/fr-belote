@@ -566,7 +566,8 @@ void BeloteContext::CardPlayed(const std::string &card)
 	);
 
 	// Check if the card is asset's Q or K, then check if player has both for the Belote.
-	CheckForBelote(card);
+	if (!CheckForBelote(card))
+		CheckForRebelote(card);
 
 	// Remove card from player's hand
 	// NB: the out of range index is *intentional*! We want the element past the end, to conform with STL iterators.
@@ -592,10 +593,10 @@ void BeloteContext::CardPlayed(const std::string &card)
 	}
 }
 
-void BeloteContext::CheckForBelote(const std::string &playedCard)
+bool BeloteContext::CheckForBelote(const std::string &playedCard)
 {
 	if (playedCard.front() != d->m_CurrentAsset.front() || d->m_TeamOwningBelote != TI_None)
-		return;
+		return false;
 
 	const bool isQueen = 'Q' == playedCard.at(1);
 	std::string searchedCard;
@@ -605,13 +606,13 @@ void BeloteContext::CheckForBelote(const std::string &playedCard)
 		searchedCard = d->m_CurrentAsset + 'Q';
 
 	if (searchedCard == "")
-		return;
+		return false;
 
 	PlayerHand::const_iterator secondPart = std::find(d->m_PlayersHand[d->m_CurrentPlayer].begin(),
 													  d->m_PlayersHand[d->m_CurrentPlayer].end(),
 													  searchedCard);
 	if (secondPart == d->m_PlayersHand[d->m_CurrentPlayer].end())
-		return;
+		return false;
 
 	// Adds 20 points and report Belote
 	if (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North)
@@ -626,6 +627,31 @@ void BeloteContext::CheckForBelote(const std::string &playedCard)
 	}
 
 	NotifyTurnEvent(TE_BeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
+
+	return true;
+}
+
+void BeloteContext::CheckForRebelote(const std::string &playedCard)
+{
+	if (playedCard.front() != d->m_CurrentAsset.front() || d->m_TeamOwningBelote == TI_None)
+		return;
+
+	bool sameTeamOwnsBelote = (d->m_TeamOwningBelote == TI_NorthSouth &&
+								(d->m_CurrentPlayer == PP_North || d->m_CurrentPlayer == PP_South));
+
+	if (!sameTeamOwnsBelote)
+	{
+		sameTeamOwnsBelote = (d->m_TeamOwningBelote == TI_WestEast &&
+								(d->m_CurrentPlayer == PP_West || d->m_CurrentPlayer == PP_East));
+
+		if (!sameTeamOwnsBelote)
+			return;
+	}
+
+	if (playedCard.at(1) != 'K' && playedCard.at(1) != 'Q')
+		return;
+
+	NotifyTurnEvent(TE_RebeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
 }
 
 void BeloteContext::TurnEnded()
@@ -751,6 +777,10 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 
 	case TE_BeloteAnnounced:
 		packet << BCPT_BeloteAnnounced << player->GetClientName().c_str();
+		break;
+
+	case TE_RebeloteAnnounced:
+		packet << BCPT_RebeloteAnnounced << player->GetClientName().c_str();
 		break;
 
 	case TE_ScoresUpdated:

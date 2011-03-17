@@ -183,6 +183,7 @@ public:
 	static const CEGUI::String EventCurrentScores;
 	static const CEGUI::String EventTotalScores;
 	static const CEGUI::String EventBeloteAnnounced;
+	static const CEGUI::String EventRebeloteAnnounced;
 	static const CEGUI::String EventNoAssetTaken;
 
 public:
@@ -205,6 +206,7 @@ public:
 	ThreadSafeEventQueue<ScoresArgs>						m_CurrentScores;
 	ThreadSafeEventQueue<ScoresArgs>						m_TotalScores;
 	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_BeloteAnnounced;
+	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_RebeloteAnnounced;
 	ThreadSafeEventQueue<>									m_NoAssetTaken;
 
 	struct ConnectionStatusPushGuard

@@ -49,6 +49,7 @@ private:
 		TE_NoAssetTaken,
 		TE_TurnStarting,
 		TE_BeloteAnnounced,
+		TE_RebeloteAnnounced,
 		TE_ScoresUpdated,
 		TE_TotalScoresUpdated,
 	};
@@ -96,7 +97,8 @@ private:
 	void	StartTurn();
 	void	AskToPlay();
 	void	CardPlayed(const std::string &card);
-	void	CheckForBelote(const std::string &playedCard);
+	bool	CheckForBelote(const std::string &playedCard);
+	void	CheckForRebelote(const std::string &playedCard);
 	void	TurnEnded();
 	bool	PlayerHasColourInHand(const std::string &colour) const;
 	bool	PlayerMustCut() const;

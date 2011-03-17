@@ -477,6 +477,13 @@ function onBeloteAnnounced(args)
 	appendTextToChatBox(text)
 end
 
+function onRebeloteAnnounced(args)
+	local a		= toBeloteAnnouncedArgs(args)
+	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " annonce Rebelote"
+	
+	appendTextToChatBox(text)
+end
+
 function onNoAssetTaken(args)
 	local text	= "[font='DejaVuSans-8-Bold']Tout le monde a passé"
 	appendTextToChatBox(text)
@@ -667,4 +674,5 @@ client:subscribeEvent("PlayedCard", "onPlayedCard")
 client:subscribeEvent("CurrentScores", "onCurrentScores")
 client:subscribeEvent("TotalScores", "onTotalScores")
 client:subscribeEvent("BeloteAnnounced", "onBeloteAnnounced")
+client:subscribeEvent("RebeloteAnnounced", "onRebeloteAnnounced")
 client:subscribeEvent("NoAssetTaken", "onNoAssetTaken")

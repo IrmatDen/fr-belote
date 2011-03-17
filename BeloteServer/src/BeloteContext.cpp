@@ -251,14 +251,6 @@ void BeloteContext::PreTurn()
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
 
-	// Remove all cards in hand (we might be called because everyone refused to take an asset)
-	/*for (PlayerPosition pp = 0; pp != _PP_Count; pp++)
-	{
-		std::fill(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
-					d->m_PlayersHand[d->m_CurrentPlayer].end(),
-					std::string());
-	}*/
-
 	NotifyTurnEvent(TE_Dealing, d->m_Players[d->m_CurrentDealer]);
 	DealFirstPart();
 	

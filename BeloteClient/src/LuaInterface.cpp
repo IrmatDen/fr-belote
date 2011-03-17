@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/17/11 18:24:07.
+** Generated automatically by tolua++-1.0.92 on 03/17/11 19:47:22.
 */
 
 #ifndef __cplusplus
@@ -43,7 +43,7 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"CEGUI::EventSet");
  tolua_usertype(tolua_S,"BeloteAnnouncedArgs");
- tolua_usertype(tolua_S,"CurrentScoresArgs");
+ tolua_usertype(tolua_S,"ScoresArgs");
  tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
@@ -1034,11 +1034,11 @@ static int tolua_set_PlayedCardArgs_m_Player(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* get function: m_NorthSouthScore of class  CurrentScoresArgs */
-#ifndef TOLUA_DISABLE_tolua_get_CurrentScoresArgs_m_NorthSouthScore
-static int tolua_get_CurrentScoresArgs_m_NorthSouthScore(lua_State* tolua_S)
+/* get function: m_NorthSouthScore of class  ScoresArgs */
+#ifndef TOLUA_DISABLE_tolua_get_ScoresArgs_m_NorthSouthScore
+static int tolua_get_ScoresArgs_m_NorthSouthScore(lua_State* tolua_S)
 {
-  CurrentScoresArgs* self = (CurrentScoresArgs*)  tolua_tousertype(tolua_S,1,0);
+  ScoresArgs* self = (ScoresArgs*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
  if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_NorthSouthScore'",NULL);
 #endif
@@ -1047,11 +1047,11 @@ static int tolua_get_CurrentScoresArgs_m_NorthSouthScore(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* set function: m_NorthSouthScore of class  CurrentScoresArgs */
-#ifndef TOLUA_DISABLE_tolua_set_CurrentScoresArgs_m_NorthSouthScore
-static int tolua_set_CurrentScoresArgs_m_NorthSouthScore(lua_State* tolua_S)
+/* set function: m_NorthSouthScore of class  ScoresArgs */
+#ifndef TOLUA_DISABLE_tolua_set_ScoresArgs_m_NorthSouthScore
+static int tolua_set_ScoresArgs_m_NorthSouthScore(lua_State* tolua_S)
 {
-  CurrentScoresArgs* self = (CurrentScoresArgs*)  tolua_tousertype(tolua_S,1,0);
+  ScoresArgs* self = (ScoresArgs*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_NorthSouthScore'",NULL);
@@ -1064,11 +1064,11 @@ static int tolua_set_CurrentScoresArgs_m_NorthSouthScore(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* get function: m_WestEastScore of class  CurrentScoresArgs */
-#ifndef TOLUA_DISABLE_tolua_get_CurrentScoresArgs_m_WestEastScore
-static int tolua_get_CurrentScoresArgs_m_WestEastScore(lua_State* tolua_S)
+/* get function: m_WestEastScore of class  ScoresArgs */
+#ifndef TOLUA_DISABLE_tolua_get_ScoresArgs_m_WestEastScore
+static int tolua_get_ScoresArgs_m_WestEastScore(lua_State* tolua_S)
 {
-  CurrentScoresArgs* self = (CurrentScoresArgs*)  tolua_tousertype(tolua_S,1,0);
+  ScoresArgs* self = (ScoresArgs*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
  if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_WestEastScore'",NULL);
 #endif
@@ -1077,11 +1077,11 @@ static int tolua_get_CurrentScoresArgs_m_WestEastScore(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* set function: m_WestEastScore of class  CurrentScoresArgs */
-#ifndef TOLUA_DISABLE_tolua_set_CurrentScoresArgs_m_WestEastScore
-static int tolua_set_CurrentScoresArgs_m_WestEastScore(lua_State* tolua_S)
+/* set function: m_WestEastScore of class  ScoresArgs */
+#ifndef TOLUA_DISABLE_tolua_set_ScoresArgs_m_WestEastScore
+static int tolua_set_ScoresArgs_m_WestEastScore(lua_State* tolua_S)
 {
-  CurrentScoresArgs* self = (CurrentScoresArgs*)  tolua_tousertype(tolua_S,1,0);
+  ScoresArgs* self = (ScoresArgs*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_WestEastScore'",NULL);
@@ -1089,36 +1089,6 @@ static int tolua_set_CurrentScoresArgs_m_WestEastScore(lua_State* tolua_S)
  tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
 #endif
   self->m_WestEastScore = ((int)  tolua_tonumber(tolua_S,2,0))
-;
- return 0;
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* get function: m_PlayedLastTurn of class  CurrentScoresArgs */
-#ifndef TOLUA_DISABLE_tolua_get_CurrentScoresArgs_m_PlayedLastTurn
-static int tolua_get_CurrentScoresArgs_m_PlayedLastTurn(lua_State* tolua_S)
-{
-  CurrentScoresArgs* self = (CurrentScoresArgs*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_PlayedLastTurn'",NULL);
-#endif
- tolua_pushboolean(tolua_S,(bool)self->m_PlayedLastTurn);
- return 1;
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* set function: m_PlayedLastTurn of class  CurrentScoresArgs */
-#ifndef TOLUA_DISABLE_tolua_set_CurrentScoresArgs_m_PlayedLastTurn
-static int tolua_set_CurrentScoresArgs_m_PlayedLastTurn(lua_State* tolua_S)
-{
-  CurrentScoresArgs* self = (CurrentScoresArgs*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_PlayedLastTurn'",NULL);
- if (!tolua_isboolean(tolua_S,2,0,&tolua_err))
- tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
-#endif
-  self->m_PlayedLastTurn = ((bool)  tolua_toboolean(tolua_S,2,0))
 ;
  return 0;
 }
@@ -1520,11 +1490,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_variable(tolua_S,"m_Card",tolua_get_PlayedCardArgs_m_Card,tolua_set_PlayedCardArgs_m_Card);
   tolua_variable(tolua_S,"m_Player",tolua_get_PlayedCardArgs_m_Player,tolua_set_PlayedCardArgs_m_Player);
  tolua_endmodule(tolua_S);
- tolua_cclass(tolua_S,"CurrentScoresArgs","CurrentScoresArgs","CEGUI::EventArgs",NULL);
- tolua_beginmodule(tolua_S,"CurrentScoresArgs");
-  tolua_variable(tolua_S,"m_NorthSouthScore",tolua_get_CurrentScoresArgs_m_NorthSouthScore,tolua_set_CurrentScoresArgs_m_NorthSouthScore);
-  tolua_variable(tolua_S,"m_WestEastScore",tolua_get_CurrentScoresArgs_m_WestEastScore,tolua_set_CurrentScoresArgs_m_WestEastScore);
-  tolua_variable(tolua_S,"m_PlayedLastTurn",tolua_get_CurrentScoresArgs_m_PlayedLastTurn,tolua_set_CurrentScoresArgs_m_PlayedLastTurn);
+ tolua_cclass(tolua_S,"ScoresArgs","ScoresArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"ScoresArgs");
+  tolua_variable(tolua_S,"m_NorthSouthScore",tolua_get_ScoresArgs_m_NorthSouthScore,tolua_set_ScoresArgs_m_NorthSouthScore);
+  tolua_variable(tolua_S,"m_WestEastScore",tolua_get_ScoresArgs_m_WestEastScore,tolua_set_ScoresArgs_m_WestEastScore);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"BeloteAnnouncedArgs","BeloteAnnouncedArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"BeloteAnnouncedArgs");

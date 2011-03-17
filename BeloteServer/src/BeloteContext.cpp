@@ -180,7 +180,7 @@ void BeloteContext::StartGame()
 	// Init game state.
 	InitDeck();
 	ShuffleDeck();
-	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
+	std::fill(d->m_TotalScores, d->m_TotalScores + countof(d->m_TotalScores), 0);
 
 	d->m_CurrentDealer = PP_South;
 	PreTurn();
@@ -309,6 +309,7 @@ void BeloteContext::DealFirstPart()
 	);
 }
 
+// Asset related methods
 void BeloteContext::AskForAsset()
 {
 	sf::Packet packet;
@@ -384,6 +385,7 @@ void BeloteContext::DealLastPart()
 	StartTurn();
 }
 
+// Game progress methods
 void BeloteContext::StartTurn()
 {
 	NotifyTurnEvent(TE_TurnStarting);
@@ -579,33 +581,7 @@ void BeloteContext::CardPlayed(const std::string &card)
 	// Next player!
 	if (d->m_CurrentlyPlayedCards == _PP_Count)
 	{
-		Scores scores;
-		EvaluatePlayedCards(scores);
-		const size_t maxScore = *std::max_element(scores.begin(), scores.end());
-
-		size_t winner			= 0;
-		for(; winner != 4; winner++)
-		{
-			if (scores[winner] == maxScore)
-				break;
-		}
-		assert(winner < 4);
-
-		const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
-
-		d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
-
-		ComputeAndReportTurnScore(d->m_CurrentPlayer);
-
-		if (d->m_RemainingCards[0] != 0)
-		{
-			StartTurn();
-		}
-		else
-		{
-			d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
-			PreTurn();
-		}
+		TurnEnded();
 	}
 	else
 	{
@@ -644,6 +620,43 @@ void BeloteContext::CheckForBelote(const std::string &playedCard)
 	NotifyTurnEvent(TE_BeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
 }
 
+void BeloteContext::TurnEnded()
+{
+	Scores scores;
+	EvaluatePlayedCards(scores);
+	const size_t maxScore = *std::max_element(scores.begin(), scores.end());
+
+	size_t winner			= 0;
+	for(; winner != 4; winner++)
+	{
+		if (scores[winner] == maxScore)
+			break;
+	}
+	assert(winner < 4);
+
+	const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
+
+	d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
+
+	ComputeAndReportTurnScore(d->m_CurrentPlayer);
+
+	if (d->m_RemainingCards[0] != 0)
+	{
+		StartTurn();
+	}
+	else
+	{
+		// Update total scores
+		d->m_TotalScores[TI_NorthSouth]	+= d->m_Scores[TI_NorthSouth];
+		d->m_TotalScores[TI_WestEast]	+= d->m_Scores[TI_WestEast];
+		NotifyTurnEvent(TE_TotalScoresUpdated);
+
+		// and start a new turn
+		d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
+		PreTurn();
+	}
+}
+
 void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 {
 	Scores scores;
@@ -664,15 +677,7 @@ void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 		d->m_Scores[TI_WestEast] += score;
 
 	// Notify each player of current score
-	sf::Packet packet;
-	packet << PT_GameContextPacket << BCPT_CurrentScores;
-	packet << d->m_Scores[TI_NorthSouth];
-	packet << d->m_Scores[TI_WestEast];
-	packet << (d->m_RemainingCards[0] == 0);
-	
-	std::for_each(d->m_Players.begin(), d->m_Players.end(),
-		[&] (Players::reference player) { player->GetSocket().Send(packet); }
-	);
+	NotifyTurnEvent(TE_ScoresUpdated);
 }
 
 void BeloteContext::OrderHands()
@@ -727,6 +732,18 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 
 	case TE_BeloteAnnounced:
 		packet << BCPT_BeloteAnnounced << player->GetClientName().c_str();
+		break;
+
+	case TE_ScoresUpdated:
+		packet << BCPT_CurrentScores;
+		packet << d->m_Scores[TI_NorthSouth];
+		packet << d->m_Scores[TI_WestEast];
+		break;
+
+	case TE_TotalScoresUpdated:
+		packet << BCPT_TotalScores;
+		packet << d->m_TotalScores[TI_NorthSouth];
+		packet << d->m_TotalScores[TI_WestEast];
 		break;
 	}
 	

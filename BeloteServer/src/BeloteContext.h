@@ -48,6 +48,8 @@ private:
 		TE_NoAssetTaken,
 		TE_TurnStarting,
 		TE_BeloteAnnounced,
+		TE_ScoresUpdated,
+		TE_TotalScoresUpdated,
 	};
 
 	typedef boost::array<size_t, 8>	Scores;
@@ -94,6 +96,7 @@ private:
 	void	AskToPlay();
 	void	CardPlayed(const std::string &card);
 	void	CheckForBelote(const std::string &playedCard);
+	void	TurnEnded();
 	bool	PlayerHasColourInHand(const std::string &colour) const;
 	bool	PlayerMustCut() const;
 	bool	PlayerCanOvercut() const;
@@ -124,6 +127,7 @@ private:
 		Players		m_Players;
 
 		sf::Uint32		m_Scores[_TI_Count];
+		sf::Uint32		m_TotalScores[_TI_Count];
 
 		Deck			m_Deck;
 		int				m_CurrentDeckPos;

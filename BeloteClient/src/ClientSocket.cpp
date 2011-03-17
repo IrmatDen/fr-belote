@@ -31,6 +31,7 @@ const CEGUI::String ClientSocket::EventTurnStarting("TurnStarting");
 const CEGUI::String ClientSocket::EventWaitingPlay("WaitingPlay");
 const CEGUI::String ClientSocket::EventPlayedCard("PlayedCard");
 const CEGUI::String ClientSocket::EventCurrentScores("CurrentScores");
+const CEGUI::String ClientSocket::EventTotalScores("TotalScores");
 const CEGUI::String ClientSocket::EventBeloteAnnounced("BeloteAnnounced");
 const CEGUI::String ClientSocket::EventNoAssetTaken("NoAssetTaken");
 
@@ -289,9 +290,17 @@ namespace
 
 				case BCPT_CurrentScores:
 					{
-						CurrentScoresArgs args;
-						packet >> args.m_NorthSouthScore >> args.m_WestEastScore >> args.m_PlayedLastTurn;
+						ScoresArgs args;
+						packet >> args.m_NorthSouthScore >> args.m_WestEastScore;
 						m_Self->m_CurrentScores.push(args);
+					}
+					break;
+
+				case BCPT_TotalScores:
+					{
+						ScoresArgs args;
+						packet >> args.m_NorthSouthScore >> args.m_WestEastScore;
+						m_Self->m_TotalScores.push(args);
 					}
 					break;
 
@@ -675,6 +684,7 @@ ClientSocket::ClientSocket()
 	m_WaitingPlay				(EventWaitingPlay, EventNamespace),
 	m_PlayedCard				(EventPlayedCard, EventNamespace),
 	m_CurrentScores				(EventCurrentScores, EventNamespace),
+	m_TotalScores				(EventTotalScores, EventNamespace),
 	m_BeloteAnnounced			(EventBeloteAnnounced, EventNamespace),
 	m_NoAssetTaken				(EventNoAssetTaken, EventNamespace)
 {
@@ -760,6 +770,7 @@ void ClientSocket::Update()
 	m_WaitingPlay.process(this);
 	m_PlayedCard.process(this);
 	m_CurrentScores.process(this);
+	m_TotalScores.process(this);
 	m_BeloteAnnounced.process(this);
 	m_NoAssetTaken.process(this);
 }

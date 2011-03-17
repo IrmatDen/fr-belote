@@ -74,6 +74,10 @@ function toCurrentScoresArgs(e)
     return tolua.cast(e,"const CurrentScoresArgs")
 end
 
+function toTotalScoresArgs(e)
+    return tolua.cast(e,"const TotalScoresArgs")
+end
+
 function toBeloteAnnouncedArgs(e)
     return tolua.cast(e,"const BeloteAnnouncedArgs")
 end
@@ -417,17 +421,29 @@ function onCurrentScores(args)
 		theirScore = scores.m_NorthSouthScore
 	end
 	updateTurnInfoBox(ourScore, theirScore)
+end
+
+function onTotalScores(args)
+	local scores = toTotalScoresArgs(args)
+	local ourScore		= 0
+	local theirScore	= 0
 	
-	if scores.m_PlayedLastTurn then
-		local winMgr = CEGUI.WindowManager:getSingleton()
-		local scoresTable = CEGUI.toMultiColumnList(winMgr:getWindow("UIPanel/Scores/Table"))
-		local row = scoresTable:addRow()
-		
-		local theirScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. theirScore)
-		local ourScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. ourScore)
-		scoresTable:setItem(theirScoreItem, 0, row);
-		scoresTable:setItem(ourScoreItem, 1, row);
+	if myPosition == 1 or myPosition == 3 then
+		ourScore = scores.m_NorthSouthScore
+		theirScore = scores.m_WestEastScore
+	else
+		ourScore = scores.m_WestEastScore
+		theirScore = scores.m_NorthSouthScore
 	end
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local scoresTable = CEGUI.toMultiColumnList(winMgr:getWindow("UIPanel/Scores/Table"))
+	local row = scoresTable:addRow()
+	
+	local theirScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. theirScore)
+	local ourScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. ourScore)
+	scoresTable:setItem(theirScoreItem, 0, row);
+	scoresTable:setItem(ourScoreItem, 1, row);
 end
 
 function onTextBroadcasted(args)
@@ -653,5 +669,6 @@ client:subscribeEvent("TurnStarting", "onTurnStarting")
 client:subscribeEvent("WaitingPlay", "onWaitingPlay")
 client:subscribeEvent("PlayedCard", "onPlayedCard")
 client:subscribeEvent("CurrentScores", "onCurrentScores")
+client:subscribeEvent("TotalScores", "onTotalScores")
 client:subscribeEvent("BeloteAnnounced", "onBeloteAnnounced")
 client:subscribeEvent("NoAssetTaken", "onNoAssetTaken")

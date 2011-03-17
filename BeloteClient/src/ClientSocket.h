@@ -92,12 +92,11 @@ public:
 	int				m_Player;
 };
 
-class CurrentScoresArgs : public CEGUI::EventArgs
+class ScoresArgs : public CEGUI::EventArgs
 {
 public:
 	int		m_NorthSouthScore,
 			m_WestEastScore;
-	bool	m_PlayedLastTurn;
 };
 
 class BeloteAnnouncedArgs : public CEGUI::EventArgs
@@ -182,6 +181,7 @@ public:
 	static const CEGUI::String EventWaitingPlay;
 	static const CEGUI::String EventPlayedCard;
 	static const CEGUI::String EventCurrentScores;
+	static const CEGUI::String EventTotalScores;
 	static const CEGUI::String EventBeloteAnnounced;
 	static const CEGUI::String EventNoAssetTaken;
 
@@ -202,7 +202,8 @@ public:
 	ThreadSafeEventQueue<>									m_TurnStarting;
 	ThreadSafeEventQueue<WaitingPlayArgs>					m_WaitingPlay;
 	ThreadSafeEventQueue<PlayedCardArgs>					m_PlayedCard;
-	ThreadSafeEventQueue<CurrentScoresArgs>					m_CurrentScores;
+	ThreadSafeEventQueue<ScoresArgs>						m_CurrentScores;
+	ThreadSafeEventQueue<ScoresArgs>						m_TotalScores;
 	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_BeloteAnnounced;
 	ThreadSafeEventQueue<>									m_NoAssetTaken;
 

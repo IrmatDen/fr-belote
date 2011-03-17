@@ -26,6 +26,7 @@ enum BeloteContextPacketType
 	BCPT_PlayCard,
 	BCPT_CardPlayed,
 	BCPT_CurrentScores,
+	BCPT_TotalScores,
 	BCPT_BeloteAnnounced,
 };
 

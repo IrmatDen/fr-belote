@@ -4,4 +4,4 @@
 * Supporter les litiges
 * Supporter les contrats
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
-* Reporter le total de points après chaque partie
+* Compter la belote correctement (=> même si l'équipe est dedans, elle a ses 20 pts)

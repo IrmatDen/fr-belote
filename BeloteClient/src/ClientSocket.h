@@ -65,6 +65,7 @@ class PlayerAcceptedAssetArgs : public CEGUI::EventArgs
 public:
 	std::string		m_Asset,
 					m_ByPlayer;
+	bool			m_AcceptedByNSTeam;
 };
 
 class CurrentCardsInHandArgs : public CEGUI::EventArgs

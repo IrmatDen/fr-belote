@@ -254,7 +254,7 @@ namespace
 				case BCPT_AssetAccepted:
 					{
 						PlayerAcceptedAssetArgs args;
-						packet >> args.m_ByPlayer >> args.m_Asset;
+						packet >> args.m_ByPlayer >> args.m_Asset >> args.m_AcceptedByNSTeam;
 						m_Self->m_PlayerAcceptedAsset.push(args);
 					}
 					break;

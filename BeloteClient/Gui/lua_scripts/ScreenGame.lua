@@ -210,6 +210,10 @@ function cleanedPlayedCardsArea()
 	end
 end
 
+function IsPlayerPartOfNSTeam()
+	return myPosition == 1 or myPosition == 3
+end
+
 -----------------------------------------
 -- Start of handler functions
 -----------------------------------------
@@ -345,7 +349,20 @@ function onPlayerAcceptedAsset(args)
 	
 	appendTextToChatBox(text)
 	
-	taker = a.m_ByPlayer
+	if IsPlayerPartOfNSTeam() then
+		if args.m_AcceptedByNSTeam then
+			taker = "Nous"
+		else
+			taker = "Eux"
+		end
+	else
+		if args.m_AcceptedByNSTeam then
+			taker = "Eux"
+		else
+			taker = "Nous"
+		end
+	end
+	
 	asset = AssetTranslation[a.m_Asset]
 	updateTurnInfoBox(0, 0)
 end
@@ -496,10 +513,9 @@ end
 function onContractingTeamResult(args)
 	local results = toContractingTeamResultArgs(args)
 	
-	local playerPartOfNSTeam = myPosition == 1 or myPosition == 3
 	local text	= "[font='DejaVuSans-8-Bold']"
 	
-	if playerPartOfNSTeam then
+	if IsPlayerPartOfNSTeam() then
 		if results.m_IsNorthSouthTeam then
 			text = text .. "Nous avons"
 		else

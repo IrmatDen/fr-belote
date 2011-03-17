@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/17/11 23:20:40.
+** Generated automatically by tolua++-1.0.92 on 03/17/11 23:46:37.
 */
 
 #ifndef __cplusplus
@@ -841,6 +841,36 @@ static int tolua_set_PlayerAcceptedAssetArgs_m_ByPlayer(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_AcceptedByNSTeam of class  PlayerAcceptedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerAcceptedAssetArgs_m_AcceptedByNSTeam
+static int tolua_get_PlayerAcceptedAssetArgs_m_AcceptedByNSTeam(lua_State* tolua_S)
+{
+  PlayerAcceptedAssetArgs* self = (PlayerAcceptedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_AcceptedByNSTeam'",NULL);
+#endif
+ tolua_pushboolean(tolua_S,(bool)self->m_AcceptedByNSTeam);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_AcceptedByNSTeam of class  PlayerAcceptedAssetArgs */
+#ifndef TOLUA_DISABLE_tolua_set_PlayerAcceptedAssetArgs_m_AcceptedByNSTeam
+static int tolua_set_PlayerAcceptedAssetArgs_m_AcceptedByNSTeam(lua_State* tolua_S)
+{
+  PlayerAcceptedAssetArgs* self = (PlayerAcceptedAssetArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_AcceptedByNSTeam'",NULL);
+ if (!tolua_isboolean(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_AcceptedByNSTeam = ((bool)  tolua_toboolean(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_Cards of class  CurrentCardsInHandArgs */
 #ifndef TOLUA_DISABLE_tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards
 static int tolua_get_LuaInterface_CurrentCardsInHandArgs_m_Cards(lua_State* tolua_S)
@@ -1533,6 +1563,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"PlayerAcceptedAssetArgs");
   tolua_variable(tolua_S,"m_Asset",tolua_get_PlayerAcceptedAssetArgs_m_Asset,tolua_set_PlayerAcceptedAssetArgs_m_Asset);
   tolua_variable(tolua_S,"m_ByPlayer",tolua_get_PlayerAcceptedAssetArgs_m_ByPlayer,tolua_set_PlayerAcceptedAssetArgs_m_ByPlayer);
+  tolua_variable(tolua_S,"m_AcceptedByNSTeam",tolua_get_PlayerAcceptedAssetArgs_m_AcceptedByNSTeam,tolua_set_PlayerAcceptedAssetArgs_m_AcceptedByNSTeam);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"CurrentCardsInHandArgs","CurrentCardsInHandArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"CurrentCardsInHandArgs");

@@ -788,7 +788,8 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 		break;
 
 	case TE_TakeAsset:
-		packet << BCPT_AssetAccepted << player->GetClientName().c_str() << d->m_CurrentAsset;
+		packet	<< BCPT_AssetAccepted << player->GetClientName().c_str()
+				<< d->m_CurrentAsset << (d->m_TeamAcceptingContract == TI_NorthSouth);
 		break;
 
 	case TE_RefuseAsset:

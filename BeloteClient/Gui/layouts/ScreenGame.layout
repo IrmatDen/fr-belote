@@ -81,6 +81,7 @@
 				<Property Name="Visible" Value="False" />
 				<Window Type="DefaultWindow" Name="GameArea/AssetProposal" >
 					<Property Name="RiseOnClick" Value="False" />
+					<Property Name="Visible" Value="False" />
 					<Window Type="OgreTray/StaticImage" Name="AssetProposalImg">
 						<Property Name="UnifiedAreaRect" Value="{{0.5,-48},{0.5,-89},{0.5, 48},{0.5,44.5}}" />
 						<Property Name="FrameEnabled" Value="False" />

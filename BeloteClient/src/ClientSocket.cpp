@@ -32,6 +32,7 @@ const CEGUI::String ClientSocket::EventWaitingPlay("WaitingPlay");
 const CEGUI::String ClientSocket::EventPlayedCard("PlayedCard");
 const CEGUI::String ClientSocket::EventCurrentScores("CurrentScores");
 const CEGUI::String ClientSocket::EventBeloteAnnounced("BeloteAnnounced");
+const CEGUI::String ClientSocket::EventNoAssetTaken("NoAssetTaken");
 
 // Define network state machine stuff...
 namespace
@@ -300,6 +301,10 @@ namespace
 						packet >> args.m_ByPlayer;
 						m_Self->m_BeloteAnnounced.push(args);
 					}
+					break;
+
+				case BCPT_NoAssetTaken:
+					m_Self->m_NoAssetTaken.push();
 					break;
 				}
 			}
@@ -670,7 +675,8 @@ ClientSocket::ClientSocket()
 	m_WaitingPlay				(EventWaitingPlay, EventNamespace),
 	m_PlayedCard				(EventPlayedCard, EventNamespace),
 	m_CurrentScores				(EventCurrentScores, EventNamespace),
-	m_BeloteAnnounced			(EventBeloteAnnounced, EventNamespace)
+	m_BeloteAnnounced			(EventBeloteAnnounced, EventNamespace),
+	m_NoAssetTaken				(EventNoAssetTaken, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -755,6 +761,7 @@ void ClientSocket::Update()
 	m_PlayedCard.process(this);
 	m_CurrentScores.process(this);
 	m_BeloteAnnounced.process(this);
+	m_NoAssetTaken.process(this);
 }
 
 void ClientSocket::Wait()

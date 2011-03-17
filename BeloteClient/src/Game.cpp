@@ -35,7 +35,7 @@ void Game::Init()
 	new Game();
 	SoundManager::Init();
 
-	sf::Randomizer::SetSeed(time(0));
+	sf::Randomizer::SetSeed((unsigned int)time(0));
 }
 
 void Game::Run()

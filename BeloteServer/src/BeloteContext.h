@@ -45,6 +45,7 @@ private:
 		TE_Dealing,
 		TE_TakeAsset,
 		TE_RefuseAsset,
+		TE_NoAssetTaken,
 		TE_TurnStarting,
 		TE_BeloteAnnounced,
 	};
@@ -69,25 +70,24 @@ public:
 	// Players' management
 	void	AddPlayer(ServerSocketPtr player);
 	void	DropPlayer(ServerSocketPtr player);
-	void	SetPlayerPos(ServerSocketPtr player, const std::string &posName);
-
-	// Game management
-	void	StartGame();
-	void	AcceptAsset(const std::string &colourName);
-	void	RefuseAsset();
 
 private:
+	void	SetPlayerPos(ServerSocketPtr player, const std::string &posName);
 	void	SendCurrentPositioningToAll();
 	void	SendCurrentPositioningTo(ServerSocketPtr player);
 
 	void	NotifyStarting();
 	void	NotifyTurnEvent(TurnEvent event, ServerSocketPtr player = ServerSocketPtr());
-	void	AskForAsset();
+
+	void	StartGame();
 
 	void	InitDeck();
 	void	ShuffleDeck();
 	void	PreTurn();
 	void	DealFirstPart();
+	void	AskForAsset();
+	void	AcceptAsset(const std::string &colourName);
+	void	RefuseAsset();
 	void	DealLastPart();
 
 	void	StartTurn();

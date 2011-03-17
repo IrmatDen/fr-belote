@@ -3,6 +3,5 @@
 * Permettre aux joueurs de se déplacer une fois placé sur la table
 * Supporter les litiges
 * Supporter les contrats
-* Nouvelle donne si personne ne prend au 2nd tour
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
 * Reporter le total de points après chaque partie

@@ -251,6 +251,14 @@ void BeloteContext::PreTurn()
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
 	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
 
+	// Remove all cards in hand (we might be called because everyone refused to take an asset)
+	/*for (PlayerPosition pp = 0; pp != _PP_Count; pp++)
+	{
+		std::fill(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
+					d->m_PlayersHand[d->m_CurrentPlayer].end(),
+					std::string());
+	}*/
+
 	NotifyTurnEvent(TE_Dealing, d->m_Players[d->m_CurrentDealer]);
 	DealFirstPart();
 	
@@ -333,10 +341,22 @@ void BeloteContext::AcceptAsset(const std::string &colourName)
 
 void BeloteContext::RefuseAsset()
 {
-	if (d->m_CurrentPlayer == d->m_CurrentDealer)
-		d->m_IsInFirstAnnouncePhase = false;
-
 	NotifyTurnEvent(TE_RefuseAsset, d->m_Players[d->m_CurrentPlayer]);
+
+	const bool wholeTurnDone = (d->m_CurrentPlayer == d->m_CurrentDealer);
+	if (wholeTurnDone)
+	{
+		if (d->m_IsInFirstAnnouncePhase)
+			d->m_IsInFirstAnnouncePhase = false;
+		else
+		{
+			NotifyTurnEvent(TE_NoAssetTaken);
+
+			d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
+			PreTurn();
+			return;
+		}
+	}
 
 	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
 	
@@ -703,6 +723,10 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 
 	case TE_RefuseAsset:
 		packet << BCPT_AssetRefused << player->GetClientName().c_str();
+		break;
+
+	case TE_NoAssetTaken:
+		packet << BCPT_NoAssetTaken;
 		break;
 
 	case TE_TurnStarting:

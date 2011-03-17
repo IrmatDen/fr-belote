@@ -20,6 +20,7 @@ enum BeloteContextPacketType
 	BCPT_RefuseAsset,
 	BCPT_AssetAccepted,
 	BCPT_AssetRefused,
+	BCPT_NoAssetTaken,
 	BCPT_TurnStarting,
 	BCPT_WaitingPlay,
 	BCPT_PlayCard,

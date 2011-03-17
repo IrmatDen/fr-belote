@@ -267,6 +267,13 @@ function onPlayerDealing(args)
 	cleanedPlayedCardsArea()
 	
 	local winMgr = CEGUI.WindowManager:getSingleton()
+	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
+	while playerHandArea:getChildCount() > 0 do
+		local cardWnd = playerHandArea:getChildAtIdx(0)
+		winMgr:destroyWindow(cardWnd)
+	end
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
 	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
 	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
@@ -458,6 +465,11 @@ function onBeloteAnnounced(args)
 	appendTextToChatBox(text)
 end
 
+function onNoAssetTaken(args)
+	local text	= "[font='DejaVuSans-8-Bold']Tout le monde a passé"
+	appendTextToChatBox(text)
+end
+
 -- Game zone events
 function onChoosePosition(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
@@ -642,3 +654,4 @@ client:subscribeEvent("WaitingPlay", "onWaitingPlay")
 client:subscribeEvent("PlayedCard", "onPlayedCard")
 client:subscribeEvent("CurrentScores", "onCurrentScores")
 client:subscribeEvent("BeloteAnnounced", "onBeloteAnnounced")
+client:subscribeEvent("NoAssetTaken", "onNoAssetTaken")

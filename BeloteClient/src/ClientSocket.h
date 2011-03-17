@@ -183,6 +183,7 @@ public:
 	static const CEGUI::String EventPlayedCard;
 	static const CEGUI::String EventCurrentScores;
 	static const CEGUI::String EventBeloteAnnounced;
+	static const CEGUI::String EventNoAssetTaken;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
@@ -203,6 +204,7 @@ public:
 	ThreadSafeEventQueue<PlayedCardArgs>					m_PlayedCard;
 	ThreadSafeEventQueue<CurrentScoresArgs>					m_CurrentScores;
 	ThreadSafeEventQueue<BeloteAnnouncedArgs>				m_BeloteAnnounced;
+	ThreadSafeEventQueue<>									m_NoAssetTaken;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

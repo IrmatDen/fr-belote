@@ -138,8 +138,9 @@ private:
 		sf::Uint32		m_Scores[_TI_Count];
 		sf::Uint32		m_TotalScores[_TI_Count];
 
-		Deck			m_Deck;
-		int				m_CurrentDeckPos;
+		Deck						m_Deck;
+		int							m_CurrentDeckPos;
+		std::vector<std::string>	m_TeamPlayedCards[2];
 
 		PlayerPosition	m_CurrentDealer;
 		PlayerPosition	m_CurrentPlayer;

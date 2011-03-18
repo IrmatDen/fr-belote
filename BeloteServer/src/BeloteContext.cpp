@@ -669,7 +669,6 @@ void BeloteContext::TurnEnded()
 	assert(winner < 4);
 
 	const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
-
 	d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
 
 	ComputeAndReportTurnScore(d->m_CurrentPlayer);
@@ -694,10 +693,14 @@ void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 	if (d->m_RemainingCards[0] == 0)
 		score += LastTurnScore;
 
+	// Update scores & put the played cards on the winning team's stack
+	TeamIndex winningTeam = TI_WestEast;
 	if (winner == PP_South || winner == PP_North)
-		d->m_Scores[TI_NorthSouth] += score;
-	else
-		d->m_Scores[TI_WestEast] += score;
+		winningTeam = TI_NorthSouth;
+
+	d->m_Scores[winningTeam] += score;
+	std::copy(d->m_PlayedCards.begin(), d->m_PlayedCards.end(),
+				std::back_inserter(d->m_TeamPlayedCards[winningTeam]));
 
 	// Notify each player of current score
 	NotifyTurnEvent(TE_ScoresUpdated);
@@ -749,6 +752,15 @@ void BeloteContext::GameEnded()
 	);
 
 	// and start a new turn
+	std::copy(d->m_TeamPlayedCards[0].begin(), d->m_TeamPlayedCards[0].end(),
+		boost_array_iterator(d->m_Deck));
+
+	std::copy(d->m_TeamPlayedCards[1].begin(), d->m_TeamPlayedCards[1].end(),
+		boost_array_iterator(d->m_Deck, d->m_Deck.begin() + d->m_TeamPlayedCards[0].size()));
+
+	d->m_TeamPlayedCards[0].swap(std::vector<std::string>());
+	d->m_TeamPlayedCards[1].swap(std::vector<std::string>());
+
 	d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
 	PreTurn();
 }

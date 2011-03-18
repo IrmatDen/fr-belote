@@ -202,7 +202,7 @@ function updateTurnInfoBox(ourScore, theirScore)
 end
 
 function deleteAllChildFromWindow(w)
-	local winMgr		= CEGUI.WindowManager:getSingleton()
+	local winMgr = CEGUI.WindowManager:getSingleton()
 	while w:getChildCount() > 0 do
 		winMgr:destroyWindow(w:getChildAtIdx(0))
 	end
@@ -271,16 +271,8 @@ function onPlayerDealing(args)
 	appendTextToChatBox(text)
 	
 	local winMgr = CEGUI.WindowManager:getSingleton()
-	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCards"))
-	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCardsLastTurn"))
 	
 	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
-	
-	local playerHandArea = winMgr:getWindow("GameArea/PlayerCards")
-	while playerHandArea:getChildCount() > 0 do
-		local cardWnd = playerHandArea:getChildAtIdx(0)
-		winMgr:destroyWindow(cardWnd)
-	end
 	
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
@@ -293,6 +285,8 @@ function onCardsReceived(args)
 	local winMgr		= CEGUI.WindowManager:getSingleton()
 	
 	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayerCards"))
+	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCards"))
+	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCardsLastTurn"))
 	
 	for i = 0, 7 do
 		local name = handContent.m_Cards[i]
@@ -520,9 +514,8 @@ function onNoAssetTaken(args)
 end
 
 function onContractingTeamResult(args)
-	local results = toContractingTeamResultArgs(args)
-	
-	local text	= "[font='DejaVuSans-8-Bold']"
+	local results	= toContractingTeamResultArgs(args)
+	local text		= "[font='DejaVuSans-8-Bold']"
 	
 	if IsPlayerPartOfNSTeam() then
 		if results.m_IsNorthSouthTeam then
@@ -545,6 +538,9 @@ function onContractingTeamResult(args)
 	end
 	
 	appendTextToChatBox(text)
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
 end
 
 -- Game zone events

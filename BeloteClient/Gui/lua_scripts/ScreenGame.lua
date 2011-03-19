@@ -662,13 +662,16 @@ end
 
 function onSeeLastTurn(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
-	local lastTurnWndVis = winMgr:getWindow("LastTurnWindow"):isVisible()
-	winMgr:getWindow("LastTurnWindow"):setVisible(not lastTurnWndVis)
+	local lastTurnWnd = winMgr:getWindow("LastTurnWindow")
+	lastTurnWnd:show()
+	lastTurnWnd:setModalState(true)
 end
 
 function onDoneSeeingLastTurn(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("LastTurnWindow"):setVisible(false)
+	local lastTurnWnd = winMgr:getWindow("LastTurnWindow")
+	lastTurnWnd:hide()
+	lastTurnWnd:setModalState(false)
 end
 
 function onQuitTable(args)

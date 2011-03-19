@@ -7,7 +7,7 @@
 			<Property Name="UnifiedAreaRect" Value="{{1,-240},{0,0},{1,0},{1,0}}" />
 			<Window Type="OgreTray/FrameWindow" Name="UIPanel/Scores" >
 				<Property Name="Text" Value="Scores" />
-				<Property Name="CaptionFont" Value="DejaVuSans-10" />
+				<Property Name="CaptionFont" Value="DejaVuSans-8-Bold" />
 				<Property Name="InheritsAlpha" Value="False" />
 				<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 				<Property Name="TitlebarEnabled" Value="True" />
@@ -24,7 +24,7 @@
 			</Window>
 			<Window Type="OgreTray/FrameWindow" Name="UIPanel/ChatBox" >
 				<Property Name="Text" Value="Chat" />
-				<Property Name="CaptionFont" Value="DejaVuSans-10" />
+				<Property Name="CaptionFont" Value="DejaVuSans-8-Bold" />
 				<Property Name="InheritsAlpha" Value="False" />
 				<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 				<Property Name="TitlebarEnabled" Value="True" />
@@ -171,21 +171,23 @@
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-193},{0.5, 400},{1,-15}}" />
 				</Window>
 			</Window>
-			<Window Type="DefaultWindow" Name="LastTurnWindow" >
-				<Property Name="Visible" Value="False" />
-				<Property Name="AlwaysOnTop" Value="True" />
-				<Window Type="OgreTray/StaticImage" Name="BGObfuscation">
-					<Property Name="RiseOnClick" Value="False" />
-				</Window>
-				<Window Type="DefaultWindow" Name="GameArea/PlayedCardsLastTurn" >
-					<Property Name="UnifiedPosition" Value="{{0.5,-108},{0.5,-166}}" />
-					<Property Name="UnifiedSize" Value="{{0,216},{0,232}}" />
-				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonDoneSeeingLastTurn" >
-					<Property Name="Text" Value="Retour au jeu" />
-					<Property Name="Font" Value="DejaVuSans-8" />
-					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{1,-85},{0.5,75},{1,-50}}" />
-				</Window>
+		</Window>
+		<Window Type="OgreTray/FrameWindow" Name="LastTurnWindow" >
+			<Property Name="Text" Value="Carte jouées au dernier tour" />
+			<Property Name="CaptionFont" Value="DejaVuSans-8-Bold" />
+			<Property Name="Visible" Value="False" />
+			<Property Name="AlwaysOnTop" Value="True" />
+			<Property Name="UnifiedPosition" Value="{{0,10},{0.15,0}}" />
+			<Property Name="UnifiedSize" Value="{{0,270},{0,330}}" />
+			<Window Type="DefaultWindow" Name="GameArea/PlayedCardsLastTurn" >
+				<Property Name="UnifiedPosition" Value="{{0.5,-108},{0,0}}" />
+				<Property Name="UnifiedSize" Value="{{0,216},{0,232}}" />
+			</Window>
+			<Window Type="OgreTray/Button" Name="ButtonDoneSeeingLastTurn" >
+				<Property Name="Text" Value="Retour au jeu" />
+				<Property Name="Font" Value="DejaVuSans-8" />
+				<Property Name="UnifiedPosition" Value="{{0.5,-60},{1,-35}}" />
+				<Property Name="UnifiedSize" Value="{{0,120},{0,35}}" />
 			</Window>
 		</Window>
     </Window>

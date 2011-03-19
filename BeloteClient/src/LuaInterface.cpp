@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/19/11 13:12:22.
+** Generated automatically by tolua++-1.0.92 on 03/19/11 20:24:35.
 */
 
 #ifndef __cplusplus
@@ -40,18 +40,19 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
  tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"SoundManager");
- tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"ContractingTeamResultArgs");
- tolua_usertype(tolua_S,"CEGUI::EventSet");
+ tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"BeloteAnnouncedArgs");
+ tolua_usertype(tolua_S,"ErrorRaisedArgs");
  tolua_usertype(tolua_S,"ScoresArgs");
- tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"Game::GameVars");
+ tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
+ tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"PotentialAssetArgs");
  tolua_usertype(tolua_S,"WaitingPlayArgs");
+ tolua_usertype(tolua_S,"CEGUI::EventSet");
  tolua_usertype(tolua_S,"GUIManager");
- tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"CurrentPositioningArgs");
  tolua_usertype(tolua_S,"SystemMessageBroadcastedEventArgs");
@@ -210,9 +211,9 @@ static int tolua_LuaInterface_Game_Quit00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: LoadMenu of class  Game */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_LoadMenu00
-static int tolua_LuaInterface_Game_LoadMenu00(lua_State* tolua_S)
+/* method: GetGUIManager of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_GetGUIManager00
+static int tolua_LuaInterface_Game_GetGUIManager00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
@@ -226,10 +227,44 @@ static int tolua_LuaInterface_Game_LoadMenu00(lua_State* tolua_S)
  {
   Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetGUIManager'",NULL);
+#endif
+ {
+  GUIManager& tolua_ret = (GUIManager&)  self->GetGUIManager();
+ tolua_pushusertype(tolua_S,(void*)&tolua_ret,"GUIManager");
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetGUIManager'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: LoadMenu of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_LoadMenu00
+static int tolua_LuaInterface_Game_LoadMenu00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"Game",0,&tolua_err) ||
+ !tolua_isnumber(tolua_S,2,1,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
+  Game::MenuReason reason = ((Game::MenuReason) (int)  tolua_tonumber(tolua_S,2,Game::MR_Normal));
+#ifndef TOLUA_RELEASE
  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'LoadMenu'",NULL);
 #endif
  {
-  self->LoadMenu();
+  self->LoadMenu(reason);
  }
  }
  return 0;
@@ -424,6 +459,54 @@ static int tolua_LuaInterface_SoundManager_PlayFX00(lua_State* tolua_S)
  tolua_error(tolua_S,"#ferror in function 'PlayFX'.",&tolua_err);
  return 0;
 #endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_ErrorTxt of class  ErrorRaisedArgs */
+#ifndef TOLUA_DISABLE_tolua_get_ErrorRaisedArgs_m_ErrorTxt
+static int tolua_get_ErrorRaisedArgs_m_ErrorTxt(lua_State* tolua_S)
+{
+  ErrorRaisedArgs* self = (ErrorRaisedArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ErrorTxt'",NULL);
+#endif
+ tolua_pushcppstring(tolua_S,(const char*)self->m_ErrorTxt);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_ErrorTxt of class  ErrorRaisedArgs */
+#ifndef TOLUA_DISABLE_tolua_set_ErrorRaisedArgs_m_ErrorTxt
+static int tolua_set_ErrorRaisedArgs_m_ErrorTxt(lua_State* tolua_S)
+{
+  ErrorRaisedArgs* self = (ErrorRaisedArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_ErrorTxt'",NULL);
+ if (!tolua_iscppstring(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_ErrorTxt = ((std::string)  tolua_tocppstring(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: ErrorUnknown of class  GUIManager */
+#ifndef TOLUA_DISABLE_tolua_get_GUIManager_ErrorUnknown
+static int tolua_get_GUIManager_ErrorUnknown(lua_State* tolua_S)
+{
+ tolua_pushcppstring(tolua_S,(const char*)GUIManager::ErrorUnknown);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: ErrorLostConnection of class  GUIManager */
+#ifndef TOLUA_DISABLE_tolua_get_GUIManager_ErrorLostConnection
+static int tolua_get_GUIManager_ErrorLostConnection(lua_State* tolua_S)
+{
+ tolua_pushcppstring(tolua_S,(const char*)GUIManager::ErrorLostConnection);
+ return 1;
 }
 #endif //#ifndef TOLUA_DISABLE
 
@@ -1492,6 +1575,8 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"Game");
   tolua_constant(tolua_S,"GM_HOST",Game::GM_HOST);
   tolua_constant(tolua_S,"GM_CLIENT",Game::GM_CLIENT);
+  tolua_constant(tolua_S,"MR_Normal",Game::MR_Normal);
+  tolua_constant(tolua_S,"MR_ConnectionLost",Game::MR_ConnectionLost);
   tolua_cclass(tolua_S,"GameVars","Game::GameVars","",NULL);
   tolua_beginmodule(tolua_S,"GameVars");
    tolua_variable(tolua_S,"m_GameMode",tolua_get_Game__GameVars_m_GameMode,tolua_set_Game__GameVars_m_GameMode);
@@ -1500,6 +1585,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_variable(tolua_S,"m_GameVars",tolua_get_Game_m_GameVars,tolua_set_Game_m_GameVars);
   tolua_function(tolua_S,"getSingleton",tolua_LuaInterface_Game_getSingleton00);
   tolua_function(tolua_S,"Quit",tolua_LuaInterface_Game_Quit00);
+  tolua_function(tolua_S,"GetGUIManager",tolua_LuaInterface_Game_GetGUIManager00);
   tolua_function(tolua_S,"LoadMenu",tolua_LuaInterface_Game_LoadMenu00);
   tolua_function(tolua_S,"LoadGame",tolua_LuaInterface_Game_LoadGame00);
   tolua_function(tolua_S,"GetClientSocket",tolua_LuaInterface_Game_GetClientSocket00);
@@ -1513,8 +1599,14 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"getSingleton",tolua_LuaInterface_SoundManager_getSingleton00);
   tolua_function(tolua_S,"PlayFX",tolua_LuaInterface_SoundManager_PlayFX00);
  tolua_endmodule(tolua_S);
- tolua_cclass(tolua_S,"GUIManager","GUIManager","",NULL);
+ tolua_cclass(tolua_S,"ErrorRaisedArgs","ErrorRaisedArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"ErrorRaisedArgs");
+  tolua_variable(tolua_S,"m_ErrorTxt",tolua_get_ErrorRaisedArgs_m_ErrorTxt,tolua_set_ErrorRaisedArgs_m_ErrorTxt);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"GUIManager","GUIManager","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"GUIManager");
+  tolua_variable(tolua_S,"ErrorUnknown",tolua_get_GUIManager_ErrorUnknown,NULL);
+  tolua_variable(tolua_S,"ErrorLostConnection",tolua_get_GUIManager_ErrorLostConnection,NULL);
  tolua_endmodule(tolua_S);
  #ifdef __cplusplus
  tolua_cclass(tolua_S,"LeftWrappedListItem","LeftWrappedListItem","CEGUI::ListboxTextItem",tolua_collect_LeftWrappedListItem);

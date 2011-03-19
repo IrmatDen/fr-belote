@@ -4,10 +4,23 @@
 #include <CEGUI.h>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+class ErrorRaisedArgs : public CEGUI::EventArgs
+{
+public:
+	std::string	m_ErrorTxt;
+};
+
 // Based on SFML/CEGUI bridge available here:
 // http://www.sfml-dev.org/wiki/fr/tutoriels/utilisercegui
-class GUIManager
+class GUIManager : public CEGUI::EventSet
 {
+public:
+	static const CEGUI::String	EventNamespace;
+	static const CEGUI::String	EventErrorRaised;
+
+	static const std::string	ErrorUnknown;
+	static const std::string	ErrorLostConnection;
+
 public:
 	GUIManager();
 	~GUIManager();
@@ -17,23 +30,6 @@ public:
 	void	UpdateAndDraw(float elapsedSeconds);
 
 	void	SetRootWindow(CEGUI::Window* win)	{ CEGUI::System::getSingleton().setGUISheet(win); }
-
-	// Helpers, mainly aimed at use from lua.
-	/* Check if needed first, heh
-	static void		LuaStringToCEGUIString(const std::string &uft8EncodedStr, CEGUI::String &destStr)
-	{
-		destStr = CEGUI::String((CEGUI::utf8*)uft8EncodedStr.c_str());
-	}
-
-	static void		SetWinTextUTF8(std::string winName, std::string winText)
-	{
-		CEGUI::WindowManager& winMgr = CEGUI::WindowManager::getSingleton();
-		if (winMgr.isWindowPresent(winName))
-		{
-			CEGUI::Window* win = winMgr.getWindow(winName);
-			win->setText(winText.c_str());
-		}
-	}*/
 
 private:
 	sf::RenderWindow*	m_Window;

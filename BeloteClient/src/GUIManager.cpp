@@ -9,6 +9,12 @@
 #include "GUIManager.h"
 #include "LuaInterface.h"
 
+const CEGUI::String	GUIManager::EventNamespace("GUIManager");
+const CEGUI::String	GUIManager::EventErrorRaised("ErrorRaised");
+
+const std::string	GUIManager::ErrorUnknown("ErrorUnknown");
+const std::string	GUIManager::ErrorLostConnection("ErrorLostConnection");
+
 GUIManager::GUIManager()
 : m_Window(0), m_Input(0)
 {

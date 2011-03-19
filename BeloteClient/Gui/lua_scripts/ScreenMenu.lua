@@ -6,6 +6,10 @@ function toConnectionStatusEventArgs(e)
     return tolua.cast(e,"const ConnectionStatusEventArgs")
 end
 
+function toErrorRaisedArgs(e)
+    return tolua.cast(e,"const ErrorRaisedArgs")
+end
+
 local screenHistory = {}
 function displayScreen(screenName)
 	local winMgr = CEGUI.WindowManager:getSingleton()
@@ -133,6 +137,16 @@ function onDoJoinGame(args)
 end
 
 	-- Error
+
+function onErrorRaised(args)
+	local errCode = toErrorRaisedArgs(args).m_ErrorTxt
+	
+	if errCode == GUIManager.ErrorLostConnection then
+		displayError("Connexion au serveur perdue.")
+	elseif errCode == GUIManager.ErrorUnknown then
+		displayError("Erreur inconnue :(")
+	end
+end
 	
 function onErrorOk(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
@@ -182,8 +196,9 @@ beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
 beloteSaveCB:setItemSelectState(0, true)
 
 -- subscribe required events
-	-- Network events
+	-- Network & errors events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
+game:GetGUIManager():subscribeEvent("ErrorRaised", "onErrorRaised")
 	-- Main menu
 winMgr:getWindow("MenuScreenMain/ButtonCreateRoom"):subscribeEvent("Clicked", "onHostGame")
 winMgr:getWindow("MenuScreenMain/ButtonJoinRoom"):subscribeEvent("Clicked", "onJoinGame")

@@ -20,6 +20,13 @@ public:
 		GM_CLIENT
 	};
 
+	enum MenuReason
+	{
+		MR_Normal,
+		MR_ConnectionLost,
+		MR_Unknown
+	};
+
 	struct GameVars
 	{
 		GameMode		m_GameMode;
@@ -32,8 +39,9 @@ public:
 	void			Quit();
 
 	// UI related
-	void			LoadMenu()					{ m_LoadMenuPending = true; }
-	void			LoadGame()					{ m_LoadGamePending = true; }
+	GUIManager&		GetGUIManager()								{ return m_GuiManager; }
+	void			LoadMenu(MenuReason reason = MR_Normal)		{ m_MenuReason = reason; m_LoadMenuPending = true; }
+	void			LoadGame()									{ m_LoadGamePending = true; }
 
 	// Network related
 	ClientSocket&	GetClientSocket()			{ return m_ClientSocket; }
@@ -55,6 +63,7 @@ private:
 
 	// Flags
 	bool				m_QuitPending;
+	MenuReason			m_MenuReason;
 	bool				m_LoadMenuPending;
 	bool				m_LoadGamePending;
 

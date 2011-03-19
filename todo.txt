@@ -1,4 +1,3 @@
-* Message box pour signifier une connexion en cours, une impossibilité de connexion, une connexion perdue
 * Les clients devraient pinger le serveur régulièrement
 * Permettre aux joueurs de se déplacer une fois placé sur la table
 * Supporter les litiges

@@ -1,4 +1,12 @@
-class GUIManager
+class ErrorRaisedArgs : public CEGUI::EventArgs
 {
 public:
+	std::string	m_ErrorTxt;
+};
+
+class GUIManager : public CEGUI::EventSet
+{
+public:
+	static const std::string	ErrorUnknown;
+	static const std::string	ErrorLostConnection;
 };

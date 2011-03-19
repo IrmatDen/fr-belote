@@ -222,10 +222,10 @@ function onConnectionStatusUpdated(args)
 	local connStatus	= toConnectionStatusEventArgs(args).m_ConnectionStatus
 	
 	if connStatus == ConnectionStatusEventArgs.CS_Disconnected then
-		print("Connection lost! Get a real error message dude and explain yourself!")
-		game:LoadMenu()
+		game:LoadMenu(Game.MR_ConnectionLost)
 	else
 		print("Unexpected connection status: " .. connStatus)
+		game:LoadMenu(Game.MR_Unknown)
 	end
 end
 

@@ -23,7 +23,7 @@ Game::Game()
 	CEGUI::ImageManager::getSingleton().loadImageset("PlayingCards.imageset");
 	CEGUI::AnimationManager::getSingleton().loadAnimationsFromXML("CardHovering.xml");
 
-	LoadMenu();
+	LoadMenu(MR_Normal);
 }
 
 Game::~Game()
@@ -120,6 +120,23 @@ void Game::DoLoadMenu()
 
 	m_BgImage.LoadFromFile("Gui/ScreenMenu.png");
 	m_BgSprite.SetImage(m_BgImage);
+
+	// Display eventual error message
+	if (m_MenuReason == MR_Normal)
+		return;
+	
+	ErrorRaisedArgs args;
+	switch(m_MenuReason)
+	{
+	case MR_ConnectionLost:
+		args.m_ErrorTxt = GUIManager::ErrorLostConnection;
+		break;
+
+	default:
+		args.m_ErrorTxt = GUIManager::ErrorUnknown;
+		break;
+	}
+	m_GuiManager.fireEvent(GUIManager::EventErrorRaised, args, GUIManager::EventNamespace);
 }
 
 void Game::DoLoadGame()

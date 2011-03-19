@@ -7,6 +7,12 @@ public:
 		GM_CLIENT
 	};
 
+	enum MenuReason
+	{
+		MR_Normal,
+		MR_ConnectionLost
+	};
+
 	struct GameVars
 	{
 		GameMode		m_GameMode;
@@ -19,7 +25,8 @@ public:
 	static Game&	getSingleton(void);
 	void			Quit(void);
 
-	void			LoadMenu();
+	GUIManager&		GetGUIManager();
+	void			LoadMenu(MenuReason reason = MR_Normal);
 	void			LoadGame();
 
 	ClientSocket&	GetClientSocket();

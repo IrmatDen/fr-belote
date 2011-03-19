@@ -18,4 +18,5 @@ bordel*
 *.ipch
 ./include
 ./lib
+./CodeAnalyst
 glob:*.suo

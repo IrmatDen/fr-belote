@@ -277,5 +277,25 @@
                 </Window>
             </Window>
         </Window>
+		<Window Type="OgreTray/FrameWindow" Name="ErrorMsgBox" >
+			<Property Name="Text" Value="Erreur" />
+			<Property Name="CaptionFont" Value="DejaVuSans-8-Bold" />
+			<Property Name="Visible" Value="False" />
+			<Property Name="AlwaysOnTop" Value="True" />
+			<Property Name="UnifiedPosition" Value="{{0.5,-150},{0.5,-50}}" />
+			<Property Name="UnifiedSize" Value="{{0,300},{0,120}}" />
+			<Window Type="OgreTray/StaticText" Name="ErrorMsgBox/ErrorTxt" >
+				<Property Name="Font" Value="DejaVuSans-8" />
+				<Property Name="Text" Value="Impossible de se connecter." />
+				<Property Name="VertFormatting" Value="TopAligned" />
+				<Property Name="UnifiedSize" Value="{{1,0},{0,40}}" />
+			</Window>
+			<Window Type="OgreTray/Button" Name="ErrorMsgBox/OK" >
+				<Property Name="Text" Value="OK" />
+				<Property Name="Font" Value="DejaVuSans-8" />
+				<Property Name="UnifiedPosition" Value="{{0.5,-30},{1,-25}}" />
+				<Property Name="UnifiedSize" Value="{{0,60},{0,25}}" />
+			</Window>
+		</Window>
     </Window>
 </GUILayout>

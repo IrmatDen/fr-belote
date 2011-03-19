@@ -17,6 +17,20 @@ function displayScreen(screenName)
 	screenHistory[#screenHistory + 1] = screenName
 end
 
+function displayMessage(msgTitle, msg, showOK)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local errorWnd = winMgr:getWindow("ErrorMsgBox")
+	errorWnd:setText(msgTitle)
+	errorWnd:getChild("ErrorMsgBox/ErrorTxt"):setText(msg)
+	errorWnd:getChild("ErrorMsgBox/OK"):setVisible(showOK)
+	errorWnd:show()
+	errorWnd:setModalState(true)
+end
+
+function displayError(errorString)
+	displayMessage("Erreur", errorString, true)
+end
+
 -----------------------------------------
 -- Start of handler functions
 -----------------------------------------
@@ -37,9 +51,9 @@ function onConnectionStatusUpdated(args)
 	if connStatus == ConnectionStatusEventArgs.CS_Connected then
 		Game:getSingleton():LoadGame()
 	elseif connStatus == ConnectionStatusEventArgs.CS_LobbyFull then
-		print("Lobby full, can't join! Get a real error message dude and explain yourself!")
+		displayError("Plus de place sur ce serveur!")
 	else -- Disconnected, meaning host unreachable
-		print("Connection failed! Get a real error message dude and explain yourself!")
+		displayError("Impossible de se connecter")
 	end
 end
 
@@ -114,8 +128,19 @@ function onDoJoinGame(args)
 	local hostIpBox = winMgr:getWindow("MenuScreenJoinGame/HostIP")
 	
 	client:Connect(hostIpBox:getText(), pnameBox:getText())
+	
+	displayMessage("Patientez", "Connection en cours...", false)
 end
 
+	-- Error
+	
+function onErrorOk(args)
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local errorWnd = winMgr:getWindow("ErrorMsgBox")
+	errorWnd:hide()
+	errorWnd:setModalState(false)
+end
+	
 -----------------------------------------
 -- Script Entry Point
 -----------------------------------------
@@ -178,6 +203,8 @@ clientNameBox:subscribeEvent("InvalidEntryAttempted", "disableJoinGame")
 hostIpBox:subscribeEvent("ValidEntry", "enableJoinGame")
 hostIpBox:subscribeEvent("TextInvalidated", "disableJoinGame")
 hostIpBox:subscribeEvent("InvalidEntryAttempted", "disableJoinGame")
+	-- Error event
+winMgr:getWindow("ErrorMsgBox/OK"):subscribeEvent("Clicked", "onErrorOk")
 
 -- Finish setup parts which fire events
 hostNameBox:setText("Host")

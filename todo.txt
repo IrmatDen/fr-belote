@@ -5,3 +5,4 @@
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
 * stocker le jeu pour replay/debug?
 * Factoriser le code réseau vers common, ça devient /très/ moche
+* Factoriser les events réseaux clients, ça devient aussi /très/ moche

@@ -4,3 +4,4 @@
 * Supporter sens de rotation perso
 * Meilleurs feedback pour représenter la parole (ie, bulles style BD?)
 * stocker le jeu pour replay/debug?
+* Factoriser le code réseau vers common, ça devient /très/ moche

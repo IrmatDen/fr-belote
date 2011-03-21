@@ -136,6 +136,7 @@ private:
 		Players		m_Players;
 
 		sf::Uint32		m_Scores[_TI_Count];
+		sf::Uint32		m_LitigeScorePending;
 		sf::Uint32		m_TotalScores[_TI_Count];
 
 		Deck						m_Deck;
@@ -167,6 +168,11 @@ private:
 			return PP_South;
 	
 		return (PlayerPosition)(pp + 1);
+	}
+
+	static TeamIndex		GetOppositeTeam(TeamIndex ti)
+	{
+		return static_cast<TeamIndex>(ti ^ 1);
 	}
 
 	struct IsSameColour : public std::binary_function<std::string, std::string, bool>

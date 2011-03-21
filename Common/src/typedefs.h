@@ -5,7 +5,7 @@
 
 #include <boost/array.hpp>
 
-// Allows use of std::tr1::shared_ptr<> on statically allocated objects
+// Allows use of std::shared_ptr<> on statically allocated objects
 struct null_deleter
 {
     void operator()(void const *) const
@@ -60,13 +60,13 @@ namespace std
 template<class Container> inline
 BoostArrayOutputIterator<Container> boost_array_iterator(Container& array)
 {
-	return (BoostArrayOutputIterator<Container>(array, array.begin()));
+	return BoostArrayOutputIterator<Container>(array, array.begin());
 }
 
 template<class Container> inline
 BoostArrayOutputIterator<Container> boost_array_iterator(Container& array, typename Container::iterator startIter)
 {
-	return (BoostArrayOutputIterator<Container>(array, startIter));
+	return BoostArrayOutputIterator<Container>(array, startIter);
 }
 
 #endif

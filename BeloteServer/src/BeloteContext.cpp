@@ -181,6 +181,7 @@ void BeloteContext::StartGame()
 	InitDeck();
 	ShuffleDeck();
 	std::fill(d->m_TotalScores, d->m_TotalScores + countof(d->m_TotalScores), 0);
+	d->m_LitigeScorePending = 0;
 
 	d->m_CurrentDealer = PP_South;
 	PreTurn();
@@ -708,7 +709,8 @@ void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 
 void BeloteContext::GameEnded()
 {
-	bool contractingTeamWin = false;
+	bool contractingTeamWin				= false;
+	const sf::Uint32 prevLitigeScore	= d->m_LitigeScorePending;
 
 	// Update total scores
 	if (d->m_Scores[d->m_TeamAcceptingContract] >= MinScoreToWin)
@@ -729,9 +731,22 @@ void BeloteContext::GameEnded()
 
 		contractingTeamWin = true;
 	}
+	// Check for a litige
+	else if (d->m_Scores[TI_NorthSouth] == d->m_Scores[TI_WestEast] &&
+			 d->m_TeamOwningBelote != GetOppositeTeam(d->m_TeamAcceptingContract))
+	{
+		const TeamIndex team	= GetOppositeTeam(d->m_TeamAcceptingContract);
+		d->m_TotalScores[team]	+= d->m_Scores[team];
+
+		sf::Uint32 litigeScore = d->m_Scores[TI_NorthSouth];
+		if (d->m_TeamOwningBelote == d->m_TeamAcceptingContract)
+			litigeScore -= BeloteScore;
+		d->m_LitigeScorePending	+= litigeScore;
+	}
+	// Contracting team lost, all points goes to the other team
 	else
 	{
-		const TeamIndex winningTeam = static_cast<TeamIndex>(d->m_TeamAcceptingContract ^ 1);
+		const TeamIndex winningTeam = GetOppositeTeam(d->m_TeamAcceptingContract);
 		d->m_TotalScores[winningTeam] += PointsSumScore;
 
 		if (d->m_TeamOwningBelote != TI_None)
@@ -740,16 +755,36 @@ void BeloteContext::GameEnded()
 		contractingTeamWin = false;
 	}
 
-	NotifyTurnEvent(TE_TotalScoresUpdated);
-
-	// Report what happened about the team accepting the asset
-	sf::Packet packet;
-	packet << PT_GameContextPacket << BCPT_ContractingTeamResult;
-	packet << (d->m_TeamAcceptingContract == TI_NorthSouth) << contractingTeamWin;
+	// Notify Litige if any
+	if (prevLitigeScore != d->m_LitigeScorePending)
+	{
+		sf::Packet packet;
+		packet << PT_GameContextPacket << BCPT_Litige << (d->m_LitigeScorePending - prevLitigeScore);
 	
-	std::for_each(d->m_Players.begin(), d->m_Players.end(),
-		[&] (Players::reference player) { player->GetSocket().Send(packet); }
-	);
+		std::for_each(d->m_Players.begin(), d->m_Players.end(),
+			[&] (Players::reference player) { player->GetSocket().Send(packet); }
+		);
+	}
+	else
+	{
+		TeamIndex winningTeam = d->m_TeamAcceptingContract;
+		if (!contractingTeamWin)
+			winningTeam = GetOppositeTeam(d->m_TeamAcceptingContract);
+
+		d->m_TotalScores[winningTeam]	+= d->m_LitigeScorePending;
+		d->m_LitigeScorePending			= 0;
+
+		// Report what happened about the team accepting the asset
+		sf::Packet packet;
+		packet << PT_GameContextPacket << BCPT_ContractingTeamResult;
+		packet << (d->m_TeamAcceptingContract == TI_NorthSouth) << contractingTeamWin;
+	
+		std::for_each(d->m_Players.begin(), d->m_Players.end(),
+			[&] (Players::reference player) { player->GetSocket().Send(packet); }
+		);
+	}
+
+	NotifyTurnEvent(TE_TotalScoresUpdated);
 
 	// and start a new turn
 	std::copy(d->m_TeamPlayedCards[0].begin(), d->m_TeamPlayedCards[0].end(),

@@ -36,6 +36,7 @@ const CEGUI::String ClientSocket::EventBeloteAnnounced("BeloteAnnounced");
 const CEGUI::String ClientSocket::EventRebeloteAnnounced("RebeloteAnnounced");
 const CEGUI::String ClientSocket::EventNoAssetTaken("NoAssetTaken");
 const CEGUI::String ClientSocket::EventContractingTeamResult("ContractingTeamResult");
+const CEGUI::String ClientSocket::EventLitige("Litige");
 
 // Define network state machine stuff...
 namespace
@@ -331,6 +332,14 @@ namespace
 						ContractingTeamResultArgs args;
 						packet >> args.m_IsNorthSouthTeam >> args.m_HasWon;
 						m_Self->m_ContractingTeamResult.push(args);
+					}
+					break;
+
+				case BCPT_Litige:
+					{
+						LitigeArgs args;
+						packet >> args.m_LitigeValue;
+						m_Self->m_Litige.push(args);
 					}
 					break;
 				}
@@ -706,7 +715,8 @@ ClientSocket::ClientSocket()
 	m_BeloteAnnounced			(EventBeloteAnnounced, EventNamespace),
 	m_RebeloteAnnounced			(EventRebeloteAnnounced, EventNamespace),
 	m_NoAssetTaken				(EventNoAssetTaken, EventNamespace),
-	m_ContractingTeamResult		(EventContractingTeamResult, EventNamespace)
+	m_ContractingTeamResult		(EventContractingTeamResult, EventNamespace),
+	m_Litige					(EventLitige, EventNamespace)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -795,6 +805,7 @@ void ClientSocket::Update()
 	m_RebeloteAnnounced.process(this);
 	m_NoAssetTaken.process(this);
 	m_ContractingTeamResult.process(this);
+	m_Litige.process(this);
 }
 
 void ClientSocket::Wait()

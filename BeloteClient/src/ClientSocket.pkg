@@ -102,6 +102,12 @@ public:
 			m_HasWon;
 };
 
+class LitigeArgs : public CEGUI::EventArgs
+{
+public:
+	int	m_LitigeValue;
+};
+
 class ClientSocket : public CEGUI::EventSet
 {
 public:

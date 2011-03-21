@@ -82,6 +82,10 @@ function toContractingTeamResultArgs(e)
     return tolua.cast(e,"const ContractingTeamResultArgs")
 end
 
+function toLitigeArgs(e)
+    return tolua.cast(e,"const LitigeArgs")
+end
+
 -- Add a card to the player's current hand
 function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -543,6 +547,15 @@ function onContractingTeamResult(args)
 	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
 end
 
+function onLitige(args)
+	local litigeScore = toLitigeArgs(args).m_LitigeValue
+	local text = "[font='DejaVuSans-8-Bold'] Partie en litige!"
+	appendTextToChatBox(text)
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
+end
+
 -- Game zone events
 function onChoosePosition(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
@@ -747,3 +760,4 @@ client:subscribeEvent("BeloteAnnounced", "onBeloteAnnounced")
 client:subscribeEvent("RebeloteAnnounced", "onRebeloteAnnounced")
 client:subscribeEvent("NoAssetTaken", "onNoAssetTaken")
 client:subscribeEvent("ContractingTeamResult", "onContractingTeamResult")
+client:subscribeEvent("Litige", "onLitige")

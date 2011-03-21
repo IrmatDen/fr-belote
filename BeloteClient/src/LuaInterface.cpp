@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/19/11 20:24:35.
+** Generated automatically by tolua++-1.0.92 on 03/21/11 21:01:33.
 */
 
 #ifndef __cplusplus
@@ -40,13 +40,14 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
  tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"SoundManager");
+ tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"ContractingTeamResultArgs");
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"BeloteAnnouncedArgs");
  tolua_usertype(tolua_S,"ErrorRaisedArgs");
  tolua_usertype(tolua_S,"ScoresArgs");
  tolua_usertype(tolua_S,"Game::GameVars");
- tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
+ tolua_usertype(tolua_S,"LitigeArgs");
  tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
  tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"PotentialAssetArgs");
@@ -1298,6 +1299,36 @@ static int tolua_set_ContractingTeamResultArgs_m_HasWon(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_LitigeValue of class  LitigeArgs */
+#ifndef TOLUA_DISABLE_tolua_get_LitigeArgs_m_LitigeValue
+static int tolua_get_LitigeArgs_m_LitigeValue(lua_State* tolua_S)
+{
+  LitigeArgs* self = (LitigeArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_LitigeValue'",NULL);
+#endif
+ tolua_pushnumber(tolua_S,(lua_Number)self->m_LitigeValue);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_LitigeValue of class  LitigeArgs */
+#ifndef TOLUA_DISABLE_tolua_set_LitigeArgs_m_LitigeValue
+static int tolua_set_LitigeArgs_m_LitigeValue(lua_State* tolua_S)
+{
+  LitigeArgs* self = (LitigeArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_LitigeValue'",NULL);
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_LitigeValue = ((int)  tolua_tonumber(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -1687,6 +1718,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"ContractingTeamResultArgs");
   tolua_variable(tolua_S,"m_IsNorthSouthTeam",tolua_get_ContractingTeamResultArgs_m_IsNorthSouthTeam,tolua_set_ContractingTeamResultArgs_m_IsNorthSouthTeam);
   tolua_variable(tolua_S,"m_HasWon",tolua_get_ContractingTeamResultArgs_m_HasWon,tolua_set_ContractingTeamResultArgs_m_HasWon);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"LitigeArgs","LitigeArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"LitigeArgs");
+  tolua_variable(tolua_S,"m_LitigeValue",tolua_get_LitigeArgs_m_LitigeValue,tolua_set_LitigeArgs_m_LitigeValue);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

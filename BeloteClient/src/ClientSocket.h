@@ -57,14 +57,14 @@ public:
 class PlayerRefusedAssetArgs : public CEGUI::EventArgs
 {
 public:
-	std::string		m_ByPlayer;
+	int				m_PlayerPos;
 };
 
 class PlayerAcceptedAssetArgs : public CEGUI::EventArgs
 {
 public:
-	std::string		m_Asset,
-					m_ByPlayer;
+	int				m_PlayerPos;
+	std::string		m_Asset;
 	bool			m_AcceptedByNSTeam;
 };
 
@@ -103,7 +103,7 @@ public:
 class BeloteAnnouncedArgs : public CEGUI::EventArgs
 {
 public:
-	std::string		m_ByPlayer;
+	int		m_ByPlayerPos;
 };
 
 class ContractingTeamResultArgs : public CEGUI::EventArgs

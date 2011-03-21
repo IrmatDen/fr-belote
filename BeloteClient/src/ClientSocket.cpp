@@ -255,7 +255,7 @@ namespace
 				case BCPT_AssetAccepted:
 					{
 						PlayerAcceptedAssetArgs args;
-						packet >> args.m_ByPlayer >> args.m_Asset >> args.m_AcceptedByNSTeam;
+						packet >> args.m_PlayerPos >> args.m_Asset >> args.m_AcceptedByNSTeam;
 						m_Self->m_PlayerAcceptedAsset.push(args);
 					}
 					break;
@@ -263,7 +263,7 @@ namespace
 				case BCPT_AssetRefused:
 					{
 						PlayerRefusedAssetArgs args;
-						packet >> args.m_ByPlayer;
+						packet >> args.m_PlayerPos;
 						m_Self->m_PlayerRefusedAsset.push(args);
 					}
 					break;
@@ -310,7 +310,7 @@ namespace
 				case BCPT_BeloteAnnounced:
 					{
 						BeloteAnnouncedArgs args;
-						packet >> args.m_ByPlayer;
+						packet >> args.m_ByPlayerPos;
 						m_Self->m_BeloteAnnounced.push(args);
 					}
 					break;
@@ -318,7 +318,7 @@ namespace
 				case BCPT_RebeloteAnnounced:
 					{
 						BeloteAnnouncedArgs args;
-						packet >> args.m_ByPlayer;
+						packet >> args.m_ByPlayerPos;
 						m_Self->m_RebeloteAnnounced.push(args);
 					}
 					break;

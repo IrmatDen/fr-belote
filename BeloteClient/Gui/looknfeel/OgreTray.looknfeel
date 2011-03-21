@@ -526,7 +526,7 @@
                 <HorzFormat type="Stretched" />
             </ImageryComponent>
         </ImagerySection>
-        <ImagerySection name="noframe_background">
+        <ImagerySection name="no_frame_background">
             <ImageryComponent>
                 <Area>
                     <Dim type="LeftEdge"><AbsoluteDim value="0" /></Dim>
@@ -2504,10 +2504,10 @@
             <Layer><Section look="OgreTray/StaticShared" section="with_frame_background" /></Layer>
         </StateImagery>
         <StateImagery name="NoFrameEnabledBackground">
-            <Layer><Section look="OgreTray/StaticShared" section="noframe_background" /></Layer>
+            <Layer><Section look="OgreTray/StaticShared" section="no_frame_background" /></Layer>
         </StateImagery>
         <StateImagery name="NoFrameDisabledBackground">
-            <Layer><Section look="OgreTray/StaticShared" section="noframe_background" /></Layer>
+            <Layer><Section look="OgreTray/StaticShared" section="no_frame_background" /></Layer>
         </StateImagery>
         <StateImagery name="WithFrameImage">
             <Layer><Section section="image_withframe" /></Layer>

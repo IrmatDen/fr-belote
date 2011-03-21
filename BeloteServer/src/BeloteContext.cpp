@@ -330,14 +330,14 @@ void BeloteContext::AcceptAsset(const std::string &colourName)
 	d->m_CurrentAsset = colourName.front();
 	d->m_TeamAcceptingContract = (d->m_CurrentPlayer == PP_South || d->m_CurrentPlayer == PP_North) ? TI_NorthSouth : TI_WestEast;
 
-	NotifyTurnEvent(TE_TakeAsset, d->m_Players[d->m_CurrentPlayer]);
+	NotifyTurnEvent(TE_TakeAsset);
 
 	DealLastPart();
 }
 
 void BeloteContext::RefuseAsset()
 {
-	NotifyTurnEvent(TE_RefuseAsset, d->m_Players[d->m_CurrentPlayer]);
+	NotifyTurnEvent(TE_RefuseAsset);
 
 	const bool wholeTurnDone = (d->m_CurrentPlayer == d->m_CurrentDealer);
 	if (wholeTurnDone)
@@ -627,7 +627,7 @@ bool BeloteContext::CheckForBelote(const std::string &playedCard)
 		d->m_TeamOwningBelote = TI_WestEast;
 	}
 
-	NotifyTurnEvent(TE_BeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
+	NotifyTurnEvent(TE_BeloteAnnounced);
 
 	return true;
 }
@@ -652,7 +652,7 @@ void BeloteContext::CheckForRebelote(const std::string &playedCard)
 	if (playedCard.at(1) != 'K' && playedCard.at(1) != 'Q')
 		return;
 
-	NotifyTurnEvent(TE_RebeloteAnnounced, d->m_Players[d->m_CurrentPlayer]);
+	NotifyTurnEvent(TE_RebeloteAnnounced);
 }
 
 void BeloteContext::TurnEnded()
@@ -835,12 +835,12 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 		break;
 
 	case TE_TakeAsset:
-		packet	<< BCPT_AssetAccepted << player->GetClientName().c_str()
+		packet	<< BCPT_AssetAccepted << d->m_CurrentPlayer
 				<< d->m_CurrentAsset << (d->m_TeamAcceptingContract == TI_NorthSouth);
 		break;
 
 	case TE_RefuseAsset:
-		packet << BCPT_AssetRefused << player->GetClientName().c_str();
+		packet << BCPT_AssetRefused << d->m_CurrentPlayer;
 		break;
 
 	case TE_NoAssetTaken:
@@ -852,11 +852,11 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 		break;
 
 	case TE_BeloteAnnounced:
-		packet << BCPT_BeloteAnnounced << player->GetClientName().c_str();
+		packet << BCPT_BeloteAnnounced << d->m_CurrentPlayer;
 		break;
 
 	case TE_RebeloteAnnounced:
-		packet << BCPT_RebeloteAnnounced << player->GetClientName().c_str();
+		packet << BCPT_RebeloteAnnounced << d->m_CurrentPlayer;
 		break;
 
 	case TE_ScoresUpdated:

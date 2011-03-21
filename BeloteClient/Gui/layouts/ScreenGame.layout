@@ -152,6 +152,54 @@
 						<Property Name="UnifiedAreaRect" Value="{{0.9,-60},{0.5,-20.5},{0.9,50},{0.5,20.5}}" />
 					</Window>
 				</Window>
+				<Window Type="OgreTray/StaticImage" Name="LPlayerSpeakArea" >
+					<Property Name="UnifiedPosition" Value="{{0.1,-10},{0.5,-75}}" />
+					<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
+					<Property Name="FrameEnabled" Value="False" />
+					<Property Name="BackgroundEnabled" Value="False" />
+					<Property Name="Alpha" Value="0" />
+					<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneL" />
+					<Window Type="OgreTray/StaticText" Name="LPlayerSpeakArea/Txt" >
+						<Property Name="Font" Value="DejaVuSans-8" />
+						<Property Name="FrameEnabled" Value="False" />
+						<Property Name="BackgroundEnabled" Value="False" />
+						<Property Name="HorzFormatting" Value="HorzCentred" />
+						<Property Name="Text" Value="Je passe" />
+						<Property Name="UnifiedAreaRect" Value="{{0,12},{0,6},{1,-12},{0,25}}" />
+					</Window>
+				</Window>
+				<Window Type="OgreTray/StaticImage" Name="RPlayerSpeakArea" >
+					<Property Name="UnifiedPosition" Value="{{0.9,-100},{0.5,-75}}" />
+					<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
+					<Property Name="FrameEnabled" Value="False" />
+					<Property Name="BackgroundEnabled" Value="False" />
+					<Property Name="Alpha" Value="0" />
+					<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneR" />
+					<Window Type="OgreTray/StaticText" Name="RPlayerSpeakArea/Txt" >
+						<Property Name="Font" Value="DejaVuSans-8" />
+						<Property Name="FrameEnabled" Value="False" />
+						<Property Name="BackgroundEnabled" Value="False" />
+						<Property Name="HorzFormatting" Value="HorzCentred" />
+						<Property Name="Text" Value="Je passe" />
+						<Property Name="UnifiedAreaRect" Value="{{0,12},{0,6},{1,-12},{0,25}}" />
+					</Window>
+				</Window>
+				<Window Type="OgreTray/StaticImage" Name="TPlayerSpeakArea" >
+					<Property Name="UnifiedPosition" Value="{{0.5,-25},{0,65}}" />
+					<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
+					<Property Name="FrameEnabled" Value="False" />
+					<Property Name="BackgroundEnabled" Value="False" />
+					<Property Name="Alpha" Value="0" />
+					<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneT" />
+					<Window Type="OgreTray/StaticText" Name="TPlayerSpeakArea/Txt" >
+						<Property Name="Font" Value="DejaVuSans-8" />
+						<Property Name="FrameEnabled" Value="False" />
+						<Property Name="BackgroundEnabled" Value="False" />
+						<Property Name="HorzFormatting" Value="HorzCentred" />
+						<Property Name="Text" Value="Je passe" />
+						<Property Name="UnifiedAreaRect" Value="{{0,12},{0,25},{1,-12},{0,39}}" />
+					</Window>
+				</Window>
 				<Window Type="OgreTray/StaticText" Name="TurnInfo" >
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="Text" >Preneur :

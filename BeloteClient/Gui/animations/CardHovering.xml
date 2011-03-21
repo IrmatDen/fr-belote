@@ -3,13 +3,21 @@
 	<AnimationDefinition name="HoverIn" duration="0.15" replayMode="once">
 		<Affector property="UnifiedYPosition" interpolator="UDim">
 			<KeyFrame position="0.0" value="{1,-133.5}" />
-			<KeyFrame position="0.15" value="{1,-178}" />
+			<KeyFrame position="0.15" value="{1,-178}" progression="quadratic decelerating" />
 		</Affector>
 	</AnimationDefinition>
 	<AnimationDefinition name="HoverOut" duration="0.15" replayMode="once">
 		<Affector property="UnifiedYPosition" interpolator="UDim">
 			<KeyFrame position="0.0" value="{1,-178}" />
-			<KeyFrame position="0.15" value="{1,-133.5}" />
+			<KeyFrame position="0.15" value="{1,-133.5}" progression="quadratic decelerating" />
+		</Affector>
+	</AnimationDefinition>
+	<AnimationDefinition name="PlayerSpeak" duration="2" replayMode="once">
+		<Affector property="Alpha" interpolator="float">
+			<KeyFrame position="0.0" value="0" />
+			<KeyFrame position="0.5" value="1" progression="quadratic decelerating" />
+			<KeyFrame position="1.5" value="1" progression="quadratic decelerating" />
+			<KeyFrame position="2.0" value="0" progression="quadratic decelerating" />
 		</Affector>
 	</AnimationDefinition>
 </Animations>

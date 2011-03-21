@@ -9,6 +9,10 @@ local CardHoverPropertyName		= "AnimInstanceIdx"
 
 local animInstances = { }
 
+local SpeakDisplayPropertyName	= "AnimInstanceIdx"
+local speakAnimInstances		= { }
+local SpeakAreaNames			= { "LPlayerSpeakArea/Txt", "TPlayerSpeakArea/Txt", "RPlayerSpeakArea/Txt", "" }
+
 local PositionButtonTexts		= { "Sud", "Ouest", "Nord", "Est" }
 local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "ButtonEast" }
 local myPosition				= 0
@@ -216,6 +220,36 @@ function IsPlayerPartOfNSTeam()
 	return myPosition == 1 or myPosition == 3
 end
 
+function setupAnimForSpeakArea(which)
+	local winMgr	= CEGUI.WindowManager:getSingleton()
+	local wnd		= winMgr:getWindow(which)
+	wnd:setUserString(SpeakDisplayPropertyName, #speakAnimInstances + 1)
+	
+	local animMgr	= CEGUI.AnimationManager:getSingleton()
+	local anim		= animMgr:instantiateAnimation("PlayerSpeak")
+	anim:setTargetWindow(wnd)
+	table.insert(speakAnimInstances, anim)
+end
+
+function playerSays(playerPos, text)
+	local relativePos = getRelativePosition(playerPos)
+	if relativePos == 4 then return end
+	
+	local winMgr = CEGUI.WindowManager:getSingleton()
+	local window = winMgr:getWindow(SpeakAreaNames[relativePos])
+	window:setText(text)
+	
+	local animIdx = window:getParent():getUserString(SpeakDisplayPropertyName)
+	speakAnimInstances[tonumber(animIdx)]:start()
+end
+
+function getRelativePosition(playerPos)
+	playerPos = playerPos + 1
+	local relativePos = playerPos - myPosition
+	if relativePos <= 0 then relativePos = 4 + relativePos end
+	return relativePos
+end
+
 -----------------------------------------
 -- Start of handler functions
 -----------------------------------------
@@ -342,11 +376,9 @@ function onAskAnotherAsset(args)
 end
 
 function onPlayerAcceptedAsset(args)
-	local a		= toPlayerAcceptedAssetArgs(args)
-	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer
-	text 		= text .. " prend à " .. AssetTranslation[a.m_Asset]
+	local a = toPlayerAcceptedAssetArgs(args)
 	
-	appendTextToChatBox(text)
+	playerSays(a.m_PlayerPos, "Je prends à " .. AssetTranslation[a.m_Asset])
 	
 	if IsPlayerPartOfNSTeam() then
 		if args.m_AcceptedByNSTeam then
@@ -367,10 +399,8 @@ function onPlayerAcceptedAsset(args)
 end
 
 function onPlayerRefusedAsset(args)
-	local a		= toPlayerRefusedAssetArgs(args)
-	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " passe"
-	
-	appendTextToChatBox(text)
+	local pos = toPlayerRefusedAssetArgs(args).m_PlayerPos
+	playerSays(pos, "Je passe")
 end
 
 function onTurnStarting(args)
@@ -418,9 +448,7 @@ function onPlayedCard(args)
 	end
 	
 	-- Search relative position to me
-	pcArgs.m_Player = pcArgs.m_Player + 1
-	local relativePos = pcArgs.m_Player - myPosition
-	if relativePos <= 0 then relativePos = 4 + relativePos end
+	local relativePos = getRelativePosition(pcArgs.m_Player)
 	
 	-- add card on the table
 	local cardImg = winMgr:createWindow("OgreTray/StaticImage", pcArgs.m_Card .. "ImgPlayed")
@@ -499,17 +527,13 @@ function onPlayerConnectedStateChange(args)
 end
 
 function onBeloteAnnounced(args)
-	local a		= toBeloteAnnouncedArgs(args)
-	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " annonce Belote"
-	
-	appendTextToChatBox(text)
+	local pos = toBeloteAnnouncedArgs(args).m_ByPlayerPos
+	playerSays(pos, "Belote !")
 end
 
 function onRebeloteAnnounced(args)
-	local a		= toBeloteAnnouncedArgs(args)
-	local text	= "[font='DejaVuSans-8-Bold']" .. a.m_ByPlayer .. " annonce Rebelote"
-	
-	appendTextToChatBox(text)
+	local pos = toBeloteAnnouncedArgs(args).m_ByPlayerPos
+	playerSays(pos, "Rebelote !")
 end
 
 function onNoAssetTaken(args)
@@ -717,6 +741,11 @@ guiSystem:setGUISheet(root)
 
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
+
+-- Setup animations for speaking areas
+setupAnimForSpeakArea("LPlayerSpeakArea")
+setupAnimForSpeakArea("RPlayerSpeakArea")
+setupAnimForSpeakArea("TPlayerSpeakArea")
 
 -- subscribe required events
 	-- UI Panel events

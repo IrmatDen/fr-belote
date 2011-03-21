@@ -5,3 +5,4 @@
 * stocker le jeu pour replay/debug?
 * Factoriser le code réseau vers common, ça devient /très/ moche
 * Factoriser les events réseaux clients, ça devient aussi /très/ moche
+* Gérer les déconnexions pendant une partie

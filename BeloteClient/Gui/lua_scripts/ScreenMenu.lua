@@ -84,12 +84,12 @@ end
 
 	-- Rules screen
 
-function onHostNameValid(args)
+function onRulesValid(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("MenuScreenRules/ButtonRulesStart"):enable()
 end
 
-function onHostNameInvalid(args)
+function onRulesInvalid(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("MenuScreenRules/ButtonRulesStart"):disable()
 end
@@ -101,11 +101,21 @@ function onRulesStart(args)
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local game = Game:getSingleton()
 	local client = game:GetClientSocket()
-	local pnameBox = winMgr:getWindow("MenuScreenRules/PlayerName")
+	local name = winMgr:getWindow("MenuScreenRules/PlayerName"):getText()
+	game.m_GameVars.m_PlayerName = CEGUI.String(name)
+	
+	-- Save play direction
+	local pdCBox = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/GameRotation"))
+	local pdItemIdx = pdCBox:getItemIndex(pdCBox:getSelectedItem())
+	game.m_GameVars.m_RuleSet.m_PlayDir = pdItemIdx
+	
+	-- Save winning score
+	local scoreMaxStr = winMgr:getWindow("MenuScreenRules/ScoreMax"):getText()
+	game.m_GameVars.m_RuleSet.m_WinningScore = tonumber(scoreMaxStr)
 	
 	-- No worries about joining another host, since only the host gets to the rules def screen
 	game:StartServer()
-	client:Connect("127.0.0.1", pnameBox:getText())
+	client:Connect("127.0.0.1", name)
 end
 
 	-- Join game screen
@@ -182,6 +192,7 @@ displayScreen("MenuScreenMain")
 
 -- Misc. setup
 local hostNameBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenRules/PlayerName"))
+local scoreMaxBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenRules/ScoreMax"))
 local clientNameBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/PlayerNameClient"))
 local hostIpBox = CEGUI.toEditbox(winMgr:getWindow("MenuScreenJoinGame/HostIP"))
 
@@ -189,11 +200,6 @@ local gameRotCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/GameRotatio
 gameRotCB:addItem(CEGUI.createListboxTextItem("Horaire", 0, nil, false, true))
 gameRotCB:addItem(CEGUI.createListboxTextItem("Anti-horaire", 0, nil, false, true))
 gameRotCB:setItemSelectState(0, true)
-
-local beloteSaveCB = CEGUI.toCombobox(winMgr:getWindow("MenuScreenRules/BeloteSave"))
-beloteSaveCB:addItem(CEGUI.createListboxTextItem("Oui", 0, nil, false, true))
-beloteSaveCB:addItem(CEGUI.createListboxTextItem("Non", 0, nil, false, true))
-beloteSaveCB:setItemSelectState(0, true)
 
 -- subscribe required events
 	-- Network & errors events
@@ -206,9 +212,12 @@ winMgr:getWindow("MenuScreenMain/ButtonQuit"):subscribeEvent("Clicked", "onQuitG
 	-- Rules menu
 winMgr:getWindow("MenuScreenRules/ButtonRulesStart"):subscribeEvent("Clicked", "onRulesStart")
 winMgr:getWindow("MenuScreenRules/ButtonRulesBack"):subscribeEvent("Clicked", "onBack")
-hostNameBox:subscribeEvent("ValidEntry", "onHostNameValid")
-hostNameBox:subscribeEvent("TextInvalidated", "onHostNameInvalid")
-hostNameBox:subscribeEvent("InvalidEntryAttempted", "onHostNameInvalid")
+hostNameBox:subscribeEvent("ValidEntry", "onRulesValid")
+hostNameBox:subscribeEvent("TextInvalidated", "onRulesInvalid")
+hostNameBox:subscribeEvent("InvalidEntryAttempted", "onRulesInvalid")
+scoreMaxBox:subscribeEvent("ValidEntry", "onRulesValid")
+scoreMaxBox:subscribeEvent("TextInvalidated", "onRulesInvalid")
+scoreMaxBox:subscribeEvent("InvalidEntryAttempted", "onRulesInvalid")
 	-- Join game menu
 winMgr:getWindow("MenuScreenJoinGame/ButtonJoinDo"):subscribeEvent("Clicked", "onDoJoinGame")
 winMgr:getWindow("MenuScreenJoinGame/ButtonJoinBack"):subscribeEvent("Clicked", "onBack")
@@ -223,5 +232,6 @@ winMgr:getWindow("ErrorMsgBox/OK"):subscribeEvent("Clicked", "onErrorOk")
 
 -- Finish setup parts which fire events
 hostNameBox:setText("Host")
+scoreMaxBox:setText("1000")
 clientNameBox:setText("Client")
 hostIpBox:setText("127.0.0.1")

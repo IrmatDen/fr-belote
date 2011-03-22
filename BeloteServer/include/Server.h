@@ -9,6 +9,8 @@ typedef std::shared_ptr<ServerSocket> ServerSocketPtr;
 class BeloteContext;
 typedef std::shared_ptr<BeloteContext> BeloteContextPtr;
 
+struct BeloteContextRuleSet;
+
 class Server
 {
 public:
@@ -23,6 +25,7 @@ public:
 	unsigned int	GetClientCount() const		{ return m_ClientsCount; }
 
 	void	Start();
+	void	SetRuleSet(BeloteContextRuleSet &ruleSet);
 	void	ClientConnected(const std::string &clientName);
 	void	ClientDisconnected(const std::string &clientName);
 	void	BroadcastText(const std::string &clientName, const std::string &msg);

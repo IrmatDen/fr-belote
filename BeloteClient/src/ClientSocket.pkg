@@ -1,3 +1,5 @@
+$#include "ClientSocket.h"
+
 class ConnectionStatusEventArgs : public CEGUI::EventArgs
 {
 public:

@@ -9,6 +9,7 @@
 #include "ServerSocket.h"
 
 #include "BeloteContext.h"
+#include "BeloteContextTypes.h"
 
 Server::Server()
 {
@@ -60,6 +61,11 @@ void Server::Start()
 	m_Listener.Close();
 
 	m_BeloteContext->Reset();
+}
+
+void Server::SetRuleSet(BeloteContextRuleSet &ruleSet)
+{
+	m_BeloteContext->SetRuleSet(ruleSet);
 }
 
 void Server::Stop()

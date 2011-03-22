@@ -1,3 +1,5 @@
+$#include "GUIManager.h"
+
 class ErrorRaisedArgs : public CEGUI::EventArgs
 {
 public:

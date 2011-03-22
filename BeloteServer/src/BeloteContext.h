@@ -11,6 +11,7 @@
 
 #include "ServerSocket.h"
 #include "BeloteContextPackets.h"
+#include "BeloteContextTypes.h"
 
 class Server;
 typedef std::shared_ptr<Server> ServerPtr;
@@ -70,7 +71,8 @@ private:
 public:
 	BeloteContext(ServerPtr server);
 	~BeloteContext();
-
+	
+	void	SetRuleSet(BeloteContextRuleSet &ruleSet)		{ d->m_RuleSet = ruleSet; }
 	void	Reset();
 
 	// Network reactions
@@ -135,6 +137,8 @@ private:
 		Players		m_UnplacedPlayers;
 		Players		m_Players;
 
+		BeloteContextRuleSet	m_RuleSet;
+
 		sf::Uint32		m_Scores[_TI_Count];
 		sf::Uint32		m_LitigeScorePending;
 		sf::Uint32		m_TotalScores[_TI_Count];
@@ -162,12 +166,34 @@ private:
 
 	// Tools
 private:
-	static PlayerPosition	GetNextPlayer(PlayerPosition pp)
+	static PlayerPosition	GetNextPlayer(PlayDirection pd, PlayerPosition pp)
 	{
-		if (PP_East == pp)
-			return PP_South;
+		if (pd == PD_CW)
+		{
+			if (PP_East == pp)
+				return PP_South;
 	
-		return (PlayerPosition)(pp + 1);
+			return (PlayerPosition)(pp + 1);
+		}
+
+		// CCW
+		if (PP_South == pp)
+			return PP_East;
+	
+		return (PlayerPosition)(pp - 1);
+	}
+	
+	static PlayerPosition	GetWinnerPosition(PlayDirection pd, PlayerPosition endingPos, size_t winnerPosFromSP)
+	{
+		if (pd == PD_CW)
+		{
+			const PlayerPosition startingPos = GetNextPlayer(pd, endingPos);
+			return static_cast<PlayerPosition>((startingPos + winnerPosFromSP) % _PP_Count);
+		}
+
+		// CCW
+		const PlayerPosition startingPos = GetNextPlayer(pd, endingPos);
+		return static_cast<PlayerPosition>(_PP_Count - startingPos - winnerPosFromSP);
 	}
 
 	static TeamIndex		GetOppositeTeam(TeamIndex ti)

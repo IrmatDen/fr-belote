@@ -1,3 +1,7 @@
+$#include "Game.h"
+
+$pfile "BeloteContextTypes.pkg"
+
 class Game
 {
 public:
@@ -15,8 +19,9 @@ public:
 
 	struct GameVars
 	{
-		GameMode		m_GameMode;
-		CEGUI::String	m_PlayerName;
+		GameMode				m_GameMode;
+		CEGUI::String			m_PlayerName;
+		BeloteContextRuleSet	m_RuleSet;
 	};
 
 	GameVars m_GameVars;

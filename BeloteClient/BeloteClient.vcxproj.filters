@@ -86,5 +86,8 @@
     <None Include="Gui\lua_scripts\ScreenGame.lua">
       <Filter>Resource Files\Lua</Filter>
     </None>
+    <None Include="src\BeloteContextTypes.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
   </ItemGroup>
 </Project>

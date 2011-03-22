@@ -1,3 +1,5 @@
+$#include "SoundManager.h"
+
 class SoundManager
 {
 public:

@@ -249,7 +249,7 @@ void BeloteContext::ShuffleDeck()
 
 void BeloteContext::PreTurn()
 {
-	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentDealer);
+	d->m_CurrentPlayer = GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentDealer);
 	
 	std::fill(d->m_Scores, d->m_Scores + countof(d->m_Scores), 0);
 	d->m_TeamOwningBelote = TI_None;
@@ -282,7 +282,7 @@ void BeloteContext::DealFirstPart()
 		for (int card = 0; card != currentCardsCountToGive; card++)
 			d->m_PlayersHand[pp][currentHandPos[pp]++] = d->m_Deck[d->m_CurrentDeckPos++];
 
-		pp = GetNextPlayer(pp);
+		pp = GetNextPlayer(d->m_RuleSet.m_PlayDir, pp);
 
 		if (playerIdx == _PP_Count - 1)
 			currentCardsCountToGive = 5 - currentCardsCountToGive;
@@ -348,13 +348,13 @@ void BeloteContext::RefuseAsset()
 		{
 			NotifyTurnEvent(TE_NoAssetTaken);
 
-			d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
+			d->m_CurrentDealer = GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentDealer);
 			PreTurn();
 			return;
 		}
 	}
 
-	d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
+	d->m_CurrentPlayer = GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentPlayer);
 	
 	AskForAsset();
 }
@@ -362,7 +362,7 @@ void BeloteContext::RefuseAsset()
 void BeloteContext::DealLastPart()
 {
 	PlayerPosition taker	= d->m_CurrentPlayer;
-	d->m_CurrentPlayer		= GetNextPlayer(d->m_CurrentDealer);
+	d->m_CurrentPlayer		= GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentDealer);
 	PlayerPosition pp		= d->m_CurrentPlayer;
 	int currentHandPos[4]	= { 5, 5, 5, 5 };
 
@@ -373,7 +373,7 @@ void BeloteContext::DealLastPart()
 		for (int card = 0; card != cardsToGive; card++)
 			d->m_PlayersHand[pp][currentHandPos[pp]++] = d->m_Deck[d->m_CurrentDeckPos++];
 
-		pp = GetNextPlayer(pp);
+		pp = GetNextPlayer(d->m_RuleSet.m_PlayDir, pp);
 	}
 
 	// Give the shown card to the taker.
@@ -589,7 +589,7 @@ void BeloteContext::CardPlayed(const std::string &card)
 	}
 	else
 	{
-		d->m_CurrentPlayer = GetNextPlayer(d->m_CurrentPlayer);
+		d->m_CurrentPlayer = GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentPlayer);
 		AskToPlay();
 	}
 }
@@ -669,8 +669,7 @@ void BeloteContext::TurnEnded()
 	}
 	assert(winner < 4);
 
-	const int winnerPos = (GetNextPlayer(d->m_CurrentPlayer) + winner) % _PP_Count;
-	d->m_CurrentPlayer = static_cast<PlayerPosition>(winnerPos);
+	d->m_CurrentPlayer = GetWinnerPosition(d->m_RuleSet.m_PlayDir, d->m_CurrentPlayer, winner);
 
 	ComputeAndReportTurnScore(d->m_CurrentPlayer);
 
@@ -796,7 +795,7 @@ void BeloteContext::GameEnded()
 	d->m_TeamPlayedCards[0].swap(std::vector<std::string>());
 	d->m_TeamPlayedCards[1].swap(std::vector<std::string>());
 
-	d->m_CurrentDealer = GetNextPlayer(d->m_CurrentDealer);
+	d->m_CurrentDealer = GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentDealer);
 	PreTurn();
 }
 

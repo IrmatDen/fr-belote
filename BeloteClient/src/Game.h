@@ -6,6 +6,7 @@
 #include <SFML/Network/TcpSocket.hpp>
 
 #include "Server.h"
+#include "BeloteContextTypes.h"
 
 #include "GUIManager.h"
 #include "ClientSocket.h"
@@ -29,8 +30,9 @@ public:
 
 	struct GameVars
 	{
-		GameMode		m_GameMode;
-		CEGUI::String	m_PlayerName;
+		GameMode				m_GameMode;
+		CEGUI::String			m_PlayerName;
+		BeloteContextRuleSet	m_RuleSet;
 	} m_GameVars;
 
 public:
@@ -45,7 +47,7 @@ public:
 
 	// Network related
 	ClientSocket&	GetClientSocket()			{ return m_ClientSocket; }
-	void			StartServer()				{ m_ServerThread.Launch(); }
+	void			StartServer()				{ m_Server.SetRuleSet(m_GameVars.m_RuleSet); m_ServerThread.Launch(); }
 	void			StopServer()				{ m_Server.Stop(); }
 
 private:

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/21/11 23:44:10.
+** Generated automatically by tolua++-1.0.92 on 03/22/11 18:40:32.
 */
 
 #ifndef __cplusplus
@@ -14,6 +14,7 @@
 int tolua_LuaInterface_open (lua_State* tolua_S);
 
 #include "Game.h"
+#include "../../include/BeloteContextTypes.h"
 #include "SoundManager.h"
 #include "GUIManager.h"
 #include "LeftWrappedListItem.h"
@@ -34,34 +35,95 @@ static int tolua_collect_LeftWrappedListItem (lua_State* tolua_S)
 /* function to register type */
 static void tolua_reg_types (lua_State* tolua_S)
 {
- tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"PlayedCardArgs");
  tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
  tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
+ tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
  tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"SoundManager");
- tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"ContractingTeamResultArgs");
- tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"BeloteAnnouncedArgs");
- tolua_usertype(tolua_S,"ErrorRaisedArgs");
+ tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"ScoresArgs");
- tolua_usertype(tolua_S,"Game::GameVars");
+ tolua_usertype(tolua_S,"ErrorRaisedArgs");
+ tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"CEGUI::EventSet");
  tolua_usertype(tolua_S,"LitigeArgs");
- tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
  tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
+ tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"PotentialAssetArgs");
  tolua_usertype(tolua_S,"WaitingPlayArgs");
- tolua_usertype(tolua_S,"CEGUI::EventSet");
+ tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
  tolua_usertype(tolua_S,"GUIManager");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"CurrentPositioningArgs");
  tolua_usertype(tolua_S,"SystemMessageBroadcastedEventArgs");
- tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
+ tolua_usertype(tolua_S,"BeloteContextRuleSet");
  tolua_usertype(tolua_S,"Game");
  tolua_usertype(tolua_S,"TextBroadcastedEventArgs");
  tolua_usertype(tolua_S,"PlayerDealingArgs");
 }
+
+/* get function: m_PlayDir of class  BeloteContextRuleSet */
+#ifndef TOLUA_DISABLE_tolua_get_BeloteContextRuleSet_m_PlayDir
+static int tolua_get_BeloteContextRuleSet_m_PlayDir(lua_State* tolua_S)
+{
+  BeloteContextRuleSet* self = (BeloteContextRuleSet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_PlayDir'",NULL);
+#endif
+ tolua_pushnumber(tolua_S,(lua_Number)self->m_PlayDir);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_PlayDir of class  BeloteContextRuleSet */
+#ifndef TOLUA_DISABLE_tolua_set_BeloteContextRuleSet_m_PlayDir
+static int tolua_set_BeloteContextRuleSet_m_PlayDir(lua_State* tolua_S)
+{
+  BeloteContextRuleSet* self = (BeloteContextRuleSet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_PlayDir'",NULL);
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_PlayDir = ((PlayDirection) (int)  tolua_tonumber(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_WinningScore of class  BeloteContextRuleSet */
+#ifndef TOLUA_DISABLE_tolua_get_BeloteContextRuleSet_unsigned_m_WinningScore
+static int tolua_get_BeloteContextRuleSet_unsigned_m_WinningScore(lua_State* tolua_S)
+{
+  BeloteContextRuleSet* self = (BeloteContextRuleSet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_WinningScore'",NULL);
+#endif
+ tolua_pushnumber(tolua_S,(lua_Number)self->m_WinningScore);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_WinningScore of class  BeloteContextRuleSet */
+#ifndef TOLUA_DISABLE_tolua_set_BeloteContextRuleSet_unsigned_m_WinningScore
+static int tolua_set_BeloteContextRuleSet_unsigned_m_WinningScore(lua_State* tolua_S)
+{
+  BeloteContextRuleSet* self = (BeloteContextRuleSet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_WinningScore'",NULL);
+ if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_WinningScore = ((unsigned int)  tolua_tonumber(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
 
 /* get function: m_GameMode of class  GameVars */
 #ifndef TOLUA_DISABLE_tolua_get_Game__GameVars_m_GameMode
@@ -118,6 +180,36 @@ static int tolua_set_Game__GameVars_m_PlayerName(lua_State* tolua_S)
  tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
 #endif
   self->m_PlayerName = *((CEGUI::String*)  tolua_tousertype(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_RuleSet of class  GameVars */
+#ifndef TOLUA_DISABLE_tolua_get_Game__GameVars_m_RuleSet
+static int tolua_get_Game__GameVars_m_RuleSet(lua_State* tolua_S)
+{
+  Game::GameVars* self = (Game::GameVars*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_RuleSet'",NULL);
+#endif
+ tolua_pushusertype(tolua_S,(void*)&self->m_RuleSet,"BeloteContextRuleSet");
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_RuleSet of class  GameVars */
+#ifndef TOLUA_DISABLE_tolua_set_Game__GameVars_m_RuleSet
+static int tolua_set_Game__GameVars_m_RuleSet(lua_State* tolua_S)
+{
+  Game::GameVars* self = (Game::GameVars*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_RuleSet'",NULL);
+ if (!tolua_isusertype(tolua_S,2,"BeloteContextRuleSet",0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_RuleSet = *((BeloteContextRuleSet*)  tolua_tousertype(tolua_S,2,0))
 ;
  return 0;
 }
@@ -1602,6 +1694,13 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_reg_types(tolua_S);
  tolua_module(tolua_S,NULL,0);
  tolua_beginmodule(tolua_S,NULL);
+ tolua_constant(tolua_S,"PD_CW",PD_CW);
+ tolua_constant(tolua_S,"PD_CCW",PD_CCW);
+ tolua_cclass(tolua_S,"BeloteContextRuleSet","BeloteContextRuleSet","",NULL);
+ tolua_beginmodule(tolua_S,"BeloteContextRuleSet");
+  tolua_variable(tolua_S,"m_PlayDir",tolua_get_BeloteContextRuleSet_m_PlayDir,tolua_set_BeloteContextRuleSet_m_PlayDir);
+  tolua_variable(tolua_S,"m_WinningScore",tolua_get_BeloteContextRuleSet_unsigned_m_WinningScore,tolua_set_BeloteContextRuleSet_unsigned_m_WinningScore);
+ tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"Game","Game","",NULL);
  tolua_beginmodule(tolua_S,"Game");
   tolua_constant(tolua_S,"GM_HOST",Game::GM_HOST);
@@ -1612,6 +1711,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_beginmodule(tolua_S,"GameVars");
    tolua_variable(tolua_S,"m_GameMode",tolua_get_Game__GameVars_m_GameMode,tolua_set_Game__GameVars_m_GameMode);
    tolua_variable(tolua_S,"m_PlayerName",tolua_get_Game__GameVars_m_PlayerName,tolua_set_Game__GameVars_m_PlayerName);
+   tolua_variable(tolua_S,"m_RuleSet",tolua_get_Game__GameVars_m_RuleSet,tolua_set_Game__GameVars_m_RuleSet);
   tolua_endmodule(tolua_S);
   tolua_variable(tolua_S,"m_GameVars",tolua_get_Game_m_GameVars,tolua_set_Game_m_GameVars);
   tolua_function(tolua_S,"getSingleton",tolua_LuaInterface_Game_getSingleton00);

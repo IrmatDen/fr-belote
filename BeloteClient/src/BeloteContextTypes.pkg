@@ -1,0 +1,14 @@
+$#include "../../include/BeloteContextTypes.h"
+
+enum PlayDirection
+{
+	PD_CW,
+	PD_CCW
+};
+
+struct BeloteContextRuleSet
+{
+
+	PlayDirection	m_PlayDir;
+	unsigned int	m_WinningScore;
+};

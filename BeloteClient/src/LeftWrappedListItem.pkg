@@ -1,3 +1,5 @@
+$#include "LeftWrappedListItem.h"
+
 class LeftWrappedListItem : public CEGUI::ListboxTextItem
 {
 public:

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/22/11 18:40:32.
+** Generated automatically by tolua++-1.0.92 on 03/22/11 19:33:18.
 */
 
 #ifndef __cplusplus
@@ -38,8 +38,9 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"PlayedCardArgs");
  tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
- tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
  tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
+ tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
+ tolua_usertype(tolua_S,"MatchWonArgs");
  tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"ContractingTeamResultArgs");
@@ -1421,6 +1422,36 @@ static int tolua_set_LitigeArgs_m_LitigeValue(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* get function: m_MatchWonByNSTeam of class  MatchWonArgs */
+#ifndef TOLUA_DISABLE_tolua_get_MatchWonArgs_m_MatchWonByNSTeam
+static int tolua_get_MatchWonArgs_m_MatchWonByNSTeam(lua_State* tolua_S)
+{
+  MatchWonArgs* self = (MatchWonArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_MatchWonByNSTeam'",NULL);
+#endif
+ tolua_pushboolean(tolua_S,(bool)self->m_MatchWonByNSTeam);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_MatchWonByNSTeam of class  MatchWonArgs */
+#ifndef TOLUA_DISABLE_tolua_set_MatchWonArgs_m_MatchWonByNSTeam
+static int tolua_set_MatchWonArgs_m_MatchWonByNSTeam(lua_State* tolua_S)
+{
+  MatchWonArgs* self = (MatchWonArgs*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_MatchWonByNSTeam'",NULL);
+ if (!tolua_isboolean(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_MatchWonByNSTeam = ((bool)  tolua_toboolean(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Connect of class  ClientSocket */
 #ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
 static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
@@ -1822,6 +1853,10 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_cclass(tolua_S,"LitigeArgs","LitigeArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"LitigeArgs");
   tolua_variable(tolua_S,"m_LitigeValue",tolua_get_LitigeArgs_m_LitigeValue,tolua_set_LitigeArgs_m_LitigeValue);
+ tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"MatchWonArgs","MatchWonArgs","CEGUI::EventArgs",NULL);
+ tolua_beginmodule(tolua_S,"MatchWonArgs");
+  tolua_variable(tolua_S,"m_MatchWonByNSTeam",tolua_get_MatchWonArgs_m_MatchWonByNSTeam,tolua_set_MatchWonArgs_m_MatchWonByNSTeam);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
  tolua_beginmodule(tolua_S,"ClientSocket");

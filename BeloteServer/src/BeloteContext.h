@@ -53,6 +53,7 @@ private:
 		TE_RebeloteAnnounced,
 		TE_ScoresUpdated,
 		TE_TotalScoresUpdated,
+		TE_MatchEnded,
 	};
 
 	typedef boost::array<size_t, 8>	Scores;
@@ -101,17 +102,19 @@ private:
 	void	RefuseAsset();
 	void	DealLastPart();
 
-	void	StartTurn();
-	void	AskToPlay();
-	void	CardPlayed(const std::string &card);
-	bool	CheckForBelote(const std::string &playedCard);
-	void	CheckForRebelote(const std::string &playedCard);
-	void	TurnEnded();
-	bool	PlayerHasColourInHand(const std::string &colour) const;
-	bool	PlayerMustCut() const;
-	bool	PlayerCanOvercut() const;
-	void	ComputeAndReportTurnScore(PlayerPosition winner);
-	void	GameEnded();
+	void		StartTurn();
+	void		AskToPlay();
+	void		CardPlayed(const std::string &card);
+	bool		CheckForBelote(const std::string &playedCard);
+	void		CheckForRebelote(const std::string &playedCard);
+	void		TurnEnded();
+	bool		PlayerHasColourInHand(const std::string &colour) const;
+	bool		PlayerMustCut() const;
+	bool		PlayerCanOvercut() const;
+	void		ComputeAndReportTurnScore(PlayerPosition winner);
+	void		GameEnded();
+	bool		CheckMatchEnd() const;
+	TeamIndex	GetMatchWinningTeam() const;
 
 	void	EvaluatePlayedCards(Scores &scores) const;
 	size_t	GetMaxScoreFromPlayedCards() const;

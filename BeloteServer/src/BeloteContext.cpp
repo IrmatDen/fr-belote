@@ -785,7 +785,13 @@ void BeloteContext::GameEnded()
 
 	NotifyTurnEvent(TE_TotalScoresUpdated);
 
-	// and start a new turn
+	// and start a new turn if the match has not ended
+	if (CheckMatchEnd())
+	{
+		NotifyTurnEvent(TE_MatchEnded);
+		return;
+	}
+
 	std::copy(d->m_TeamPlayedCards[0].begin(), d->m_TeamPlayedCards[0].end(),
 		boost_array_iterator(d->m_Deck));
 
@@ -797,6 +803,23 @@ void BeloteContext::GameEnded()
 
 	d->m_CurrentDealer = GetNextPlayer(d->m_RuleSet.m_PlayDir, d->m_CurrentDealer);
 	PreTurn();
+}
+
+bool BeloteContext::CheckMatchEnd() const
+{
+	return	d->m_TotalScores[0] >= d->m_RuleSet.m_WinningScore ||
+			d->m_TotalScores[1] >= d->m_RuleSet.m_WinningScore;
+}
+
+BeloteContext::TeamIndex BeloteContext::GetMatchWinningTeam() const
+{
+	if (d->m_TotalScores[TI_NorthSouth] >= d->m_RuleSet.m_WinningScore)
+		return TI_NorthSouth;
+	
+	if (d->m_TotalScores[TI_WestEast] >= d->m_RuleSet.m_WinningScore)
+		return TI_WestEast;
+
+	return TI_None;
 }
 
 void BeloteContext::OrderHands()
@@ -868,6 +891,10 @@ void BeloteContext::NotifyTurnEvent(TurnEvent event, ServerSocketPtr player)
 		packet << BCPT_TotalScores;
 		packet << d->m_TotalScores[TI_NorthSouth];
 		packet << d->m_TotalScores[TI_WestEast];
+		break;
+
+	case TE_MatchEnded:
+		packet << BCPT_MatchEnded << (GetMatchWinningTeam() == TI_NorthSouth);
 		break;
 	}
 	

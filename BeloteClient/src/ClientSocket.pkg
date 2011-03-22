@@ -110,6 +110,12 @@ public:
 	int	m_LitigeValue;
 };
 
+class MatchWonArgs : public CEGUI::EventArgs
+{
+public:
+	bool	m_MatchWonByNSTeam;
+};
+
 class ClientSocket : public CEGUI::EventSet
 {
 public:

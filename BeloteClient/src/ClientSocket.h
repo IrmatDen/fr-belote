@@ -119,6 +119,12 @@ public:
 	int	m_LitigeValue;
 };
 
+class MatchWonArgs : public CEGUI::EventArgs
+{
+public:
+	bool	m_MatchWonByNSTeam;
+};
+
 class ClientSocketPrivate;
 
 template <typename ArgType = CEGUI::EventArgs>
@@ -201,6 +207,7 @@ public:
 	static const CEGUI::String EventNoAssetTaken;
 	static const CEGUI::String EventContractingTeamResult;
 	static const CEGUI::String EventLitige;
+	static const CEGUI::String EventMatchWon;
 
 public:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
@@ -226,6 +233,7 @@ public:
 	ThreadSafeEventQueue<>									m_NoAssetTaken;
 	ThreadSafeEventQueue<ContractingTeamResultArgs>			m_ContractingTeamResult;
 	ThreadSafeEventQueue<LitigeArgs>						m_Litige;
+	ThreadSafeEventQueue<MatchWonArgs>						m_MatchWon;
 
 	struct ConnectionStatusPushGuard
 		: public std::unary_function<

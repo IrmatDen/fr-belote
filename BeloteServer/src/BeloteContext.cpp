@@ -60,6 +60,10 @@ void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocketPtr 
 			SetPlayerPos(sourcePlayer, posName);
 		}
 		break;
+
+	case BCPT_PlayerUnseat:
+		UnseatPlayer(sourcePlayer);
+		break;
 					
 	case BCPT_StartGameRequest:
 		StartGame();
@@ -142,6 +146,22 @@ void BeloteContext::SetPlayerPos(ServerSocketPtr player, const std::string &posN
 		{
 			std::cout << "[Server] BeloteContext::SetPlayerPos: player not found!" << std::endl;
 		}
+	}
+
+	SendCurrentPositioningToAll();
+}
+
+void BeloteContext::UnseatPlayer(ServerSocketPtr player)
+{
+	PlayersIt playerIt = std::find(d->m_Players.begin(), d->m_Players.end(), player);
+	if (playerIt != d->m_Players.end())
+	{
+		(*playerIt).reset();
+		d->m_UnplacedPlayers.push_back(player);
+	}
+	else
+	{
+		std::cout << "[Server] BeloteContext::UnseatPlayer: player not found!" << std::endl;
 	}
 
 	SendCurrentPositioningToAll();

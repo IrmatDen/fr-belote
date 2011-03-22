@@ -85,6 +85,7 @@ public:
 
 private:
 	void	SetPlayerPos(ServerSocketPtr player, const std::string &posName);
+	void	UnseatPlayer(ServerSocketPtr player);
 	void	SendCurrentPositioningToAll();
 	void	SendCurrentPositioningTo(ServerSocketPtr player);
 

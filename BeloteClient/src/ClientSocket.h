@@ -266,6 +266,7 @@ public:
 	void	Wait();
 
 	void	ChoosePosition(const std::string &posName);
+	void	UnseatMe();
 	void	StartGame();
 	void	AcceptAsset(const std::string &assetColour);
 	void	RefuseAsset();

@@ -15,6 +15,7 @@ local SpeakAreaNames			= { "LPlayerSpeakArea/Txt", "TPlayerSpeakArea/Txt", "RPla
 
 local PositionButtonTexts		= { "Sud", "Ouest", "Nord", "Est" }
 local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "ButtonEast" }
+local UnseatButtonNames			= { "ButtonUnseatSouth", "ButtonUnseatWest", "ButtonUnseatNorth", "ButtonUnseatEast" }
 local myPosition				= 0
 local currentPositionning		= { }
 
@@ -284,9 +285,16 @@ function onCurrentPositioningSent(args)
 			btn:setText(PositionButtonTexts[i + 1] .. ": " .. curPosArgs.m_Pos[i])
 			btn:disable()
 			playersReady = playersReady + 1
+			
+			if myPosition == i + 1 then
+				winMgr:getWindow(UnseatButtonNames[i + 1]):show()
+			else
+				winMgr:getWindow(UnseatButtonNames[i + 1]):hide()
+			end
 		else
 			btn:setText(PositionButtonTexts[i + 1])
 			btn:enable()
+			winMgr:getWindow(UnseatButtonNames[i + 1]):hide()
 		end
 	end
 	
@@ -607,6 +615,16 @@ function onChoosePosition(args)
 	end
 end
 
+function onUnseat(args)
+	local window	= CEGUI.toWindowEventArgs(args).window
+	local posStr	= window:getName()
+	
+	local client	= Game:getSingleton():GetClientSocket()
+	client:UnseatMe()
+	
+	myPosition = 0
+end
+
 -- NB: this is when the "Start Game" *button* is clicked, NOT when the game start as per a server's request!
 function onStartGameBtn(args)
 	Game:getSingleton():GetClientSocket():StartGame()
@@ -766,9 +784,13 @@ winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTab
 winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):subscribeEvent("Clicked", "onSeeLastTurn")
 winMgr:getWindow("ButtonDoneSeeingLastTurn"):subscribeEvent("Clicked", "onDoneSeeingLastTurn")
 winMgr:getWindow("ButtonSouth"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonUnseatSouth"):subscribeEvent("Clicked", "onUnseat")
 winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonUnseatWest"):subscribeEvent("Clicked", "onUnseat")
 winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonUnseatNorth"):subscribeEvent("Clicked", "onUnseat")
 winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
+winMgr:getWindow("ButtonUnseatEast"):subscribeEvent("Clicked", "onUnseat")
 winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGameBtn")
 winMgr:getWindow("ButtonAcceptAsset"):subscribeEvent("Clicked", "onAcceptAsset")
 winMgr:getWindow("ButtonRefuseAsset"):subscribeEvent("Clicked", "onRefuseAsset")

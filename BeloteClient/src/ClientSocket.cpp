@@ -51,6 +51,7 @@ namespace
 		NEC_CantConnect,
 		NEC_SendTextMessage,
 		NEC_SendPlayerPosition,
+		NEC_UnseatMe,
 		NEC_StartGame,
 		NEC_AcceptAsset,
 		NEC_RefuseAsset,
@@ -478,6 +479,23 @@ namespace
 		};
 		typedef std::shared_ptr<SendPosition>	SendPositionPtr;
 
+		struct UnseatMe : public ActionBase
+		{
+			UnseatMe(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
+
+			virtual void operator()()
+			{
+				sf::Packet p;
+				p << PT_GameContextPacket << BCPT_PlayerUnseat;
+				sf::Socket::Status s = m_Socket.Send(p);
+
+				// Error checking
+				if (s != sf::Socket::Done)
+					std::cout << "[Client] Error sending position in Actions::UnseatMe. Error code: " << s << std::endl;
+			}
+		};
+		typedef std::shared_ptr<SendPosition>	SendPositionPtr;
+
 		struct StartGame : public ActionBase
 		{
 			StartGame(sf::TcpSocket &socket) : ActionBase(socket)	{ ; }
@@ -579,6 +597,7 @@ public:
 		m_ActionSendName	= Actions::SendNamePtr			(new Actions::SendName(m_Socket));
 		m_ActionSendTxtMsg	= Actions::SendTextMessagePtr	(new Actions::SendTextMessage(m_Socket));
 		m_ActionSendPos		= Actions::SendPositionPtr		(new Actions::SendPosition(m_Socket));
+		m_ActionUnseat		= ActionPtr						(new Actions::UnseatMe(m_Socket));
 		m_ActionStartGame	= ActionPtr						(new Actions::StartGame(m_Socket));
 		m_ActionAcceptAsset	= Actions::AcceptAssetPtr		(new Actions::AcceptAsset(m_Socket));
 		m_ActionRefuseAsset	= ActionPtr						(new Actions::RefuseAsset(m_Socket));
@@ -594,6 +613,7 @@ public:
 		m_StateConnected	->AddTransition(NEC_SendName,				m_StateIdle,			m_ActionSendName	);
 		m_StateIdle			->AddTransition(NEC_SendTextMessage,		m_StateIdle,			m_ActionSendTxtMsg	);
 		m_StateIdle			->AddTransition(NEC_SendPlayerPosition,		m_StateIdle,			m_ActionSendPos		);
+		m_StateIdle			->AddTransition(NEC_UnseatMe,				m_StateIdle,			m_ActionUnseat		);
 		m_StateIdle			->AddTransition(NEC_StartGame,				m_StateIdle,			m_ActionStartGame	);
 		m_StateIdle			->AddTransition(NEC_AcceptAsset,			m_StateIdle,			m_ActionAcceptAsset	);
 		m_StateIdle			->AddTransition(NEC_RefuseAsset,			m_StateIdle,			m_ActionRefuseAsset	);
@@ -625,6 +645,11 @@ public:
 	{
 		m_ActionSendPos->m_PosName = posName;
 		m_StateMachine->Notify(NEC_SendPlayerPosition);
+	}
+
+	void UnseatMe()
+	{
+		m_StateMachine->Notify(NEC_UnseatMe);
 	}
 
 	void StartGame()
@@ -694,6 +719,7 @@ private:
 	Actions::SendNamePtr		m_ActionSendName;
 	Actions::SendTextMessagePtr	m_ActionSendTxtMsg;
 	Actions::SendPositionPtr	m_ActionSendPos;
+	ActionPtr					m_ActionUnseat;
 	ActionPtr					m_ActionStartGame;
 	Actions::AcceptAssetPtr		m_ActionAcceptAsset;
 	ActionPtr					m_ActionRefuseAsset;
@@ -764,6 +790,11 @@ void ClientSocket::SendChatMessage(const std::string &utf8EncodedMessage)
 void ClientSocket::ChoosePosition(const std::string &posName)
 {
 	m_priv->ChoosePosition(posName);
+}
+
+void ClientSocket::UnseatMe()
+{
+	m_priv->UnseatMe();
 }
 
 void ClientSocket::StartGame()

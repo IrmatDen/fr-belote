@@ -62,20 +62,44 @@
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{1,-85},{0.5,75},{1,-50}}" />
 				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonUnseatSouth" >
+					<Property Name="Visible" Value="False" />
+					<Property Name="Text" Value="X" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.5,80},{1,-85},{0.5,120},{1,-50}}" />
+				</Window>
 				<Window Type="OgreTray/Button" Name="ButtonWest" >
 					<Property Name="Text" Value="Ouest" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.2,-75},{0.5,-17.5},{0.2,75},{0.5,17.5}}" />
+				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonUnseatWest" >
+					<Property Name="Visible" Value="False" />
+					<Property Name="Text" Value="X" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.2,-20},{0.5,22.5},{0.2,20},{0.5,57.5}}" />
 				</Window>
 				<Window Type="OgreTray/Button" Name="ButtonNorth" >
 					<Property Name="Text" Value="Nord" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{0,50},{0.5,75},{0,85}}" />
 				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonUnseatNorth" >
+					<Property Name="Visible" Value="False" />
+					<Property Name="Text" Value="X" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.5,80},{0,50},{0.5,120},{0,85}}" />
+				</Window>
 				<Window Type="OgreTray/Button" Name="ButtonEast" >
 					<Property Name="Text" Value="Est" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.8,-75},{0.5,-17.5},{0.8,75},{0.5,17.5}}" />
+				</Window>
+				<Window Type="OgreTray/Button" Name="ButtonUnseatEast" >
+					<Property Name="Visible" Value="False" />
+					<Property Name="Text" Value="X" />
+					<Property Name="Font" Value="DejaVuSans-8" />
+					<Property Name="UnifiedAreaRect" Value="{{0.8,-20},{0.5,22.5},{0.8,20},{0.5,57.5}}" />
 				</Window>
 				<Window Type="OgreTray/Button" Name="ButtonStartGame" >
 					<Property Name="Text" Value="Démarrer la partie" />

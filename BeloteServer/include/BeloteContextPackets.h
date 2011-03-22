@@ -9,6 +9,7 @@ enum BeloteContextPacketType
 	// Setup packets
 	BCPT_CurrentPositionning,
 	BCPT_PlayerChoosePos,
+	BCPT_PlayerUnseat,
 	BCPT_StartGameRequest,
 	BCPT_GameStarting,
 	BCPT_Dealing,

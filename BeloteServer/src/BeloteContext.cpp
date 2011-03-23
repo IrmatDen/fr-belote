@@ -877,7 +877,7 @@ bool BeloteContext::CheckMatchEnd() const
 			d->m_TotalScores[1] >= d->m_RuleSet.m_WinningScore;
 }
 
-BeloteContext::TeamIndex BeloteContext::GetMatchWinningTeam() const
+TeamIndex BeloteContext::GetMatchWinningTeam() const
 {
 	if (d->m_TotalScores[TI_NorthSouth] >= d->m_RuleSet.m_WinningScore)
 		return TI_NorthSouth;

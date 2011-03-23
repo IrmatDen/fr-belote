@@ -1,0 +1,2 @@
+* [Menu] Le message "Impossible de se connecter" apparaît parfois au lieu de "Connection en cours..."
+* [Jeu] Il semblerait que les bots puissent se faire piquer la place et ne pas se repositionner ensuite

@@ -46,6 +46,9 @@ namespace
 
 			virtual void	Update()
 			{
+				const bool isBlocking = m_Socket.IsBlocking();
+				m_Socket.SetBlocking(true);
+
 				sf::Packet p;
 				sf::Socket::Status status = m_Socket.Receive(p);
 
@@ -70,6 +73,8 @@ namespace
 				{
 					m_StateMachine->Notify(NEC_CantConnect);
 				}
+
+				m_Socket.SetBlocking(isBlocking);
 			}
 
 			sf::TcpSocket &m_Socket;

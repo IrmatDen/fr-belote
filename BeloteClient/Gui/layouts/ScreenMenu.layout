@@ -138,8 +138,19 @@
                     <Property Name="BackgroundEnabled" Value="False" />
                 </Window>
                 <Window Type="OgreTray/Editbox" Name="MenuScreenRules/ScoreMax" >
-                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.32,0},{0.845,0},{0.39,0}}" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.33,0},{0.845,0},{0.40,0}}" />
                     <Property Name="ValidationString" Value="\d+" />
+                </Window>
+                <Window Type="OgreTray/StaticText" Name="MenuScreenRules/StaticImage/UseBotsLbl" >
+                    <Property Name="Text" Value="Permettre des bots" />
+                    <Property Name="FrameEnabled" Value="False" />
+                    <Property Name="UnifiedAreaRect" Value="{{0.15,0},{0.455,0},{0.530769,0},{0.530,0}}" />
+                    <Property Name="BackgroundEnabled" Value="False" />
+                </Window>
+                <Window Type="OgreTray/Checkbox" Name="MenuScreenRules/UseBots" >
+                    <Property Name="UnifiedAreaRect" Value="{{0.47,0},{0.45,0},{0.52,0},{0.52,0}}" />
+                    <Property Name="Tooltip" >Si cette case est cochée,
+					la table sera complétée par des joueurs artificiels.</Property>
                 </Window>
             </Window>
         </Window>

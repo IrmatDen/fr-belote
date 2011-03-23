@@ -52,6 +52,7 @@ end
 
 function onConnectionStatusUpdated(args)
 	local connStatus = toConnectionStatusEventArgs(args).m_ConnectionStatus
+	print(connStatus)
 	if connStatus == ClientSocket.CS_Connected then
 		Game:getSingleton():LoadGame()
 	elseif connStatus == ClientSocket.CS_LobbyFull then
@@ -116,6 +117,7 @@ function onRulesStart(args)
 	-- No worries about joining another host, since only the host gets to the rules def screen
 	game:StartServer()
 	client.__ClientSocket__:Connect("127.0.0.1", name)
+	displayMessage("Patientez", "Connection en cours...", false)
 end
 
 	-- Join game screen

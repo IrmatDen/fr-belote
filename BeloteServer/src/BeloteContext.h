@@ -39,8 +39,8 @@ public:
 		_TI_Count
 	};
 
-	typedef boost::array<std::string, 5> StringArray5;
-	static const StringArray5	PlayerPositionStrings;
+	typedef boost::array<std::string, 4> StringArray4;
+	static const StringArray4	PlayerPositionStrings;
 
 private:
 	enum TurnEvent

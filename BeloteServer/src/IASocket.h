@@ -11,8 +11,8 @@ public:
 	IASocket();
 
 	virtual void	OnConnectionStatusChanged(ConnectionStatus newStatus);
-	/*virtual void	OnPositionningReceived(const PositionningPacket &positionning);
-	virtual void	OnGameStarting();
+	virtual void	OnPositionningReceived(const PositionningPacket &positionning);
+	/*virtual void	OnGameStarting();
 	virtual void	OnCardsDealt(const CardsDealtPacket &cards);
 	virtual void	OnPotentialAssetReceived(const std::string &assetCard);
 	virtual void	OnAskingRevealedAsset();
@@ -34,6 +34,9 @@ public:
 private:
 	static const std::string	BotNames[];
 	static int					k_CurrentBotIdx;
+
+private:
+	bool	m_Seated;
 };
 
 typedef std::shared_ptr<IASocket> IASocketPtr;

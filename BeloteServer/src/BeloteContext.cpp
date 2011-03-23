@@ -22,7 +22,7 @@ const std::string					BeloteContext::ValueOrder("789JQK101");
 const int							BeloteContext::NormalScores[] = {0, 0, 0, 2, 3, 4, 10, 0xFFFF, 11};
 const std::string					BeloteContext::ValueOrderAtAsset("78QK1019J");
 const int							BeloteContext::AssetScores[] = {0, 0, 3, 4, 10, 0xFFFF, 11, 14, 20};
-const BeloteContext::StringArray5	BeloteContext::PlayerPositionStrings = { "South", "West", "North", "East", "Unknown" };
+const BeloteContext::StringArray4	BeloteContext::PlayerPositionStrings = { "South", "West", "North", "East" };
 
 BeloteContext::BeloteContext(ServerPtr server)
 {
@@ -127,7 +127,7 @@ void BeloteContext::DropPlayer(ServerSocketPtr player)
 void BeloteContext::SetPlayerPos(ServerSocketPtr player, const std::string &posName)
 {
 	// Find position index.
-	StringArray5::const_iterator posPtr	= std::find(PlayerPositionStrings.begin(), PlayerPositionStrings.end(), posName);
+	StringArray4::const_iterator posPtr	= std::find(PlayerPositionStrings.begin(), PlayerPositionStrings.end(), posName);
 	const size_t posIdx					= std::distance(PlayerPositionStrings.begin(), posPtr);
 
 	// Place or move player

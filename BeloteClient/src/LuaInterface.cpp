@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/23/11 20:02:25.
+** Generated automatically by tolua++-1.0.92 on 03/23/11 20:08:04.
 */
 
 #ifndef __cplusplus
@@ -123,6 +123,36 @@ static int tolua_set_BeloteContextRuleSet_unsigned_m_WinningScore(lua_State* tol
  tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
 #endif
   self->m_WinningScore = ((unsigned int)  tolua_tonumber(tolua_S,2,0))
+;
+ return 0;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* get function: m_AllowBots of class  BeloteContextRuleSet */
+#ifndef TOLUA_DISABLE_tolua_get_BeloteContextRuleSet_m_AllowBots
+static int tolua_get_BeloteContextRuleSet_m_AllowBots(lua_State* tolua_S)
+{
+  BeloteContextRuleSet* self = (BeloteContextRuleSet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_AllowBots'",NULL);
+#endif
+ tolua_pushboolean(tolua_S,(bool)self->m_AllowBots);
+ return 1;
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* set function: m_AllowBots of class  BeloteContextRuleSet */
+#ifndef TOLUA_DISABLE_tolua_set_BeloteContextRuleSet_m_AllowBots
+static int tolua_set_BeloteContextRuleSet_m_AllowBots(lua_State* tolua_S)
+{
+  BeloteContextRuleSet* self = (BeloteContextRuleSet*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable 'm_AllowBots'",NULL);
+ if (!tolua_isboolean(tolua_S,2,0,&tolua_err))
+ tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
+#endif
+  self->m_AllowBots = ((bool)  tolua_toboolean(tolua_S,2,0))
 ;
  return 0;
 }
@@ -1781,6 +1811,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"BeloteContextRuleSet");
   tolua_variable(tolua_S,"m_PlayDir",tolua_get_BeloteContextRuleSet_m_PlayDir,tolua_set_BeloteContextRuleSet_m_PlayDir);
   tolua_variable(tolua_S,"m_WinningScore",tolua_get_BeloteContextRuleSet_unsigned_m_WinningScore,tolua_set_BeloteContextRuleSet_unsigned_m_WinningScore);
+  tolua_variable(tolua_S,"m_AllowBots",tolua_get_BeloteContextRuleSet_m_AllowBots,tolua_set_BeloteContextRuleSet_m_AllowBots);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"Game","Game","",NULL);
  tolua_beginmodule(tolua_S,"Game");

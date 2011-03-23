@@ -12,10 +12,12 @@ enum PlayDirection
 
 struct BeloteContextRuleSet
 {
-	BeloteContextRuleSet() : m_PlayDir(PD_CW), m_WinningScore(1000)	{ ; }
+	BeloteContextRuleSet() : m_PlayDir(PD_CW), m_WinningScore(1000), m_AllowBots(false)
+	{ ; }
 
 	PlayDirection	m_PlayDir;
 	sf::Uint32		m_WinningScore;
+	bool			m_AllowBots;
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const BeloteContextRuleSet &bcrs)

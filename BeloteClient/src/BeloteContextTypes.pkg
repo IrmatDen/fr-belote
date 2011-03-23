@@ -11,4 +11,5 @@ struct BeloteContextRuleSet
 
 	PlayDirection	m_PlayDir;
 	unsigned int	m_WinningScore;
+	bool			m_AllowBots;
 };

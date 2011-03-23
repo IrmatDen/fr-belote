@@ -114,6 +114,10 @@ function onRulesStart(args)
 	local scoreMaxStr = winMgr:getWindow("MenuScreenRules/ScoreMax"):getText()
 	game.m_GameVars.m_RuleSet.m_WinningScore = tonumber(scoreMaxStr)
 	
+	-- Save bots use
+	local useBotsCheckBox = CEGUI.toCheckbox(winMgr:getWindow("MenuScreenRules/UseBots"))
+	game.m_GameVars.m_RuleSet.m_AllowBots = useBotsCheckBox:isSelected()
+	
 	-- No worries about joining another host, since only the host gets to the rules def screen
 	game:StartServer()
 	client.__ClientSocket__:Connect("127.0.0.1", name)

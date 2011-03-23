@@ -25,12 +25,14 @@ public:
 	unsigned int	GetClientCount() const		{ return m_ClientsCount; }
 
 	void	Start();
+	void	Update();
+	void	Stop();
+
 	void	SetRuleSet(BeloteContextRuleSet &ruleSet);
 	void	ClientConnected(const std::string &clientName);
 	void	ClientDisconnected(const std::string &clientName);
 	void	BroadcastText(const std::string &clientName, const std::string &msg);
 	void	BroadcastSystemMessage(const std::string &msg);
-	void	Stop();
 
 private:
 	typedef std::vector<ServerSocketPtr>	Clients;

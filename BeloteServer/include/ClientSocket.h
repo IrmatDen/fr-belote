@@ -9,6 +9,7 @@
 #include "BeloteContextPackets.h"
 
 class ClientSocketPrivate;
+typedef std::shared_ptr<ClientSocketPrivate> ClientSocketPrivatePtr;
 
 class ClientSocket
 {
@@ -27,9 +28,6 @@ public:
 	void	SendChatMessage(const std::string &utf8EncodedMessage);
 	void	Disconnect();
 
-	//! This will wait until the socket has finished running (must only be used when quitting).
-	void	Wait();
-
 	void	ChoosePosition(const std::string &posName);
 	void	UnseatMe();
 	void	StartGame();
@@ -37,6 +35,7 @@ public:
 	void	RefuseAsset();
 	void	PlayCard(const std::string &cardName);
 
+	virtual void	Update();
 	virtual void	OnConnectionStatusChanged(ConnectionStatus newStatus)					{ (void)newStatus; }
 	virtual void	OnPlayerConnected(const std::string &playerName)						{ (void)playerName; }
 	virtual void	OnPlayerDisconnected(const std::string &playerName)						{ (void)playerName; }
@@ -69,7 +68,7 @@ protected:
 	bool	m_IsDisconnecting;
 
 private:
-	ClientSocketPrivate *	m_priv;
+	ClientSocketPrivatePtr	m_priv;
 };
 
 #endif

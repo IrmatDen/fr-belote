@@ -58,6 +58,8 @@ PlayerSocket::PlayerSocket()
 
 void PlayerSocket::Update()
 {
+	ClientSocket::Update();
+
 	// Brute force ftw!
 	// Ok, I may consider storing current game phase to avoid this...
 

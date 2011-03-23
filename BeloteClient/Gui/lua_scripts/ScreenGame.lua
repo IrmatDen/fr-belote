@@ -299,11 +299,11 @@ function onCurrentPositioningSent(args)
 	end
 	
 	local startBtn = setupBtnsParent:getChild("ButtonStartGame")
-	if playersReady == 4 then
+	--if playersReady == 4 then
 		startBtn:enable()
-	else
-		startBtn:disable()
-	end
+	--else
+	--	startBtn:disable()
+	--end
 end
 
 function onGameStarting(args)

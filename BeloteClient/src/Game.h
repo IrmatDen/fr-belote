@@ -47,7 +47,7 @@ public:
 
 	// Network related
 	PlayerSocket&	GetPlayerSocket()			{ return m_PlayerSocket; }
-	void			StartServer()				{ m_Server.SetRuleSet(m_GameVars.m_RuleSet); m_ServerThread.Launch(); }
+	void			StartServer()				{ m_Server.SetRuleSet(m_GameVars.m_RuleSet); m_Server.Start(); }
 	void			StopServer()				{ m_Server.Stop(); }
 
 private:
@@ -73,7 +73,6 @@ private:
 	PlayerSocket		m_PlayerSocket;
 
 	// Game hosting vars
-	sf::Thread			m_ServerThread;
 	Server				m_Server;
 	
 	sf::Sprite			m_BgSprite;

@@ -12,6 +12,7 @@
 #include "BeloteContextTypes.h"
 
 Server::Server()
+	: m_Running(false)
 {
 	m_BeloteContext = BeloteContextPtr(new BeloteContext(ServerPtr(this)));
 
@@ -34,33 +35,27 @@ void Server::Start()
 	m_Listener.Listen(PORT);
 
 	m_BeloteContext->Reset();
+}
 
-	while(m_Running)
-	{
-		m_ClientsCount = 0;
-		std::for_each(m_Clients.begin(), m_Clients.end(),
-				[&] (Clients::reference ref)
-				{	if (ref->IsConnected())
-					{
-						ref->Update();
-						m_ClientsCount++;
-					}
-					ref->CheckConnection(m_Listener);
-				}
-			);
+void Server::Update()
+{
+	if (!m_Running)
+		return;
 
-		sf::Sleep(0.005f);
-	}
-	
-	// Notify clients that the server is shutting down
+	m_ClientsCount = 0;
+
 	std::for_each(m_Clients.begin(), m_Clients.end(),
-			[] (Clients::reference ref)
-			{ if (ref->IsConnected()) ref->CloseConnection(); }
+			[&] (Clients::reference ref)
+			{	if (ref->IsConnected())
+				{
+					ref->Update();
+					m_ClientsCount++;
+				}
+				ref->CheckConnection(m_Listener);
+			}
 		);
 
-	m_Listener.Close();
-
-	m_BeloteContext->Reset();
+	m_BeloteContext->Update();
 }
 
 void Server::SetRuleSet(BeloteContextRuleSet &ruleSet)
@@ -70,6 +65,19 @@ void Server::SetRuleSet(BeloteContextRuleSet &ruleSet)
 
 void Server::Stop()
 {
+	if (!m_Running)
+		return;
+
+	// Notify clients that the server is shutting down
+	std::for_each(m_Clients.begin(), m_Clients.end(),
+			[] (Clients::reference ref)
+			{ if (ref->IsConnected()) ref->CloseConnection(); }
+		);
+
+	m_Listener.Close();
+
+	m_BeloteContext->Reset();
+
 	m_Running = false;
 }
 

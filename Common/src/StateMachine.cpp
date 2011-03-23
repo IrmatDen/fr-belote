@@ -9,7 +9,8 @@ void Transition::Execute()
 		(*m_Action)();
 	}
 
-	m_Target->Enter();
+	if (m_Source.get() != m_Target.get())
+		m_Target->Enter();
 }
 
 void StateMachine::Update()

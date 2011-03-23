@@ -12,6 +12,7 @@
 #include "ServerSocket.h"
 #include "BeloteContextPackets.h"
 #include "BeloteContextTypes.h"
+#include "IASocket.h"
 
 class Server;
 typedef std::shared_ptr<Server> ServerPtr;
@@ -75,6 +76,7 @@ public:
 	
 	void	SetRuleSet(BeloteContextRuleSet &ruleSet)		{ d->m_RuleSet = ruleSet; }
 	void	Reset();
+	void	Update();
 
 	// Network reactions
 	void	HandleGameContextPacket(sf::Packet &packet, ServerSocketPtr sourcePlayer);
@@ -88,6 +90,7 @@ private:
 	void	UnseatPlayer(ServerSocketPtr player);
 	void	SendCurrentPositioningToAll();
 	void	SendCurrentPositioningTo(ServerSocketPtr player);
+	void	SpawnBots();
 
 	void	NotifyStarting();
 	void	NotifyTurnEvent(TurnEvent event, ServerSocketPtr player = ServerSocketPtr());
@@ -127,6 +130,8 @@ private:
 	void	SendCurrentHands();
 
 private:
+	typedef std::vector<IASocketPtr>		Bots;
+
 	typedef std::vector<ServerSocketPtr>	Players;
 	typedef Players::iterator				PlayersIt;
 	typedef Players::const_iterator			PlayersConstIt;
@@ -142,6 +147,9 @@ private:
 		Players		m_Players;
 
 		BeloteContextRuleSet	m_RuleSet;
+
+		size_t		m_RequiredBotsCount;
+		Bots		m_Bots;
 
 		sf::Uint32		m_Scores[_TI_Count];
 		sf::Uint32		m_LitigeScorePending;

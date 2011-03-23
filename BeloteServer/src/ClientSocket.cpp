@@ -46,9 +46,6 @@ namespace
 
 			virtual void	Update()
 			{
-				const bool isBlocking = m_Socket.IsBlocking();
-				m_Socket.SetBlocking(true);
-
 				sf::Packet p;
 				sf::Socket::Status status = m_Socket.Receive(p);
 
@@ -69,12 +66,10 @@ namespace
 					else
 						std::cout << "[Client] Unexpected packet received in State::Connecting::Update. Packet type is: " << pt << std::endl;
 				}
-				else if (status == sf::Socket::Disconnected)
+				/*else if (status == sf::Socket::Disconnected)
 				{
 					m_StateMachine->Notify(NEC_CantConnect);
-				}
-
-				m_Socket.SetBlocking(isBlocking);
+				}*/
 			}
 
 			sf::TcpSocket &m_Socket;
@@ -88,7 +83,6 @@ namespace
 
 			virtual void	Enter()
 			{
-				m_Self->OnConnectionStatusChanged(ClientSocket::CS_Connected);
 				m_StateMachine->Notify(NEC_SendName);
 			}
 
@@ -101,12 +95,15 @@ namespace
 				: State(sm), m_Socket(socket), m_Self(self)
 			{ ; }
 
+			virtual void	Enter()
+			{
+				m_Self->OnConnectionStatusChanged(ClientSocket::CS_Connected);
+			}
+
 			virtual void	Update()
 			{
 				sf::Packet packet;
-				m_Socket.SetBlocking(false);
 				sf::Socket::Status status = m_Socket.Receive(packet);
-				m_Socket.SetBlocking(true);
 
 				if (status == sf::Socket::Done)
 				{
@@ -540,9 +537,9 @@ class ClientSocketPrivate
 {
 public:
 	ClientSocketPrivate(ClientSocket *self)
-		: m_Thread(0), m_Self(self)
+		: m_Self(self)
 	{
-		m_Thread = new sf::Thread(&ClientSocketPrivate::ThreadEP, this);
+		m_Socket.SetBlocking(false);
 
 		// State machine definition
 		m_StateMachine = StateMachinePtr(new StateMachine());
@@ -584,13 +581,19 @@ public:
 		m_StateIdle			->AddTransition(NEC_DisconnectionRequest,	m_StateDisconnected,	m_ActionDisconnect	);
 	}
 
+	~ClientSocketPrivate()
+	{
+		m_StateMachine->Stop();
+		m_Socket.Disconnect();
+	}
+
 	void Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 	{
 		m_DisconnectRequested				= false;
 		m_ActionConnect->m_HostIP			= sf::IpAddress(hostIP);
 		m_ActionSendName->m_Utf8EncodedName	= utf8EncodedName;
-
-		m_Thread->Launch();
+		
+		m_StateMachine->Start(m_StateWfc);
 	}
 
 	void Disconnect()
@@ -637,32 +640,21 @@ public:
 		m_StateMachine->Notify(NEC_PlayCard);
 	}
 
-	void Wait()
+	void Update()
 	{
-		m_Thread->Wait();
-	}
+		if (m_StateMachine->IsStopped())
+			return;
 
-private:
-	void	ThreadEP()
-	{
-		m_StateMachine->Start(m_StateWfc);
+		m_StateMachine->Update();
 
-		while (!m_StateMachine->IsStopped())
-		{
-			m_StateMachine->Update();
-
-			// If the client decided to leave the table only! When the server kicks the player, this is handled by states.
-			if (m_DisconnectRequested)
-				m_StateMachine->Notify(NEC_DisconnectionRequest);
-
-			sf::Sleep(0.05f);
-		}
+		// If the client decided to leave the table only! When the server kicks the player, this is handled by states.
+		if (m_DisconnectRequested)
+			m_StateMachine->Notify(NEC_DisconnectionRequest);
 	}
 
 private:
 	sf::IpAddress	m_HostIP;
 	sf::TcpSocket	m_Socket;
-	sf::Thread		* m_Thread;
 	ClientSocket	* m_Self;
 
 	// Flags
@@ -693,12 +685,12 @@ private:
 ClientSocket::ClientSocket()
 : m_IsDisconnecting(false)
 {
-	m_priv = new ClientSocketPrivate(this);
+	m_priv = ClientSocketPrivatePtr(new ClientSocketPrivate(this));
 }
 
 ClientSocket::~ClientSocket()
 {
-	delete m_priv;
+	Disconnect();
 }
 
 void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8EncodedName)
@@ -749,7 +741,7 @@ void ClientSocket::PlayCard(const std::string &cardName)
 	m_priv->PlayCard(cardName);
 }
 
-void ClientSocket::Wait()
+void ClientSocket::Update()
 {
-	m_priv->Wait();
+	m_priv->Update();
 }

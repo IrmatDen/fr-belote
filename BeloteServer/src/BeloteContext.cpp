@@ -6,6 +6,8 @@
 #include <iterator>
 #include <numeric>
 
+#include <boost/bind.hpp>
+
 #include <SFML/System.hpp>
 
 #include "Tools.h"
@@ -44,6 +46,9 @@ void BeloteContext::Reset()
 
 	std::for_each(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), resetPlayerPtr);
 	std::for_each(d->m_Players.begin(),d->m_Players.end(), resetPlayerPtr);
+
+	d->m_RequiredBotsCount = 0;
+	d->m_Bots.swap(Bots());
 }
 
 void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocketPtr sourcePlayer)
@@ -192,9 +197,50 @@ void BeloteContext::SendCurrentPositioningTo(ServerSocketPtr player)
 	player->GetSocket().Send(packet);
 }
 
+void BeloteContext::SpawnBots()
+{
+	for (size_t i = 0; i < d->m_RequiredBotsCount; i++)
+	{
+		d->m_Bots.push_back(IASocketPtr(new IASocket()));
+	}
+}
+
 // Game management methods
+void BeloteContext::Update()
+{
+	if (d->m_RequiredBotsCount != 0)
+	{
+		StartGame();
+	}
+
+	std::for_each(d->m_Bots.begin(), d->m_Bots.end(), [](IASocketPtr p) {p->Update();} );
+}
+
 void BeloteContext::StartGame()
 {
+	// Check if bots are required
+	const size_t playersSeatedCount = std::count_if(d->m_Players.begin(), d->m_Players.end(), [] (ServerSocketPtr p) { return p != 0; } );
+	if (playersSeatedCount != _PP_Count)
+	{
+		assert(playersSeatedCount < _PP_Count);
+
+		// Can't start if not enough players & bots aren't allowed!
+		if (!d->m_RuleSet.m_AllowBots)
+			return;
+		
+		if (d->m_RequiredBotsCount == 0)
+		{
+			d->m_RequiredBotsCount = _PP_Count - playersSeatedCount;
+			SpawnBots();
+		}
+
+		return;
+	}
+	else
+	{
+		d->m_RequiredBotsCount = 0;
+	}
+
 	NotifyStarting();
 
 	// Init game state.

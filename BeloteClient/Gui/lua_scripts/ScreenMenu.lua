@@ -52,7 +52,6 @@ end
 
 function onConnectionStatusUpdated(args)
 	local connStatus = toConnectionStatusEventArgs(args).m_ConnectionStatus
-	print(connStatus)
 	if connStatus == ClientSocket.CS_Connected then
 		Game:getSingleton():LoadGame()
 	elseif connStatus == ClientSocket.CS_LobbyFull then

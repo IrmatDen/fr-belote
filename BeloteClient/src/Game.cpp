@@ -11,8 +11,7 @@
 Game* Singleton<Game>::ms_Singleton = 0;
 
 Game::Game()
-	: m_RenderWindow(0), m_QuitPending(false), m_LoadMenuPending(false), m_LoadGamePending(false),
-	m_ServerThread(&Server::Start, &m_Server)
+	: m_RenderWindow(0), m_QuitPending(false), m_LoadMenuPending(false), m_LoadGamePending(false)
 {
 	m_RenderWindow = new sf::RenderWindow(sf::VideoMode(800, 600, 32), "Belote");
 	m_RenderWindow->SetFramerateLimit(60);
@@ -65,6 +64,7 @@ void Game::Run()
 		}
 
 		m_PlayerSocket.Update();
+		m_Server.Update();
 
 		m_RenderWindow->Draw(m_BgSprite);
 		m_GuiManager.UpdateAndDraw(clock.GetElapsedTime());
@@ -100,7 +100,6 @@ void Game::Quit()
 	
 	m_Server.Stop();
 	m_PlayerSocket.Disconnect();
-	m_PlayerSocket.Wait();
 }
 
 void Game::DoLoadMenu()

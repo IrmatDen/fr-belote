@@ -137,7 +137,6 @@ private:
 	typedef Players::const_iterator			PlayersConstIt;
 
 	typedef boost::array<std::string, 32>			Deck;
-	typedef boost::array<std::string, 8>			PlayerHand;
 	typedef boost::array<std::string, _PP_Count>	PlayedCards;
 
 	struct ContextData

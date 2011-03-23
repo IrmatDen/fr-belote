@@ -1,8 +1,12 @@
 #ifndef BELOTESERVER_BELOTECONTEXTTYPES_H
 #define BELOTESERVER_BELOTECONTEXTTYPES_H
 
+#include <boost/array.hpp>
+
 #include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
+
+typedef boost::array<std::string, 8>	PlayerHand;
 
 enum PlayDirection
 {

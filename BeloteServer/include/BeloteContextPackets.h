@@ -8,6 +8,8 @@
 #include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
 
+#include "BeloteContextTypes.h"
+
 enum BeloteContextPacketType
 {
 	// Setup packets
@@ -49,7 +51,7 @@ struct PositionningPacket
 
 struct CardsDealtPacket
 {
-	boost::array<std::string, 8>	m_Cards;
+	PlayerHand	m_Cards;
 };
 
 struct AcceptedAssetPacket

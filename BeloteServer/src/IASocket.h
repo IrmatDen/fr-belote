@@ -4,6 +4,7 @@
 #include <xxshared>
 
 #include "ClientSocket.h"
+#include "BeloteContextTypes.h"
 
 class IASocket : public ClientSocket
 {
@@ -12,12 +13,11 @@ public:
 
 	virtual void	OnConnectionStatusChanged(ConnectionStatus newStatus);
 	virtual void	OnPositionningReceived(const PositionningPacket &positionning);
-	/*virtual void	OnGameStarting();
 	virtual void	OnCardsDealt(const CardsDealtPacket &cards);
 	virtual void	OnPotentialAssetReceived(const std::string &assetCard);
 	virtual void	OnAskingRevealedAsset();
 	virtual void	OnAskingAnotherAsset();
-	virtual void	OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset);
+	/*virtual void	OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset);
 	virtual void	OnRefusedAsset(int refusingPlayerPos);
 	virtual void	OnTurnStarting();
 	virtual void	OnWaitingPlay(const WaitingPlayPacket &waitingPlay);
@@ -30,6 +30,10 @@ public:
 	virtual void	OnContractingTeamResult(bool isNSTeamContracting, bool hasWon);
 	virtual void	OnLitige(int litigeValue);
 	virtual void	OnMatchWon(bool isWonByNSTeam);*/
+
+protected:
+	PlayerHand		m_MyHand;
+	std::string		m_PotentialAsset;
 
 private:
 	static const std::string	BotNames[];

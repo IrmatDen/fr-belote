@@ -7,13 +7,15 @@
 #include "IASocket.h"
 #include "BeloteContext.h"
 
-class BotNameProvider
+namespace
 {
-public:
-	typedef std::pair<int, std::string> NameInfo;
+	class BotNameProvider
+	{
+	public:
+		typedef std::pair<int, std::string> NameInfo;
 
-public:
-	static NameInfo GetName()
+	public:
+								static NameInfo GetName()
 	{
 		Init();
 
@@ -23,13 +25,13 @@ public:
 		return std::make_pair(nameIdx, BotNames[nameIdx]);
 	}
 
-	static void FreeName(int nameIdx)
+					static void FreeName(int nameIdx)
 	{
 		FreeNames.push(nameIdx);
 	}
 
-private:
-	static void Init()
+	private:
+									static void Init()
 	{
 		if (BotNameProviderInitialized)
 			return;
@@ -40,15 +42,16 @@ private:
 		BotNameProviderInitialized = true;
 	}
 
-	static const int			BotNamesCount = 4;
-	static const std::string	BotNames[BotNamesCount];
-	static bool					BotNameProviderInitialized;
-	static std::queue<int>		FreeNames;
-};
+		static const int			BotNamesCount = 4;
+		static const std::string	BotNames[BotNamesCount];
+		static bool					BotNameProviderInitialized;
+		static std::queue<int>		FreeNames;
+	};
 	
-const std::string	BotNameProvider::BotNames[BotNamesCount]	= { "Escartefigue", "Panisse", "César", "M. Brun" };
-bool				BotNameProvider::BotNameProviderInitialized = false;
-std::queue<int>		BotNameProvider::FreeNames;
+	const std::string	BotNameProvider::BotNames[BotNamesCount]	= { "Escartefigue", "Panisse", "César", "M. Brun" };
+	bool				BotNameProvider::BotNameProviderInitialized = false;
+	std::queue<int>		BotNameProvider::FreeNames;
+}
 
 IASocket::IASocket()
 	: m_MySeat(-1)

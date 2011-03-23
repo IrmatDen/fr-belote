@@ -52,9 +52,9 @@ end
 
 function onConnectionStatusUpdated(args)
 	local connStatus = toConnectionStatusEventArgs(args).m_ConnectionStatus
-	if connStatus == ConnectionStatusEventArgs.CS_Connected then
+	if connStatus == ClientSocket.CS_Connected then
 		Game:getSingleton():LoadGame()
-	elseif connStatus == ConnectionStatusEventArgs.CS_LobbyFull then
+	elseif connStatus == ClientSocket.CS_LobbyFull then
 		displayError("Plus de place sur ce serveur!")
 	else -- Disconnected, meaning host unreachable
 		displayError("Impossible de se connecter")
@@ -100,7 +100,7 @@ function onRulesStart(args)
 	-- Save player's name
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local game = Game:getSingleton()
-	local client = game:GetClientSocket()
+	local client = game:GetPlayerSocket()
 	local name = winMgr:getWindow("MenuScreenRules/PlayerName"):getText()
 	game.m_GameVars.m_PlayerName = CEGUI.String(name)
 	
@@ -115,7 +115,7 @@ function onRulesStart(args)
 	
 	-- No worries about joining another host, since only the host gets to the rules def screen
 	game:StartServer()
-	client:Connect("127.0.0.1", name)
+	client.__ClientSocket__:Connect("127.0.0.1", name)
 end
 
 	-- Join game screen
@@ -136,12 +136,12 @@ function onDoJoinGame(args)
 	-- Save game vars
 	local winMgr = CEGUI.WindowManager:getSingleton()
 	local game = Game:getSingleton()
-	local client = game:GetClientSocket()
+	local client = game:GetPlayerSocket()
 	
 	local pnameBox = winMgr:getWindow("MenuScreenJoinGame/PlayerNameClient")
 	local hostIpBox = winMgr:getWindow("MenuScreenJoinGame/HostIP")
 	
-	client:Connect(hostIpBox:getText(), pnameBox:getText())
+	client.__ClientSocket__:Connect(hostIpBox:getText(), pnameBox:getText())
 	
 	displayMessage("Patientez", "Connection en cours...", false)
 end
@@ -172,7 +172,7 @@ local guiSystem	= CEGUI.System:getSingleton()
 local schemeMgr	= CEGUI.SchemeManager:getSingleton()
 local winMgr	= CEGUI.WindowManager:getSingleton()
 local game		= Game:getSingleton()
-local client	= game:GetClientSocket()
+local client	= game:GetPlayerSocket()
 
 schemeMgr:create("OgreTray.scheme");
 local root = winMgr:loadWindowLayout("ScreenMenu.layout")

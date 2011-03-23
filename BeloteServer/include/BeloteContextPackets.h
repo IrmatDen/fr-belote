@@ -2,6 +2,10 @@
 #define BELOTESERVER_BELOTECONTEXTPACKETS_H
 
 #include <string>
+
+#include <boost/array.hpp>
+
+#include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
 
 enum BeloteContextPacketType
@@ -37,5 +41,34 @@ enum BeloteContextPacketType
 
 inline sf::Packet& operator<<(sf::Packet& packet, BeloteContextPacketType pt)		{ packet << (sf::Uint32)pt; return packet; }
 inline sf::Packet& operator>>(sf::Packet& packet, BeloteContextPacketType &pt)		{ packet >> (sf::Uint32&)pt; return packet; }
+
+struct PositionningPacket
+{
+	boost::array<std::string, 4>	m_Names;
+};
+
+struct CardsDealtPacket
+{
+	boost::array<std::string, 8>	m_Cards;
+};
+
+struct AcceptedAssetPacket
+{
+	int				m_PlayerPos;
+	std::string		m_Asset;
+	bool			m_AcceptedByNSTeam;
+};
+
+struct WaitingPlayPacket
+{
+	sf::Uint32						m_PossibleCardsCount;
+	boost::array<std::string, 8>	m_PossibleCards;
+};
+
+struct PlayedCardPacket
+{
+	std::string		m_Card;
+	int				m_Player;
+};
 
 #endif

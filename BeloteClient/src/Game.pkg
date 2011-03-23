@@ -34,7 +34,7 @@ public:
 	void			LoadMenu(MenuReason reason = MR_Normal);
 	void			LoadGame();
 
-	ClientSocket&	GetClientSocket();
+	PlayerSocket&	GetPlayerSocket();
 	void			StartServer();
 	void			StopServer();
 };

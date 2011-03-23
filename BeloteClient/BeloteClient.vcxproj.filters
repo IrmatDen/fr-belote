@@ -11,7 +11,7 @@
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <Extensions>pkg;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Resource Files\Lua">
       <UniqueIdentifier>{2e34ac3a-0dfa-4741-971e-e629a7b4fd6c}</UniqueIdentifier>
@@ -34,10 +34,10 @@
     <ClInclude Include="src\SoundManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ClientSocket.h">
+    <ClInclude Include="src\LeftWrappedListItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\LeftWrappedListItem.h">
+    <ClInclude Include="src\PlayerSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,7 +57,7 @@
     <ClCompile Include="src\SoundManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ClientSocket.cpp">
+    <ClCompile Include="src\PlayerSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -87,6 +87,9 @@
       <Filter>Resource Files\Lua</Filter>
     </None>
     <None Include="src\BeloteContextTypes.pkg">
+      <Filter>Resource Files\LuaPackage</Filter>
+    </None>
+    <None Include="src\PlayerSocket.pkg">
       <Filter>Resource Files\LuaPackage</Filter>
     </None>
   </ItemGroup>

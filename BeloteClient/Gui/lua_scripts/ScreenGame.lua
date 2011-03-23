@@ -264,7 +264,7 @@ function onConnectionStatusUpdated(args)
 	local game			= Game:getSingleton()
 	local connStatus	= toConnectionStatusEventArgs(args).m_ConnectionStatus
 	
-	if connStatus == ConnectionStatusEventArgs.CS_Disconnected then
+	if connStatus == ClientSocket.CS_Disconnected then
 		game:LoadMenu(Game.MR_ConnectionLost)
 	else
 		print("Unexpected connection status: " .. connStatus)
@@ -605,8 +605,8 @@ function onChoosePosition(args)
 	local posStr	= window:getName()
 	local posName	= posStr:sub(string.len("Button") + 1)
 	
-	local client	= Game:getSingleton():GetClientSocket()
-	client:ChoosePosition(posName)
+	local client	= Game:getSingleton():GetPlayerSocket()
+	client.__ClientSocket__:ChoosePosition(posName)
 	
 	for i = 1, #PositionButtonNames do
 		if posStr ==  PositionButtonNames[i] then
@@ -619,15 +619,15 @@ function onUnseat(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
 	local posStr	= window:getName()
 	
-	local client	= Game:getSingleton():GetClientSocket()
-	client:UnseatMe()
+	local client	= Game:getSingleton():GetPlayerSocket()
+	client.__ClientSocket__:UnseatMe()
 	
 	myPosition = 0
 end
 
 -- NB: this is when the "Start Game" *button* is clicked, NOT when the game start as per a server's request!
 function onStartGameBtn(args)
-	Game:getSingleton():GetClientSocket():StartGame()
+	Game:getSingleton():GetPlayerSocket().__ClientSocket__:StartGame()
 end
 
 function onAcceptAsset(args)
@@ -643,16 +643,16 @@ function onAcceptAsset(args)
 		assetCol		= imgName:sub(string.len("PlayingCards/Asset") + 1)
 	end
 	
-	local client	= Game:getSingleton():GetClientSocket()
-	client:AcceptAsset(assetCol)
+	local client	= Game:getSingleton():GetPlayerSocket()
+	client.__ClientSocket__:AcceptAsset(assetCol)
 	
 	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
 	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
 end
 
 function onRefuseAsset(args)
-	local client	= Game:getSingleton():GetClientSocket()
-	client:RefuseAsset()
+	local client	= Game:getSingleton():GetPlayerSocket()
+	client.__ClientSocket__:RefuseAsset()
 	
 	local winMgr	= CEGUI.WindowManager:getSingleton()
 	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
@@ -712,17 +712,17 @@ function onCardSelected(args)
 	updatePlayableCards()
 	
 	-- and (at least...) notify the server of the player's played card
-	local client = Game:getSingleton():GetClientSocket()
-	client:PlayCard(cardName)
+	local client = Game:getSingleton():GetPlayerSocket()
+	client.__ClientSocket__:PlayCard(cardName)
 end
 
 -- UI panel events
 function onSendChatText(args)
 	local we		= CEGUI.toWindowEventArgs(args)
 	local game		= Game:getSingleton()
-	local client	= game:GetClientSocket()
+	local client	= game:GetPlayerSocket()
 	
-	client:SendChatMessage(we.window:getText())
+	client.__ClientSocket__:SendChatMessage(we.window:getText())
 	we.window:setText("")
 end
 
@@ -745,12 +745,12 @@ function onQuitTable(args)
 
 	-- Save player's name
 	local game		= Game:getSingleton()
-	local client	= game:GetClientSocket()
+	local client	= game:GetPlayerSocket()
 	
 	if game.m_GameVars.m_GameMode == Game.GM_HOST then
 		game:StopServer()
 	end
-	client:Disconnect()
+	client.__ClientSocket__:Disconnect()
 	
 	game:LoadMenu()
 end
@@ -762,7 +762,7 @@ local guiSystem	= CEGUI.System:getSingleton()
 local schemeMgr = CEGUI.SchemeManager:getSingleton()
 local winMgr	= CEGUI.WindowManager:getSingleton()
 local game		= Game:getSingleton()
-local client	= game:GetClientSocket()
+local client	= game:GetPlayerSocket()
 
 schemeMgr:create("OgreTray.scheme");
 local root = winMgr:loadWindowLayout("ScreenGame.layout")

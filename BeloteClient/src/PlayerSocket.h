@@ -1,25 +1,15 @@
-#ifndef BELOTE_CLIENTSOCKET_H
-#define BELOTE_CLIENTSOCKET_H
-
-#include <string>
-#include <queue>
-
-#include <SFML/System.hpp>
+#ifndef BELOTECLIENT_PLAYERSOCKET_H
+#define BELOTECLIENT_PLAYERSOCKET_H
 
 #include <CEGUIEventArgs.h>
 #include <CEGUIEventSet.h>
 
+#include "ClientSocket.h"
+
 class ConnectionStatusEventArgs : public CEGUI::EventArgs
 {
 public:
-	enum ConnectionStatus
-	{
-		CS_Connected,
-		CS_Disconnected,
-		CS_LobbyFull
-	};
-
-	ConnectionStatus	m_ConnectionStatus;
+	ClientSocket::ConnectionStatus	m_ConnectionStatus;
 };
 
 class PlayerConnectedEventArgs : public CEGUI::EventArgs
@@ -125,8 +115,6 @@ public:
 	bool	m_MatchWonByNSTeam;
 };
 
-class ClientSocketPrivate;
-
 template <typename ArgType = CEGUI::EventArgs>
 class ThreadSafeEventQueue
 {
@@ -180,7 +168,7 @@ private:
 	CEGUI::String	m_EventNamespace;
 };
 
-class ClientSocket : public CEGUI::EventSet
+class PlayerSocket : public CEGUI::EventSet, public ClientSocket
 {
 public:
 	static const CEGUI::String EventNamespace;
@@ -210,6 +198,37 @@ public:
 	static const CEGUI::String EventMatchWon;
 
 public:
+	PlayerSocket();
+
+	void	Update();
+
+	virtual void	OnConnectionStatusChanged(ConnectionStatus newStatus);
+	virtual void	OnPlayerConnected(const std::string &playerName);
+	virtual void	OnPlayerDisconnected(const std::string &playerName);
+	virtual void	OnTextBroadcasted(const std::string &sayer, const std::string &msg);
+	virtual void	OnSysMsgBroadcasted(const std::string &msg);
+	virtual void	OnPositionningReceived(const PositionningPacket &positionning);
+	virtual void	OnGameStarting();
+	virtual void	OnPlayerDealing(const std::string &dealerName);
+	virtual void	OnCardsDealt(const CardsDealtPacket &cards);
+	virtual void	OnPotentialAssetReceived(const std::string &assetCard);
+	virtual void	OnAskingRevealedAsset();
+	virtual void	OnAskingAnotherAsset();
+	virtual void	OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset);
+	virtual void	OnRefusedAsset(int refusingPlayerPos);
+	virtual void	OnTurnStarting();
+	virtual void	OnWaitingPlay(const WaitingPlayPacket &waitingPlay);
+	virtual void	OnPlayedCard(const PlayedCardPacket &playedCard);
+	virtual void	OnCurrentScores(int NSScore, int WEScore);
+	virtual void	OnTotalScores(int NSScore, int WEScore);
+	virtual void	OnBeloteAnnounced(int announcingPos);
+	virtual void	OnRebeloteAnnounced(int announcingPos);
+	virtual void	OnNoAssetTaken();
+	virtual void	OnContractingTeamResult(bool isNSTeamContracting, bool hasWon);
+	virtual void	OnLitige(int litigeValue);
+	virtual void	OnMatchWon(bool isWonByNSTeam);
+
+private:
 	ThreadSafeEventQueue<PlayerConnectedEventArgs>			m_PlayerConnected;
 	ThreadSafeEventQueue<TextBroadcastedEventArgs>			m_TextBroadcasted;
 	ThreadSafeEventQueue<SystemMessageBroadcastedEventArgs>	m_SystemMessageBroadcasted;
@@ -246,35 +265,10 @@ public:
 		{
 			if (currentQueue.size() == 0)
 				return true;
-			return currentQueue.back().m_ConnectionStatus == ConnectionStatusEventArgs::CS_Connected;
+			return currentQueue.back().m_ConnectionStatus == ClientSocket::CS_Connected;
 		}
 
 	} m_ConnectionStatusPushGuard;
-
-public:
-	ClientSocket();
-	~ClientSocket();
-
-	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName);
-	void	SendChatMessage(const std::string &utf8EncodedMessage);
-	void	Disconnect();
-
-	//! This will fire any events queued by the socket's thread.
-	void	Update();
-
-	//! This will wait until the socket has finished running (must only be used when quitting).
-	void	Wait();
-
-	void	ChoosePosition(const std::string &posName);
-	void	UnseatMe();
-	void	StartGame();
-	void	AcceptAsset(const std::string &assetColour);
-	void	RefuseAsset();
-	void	PlayCard(const std::string &cardName);
-
-private:
-	ClientSocketPrivate *	m_priv;
-	bool					m_IsDisconnecting;
 };
 
 #endif

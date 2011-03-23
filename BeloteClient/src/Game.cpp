@@ -64,7 +64,7 @@ void Game::Run()
 			m_LoadGamePending = false;
 		}
 
-		m_ClientSocket.Update();
+		m_PlayerSocket.Update();
 
 		m_RenderWindow->Draw(m_BgSprite);
 		m_GuiManager.UpdateAndDraw(clock.GetElapsedTime());
@@ -99,14 +99,14 @@ void Game::Quit()
 	m_QuitPending = true;
 	
 	m_Server.Stop();
-	m_ClientSocket.Disconnect();
-	m_ClientSocket.Wait();
+	m_PlayerSocket.Disconnect();
+	m_PlayerSocket.Wait();
 }
 
 void Game::DoLoadMenu()
 {
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
-	m_ClientSocket.removeAllEvents();
+	m_PlayerSocket.removeAllEvents();
 
 	// Clean up all loaded anims
 	CEGUI::AnimationManager &animMgr = CEGUI::AnimationManager::getSingleton();
@@ -142,7 +142,7 @@ void Game::DoLoadMenu()
 void Game::DoLoadGame()
 {
 	CEGUI::WindowManager::getSingleton().destroyAllWindows();
-	m_ClientSocket.removeAllEvents();
+	m_PlayerSocket.removeAllEvents();
 
 	CEGUI::System::getSingleton().executeScriptFile("ScreenGame.lua");
 

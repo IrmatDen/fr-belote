@@ -70,7 +70,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="include\BeloteContextPackets.h" />
     <ClInclude Include="include\BeloteContextTypes.h" />
+    <ClInclude Include="include\ClientSocket.h" />
     <ClInclude Include="include\Packets.h" />
     <ClInclude Include="include\Server.h" />
     <ClInclude Include="src\BeloteContext.h" />
@@ -140,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BeloteContext.cpp" />
+    <ClCompile Include="src\ClientSocket.cpp" />
     <ClCompile Include="src\Server.cpp" />
     <ClCompile Include="src\ServerSocket.cpp" />
   </ItemGroup>

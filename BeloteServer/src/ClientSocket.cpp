@@ -1,43 +1,13 @@
 #include <iostream>
 
-#include <Windows.h>
-
 #include <SFML/Network.hpp>
 
-#include "Tools.h"
 #include "StateMachine.h"
 
 #include "Packets.h"
-#include "BeloteContextPackets.h"
 #include "Server.h"
 
 #include "ClientSocket.h"
-
-const CEGUI::String ClientSocket::EventNamespace("ClientSocket");
-const CEGUI::String ClientSocket::EventConnectionStatusUpdated("ConnectionStatusUpdated");
-const CEGUI::String ClientSocket::EventPlayerConnected("PlayerConnected");
-const CEGUI::String ClientSocket::EventTextBroadcasted("TextBroadcasted");
-const CEGUI::String ClientSocket::EventSystemMessageBroadcasted("SystemMessageBroadcasted");
-const CEGUI::String ClientSocket::EventCurrentPositioningSent("CurrentPositioningSent");
-const CEGUI::String ClientSocket::EventGameStarting("GameStarting");
-const CEGUI::String ClientSocket::EventPlayerDealing("PlayerDealing");
-const CEGUI::String ClientSocket::EventCardsReceived("CardsReceived");
-const CEGUI::String ClientSocket::EventPotentialAsset("PotentialAsset");
-const CEGUI::String ClientSocket::EventAskRevealedAsset("AskRevealedAsset");
-const CEGUI::String ClientSocket::EventAskAnotherAsset("AskAnotherAsset");
-const CEGUI::String ClientSocket::EventPlayerRefusedAsset("PlayerRefusedAsset");
-const CEGUI::String ClientSocket::EventPlayerAcceptedAsset("PlayerAcceptedAsset");
-const CEGUI::String ClientSocket::EventTurnStarting("TurnStarting");
-const CEGUI::String ClientSocket::EventWaitingPlay("WaitingPlay");
-const CEGUI::String ClientSocket::EventPlayedCard("PlayedCard");
-const CEGUI::String ClientSocket::EventCurrentScores("CurrentScores");
-const CEGUI::String ClientSocket::EventTotalScores("TotalScores");
-const CEGUI::String ClientSocket::EventBeloteAnnounced("BeloteAnnounced");
-const CEGUI::String ClientSocket::EventRebeloteAnnounced("RebeloteAnnounced");
-const CEGUI::String ClientSocket::EventNoAssetTaken("NoAssetTaken");
-const CEGUI::String ClientSocket::EventContractingTeamResult("ContractingTeamResult");
-const CEGUI::String ClientSocket::EventLitige("Litige");
-const CEGUI::String ClientSocket::EventMatchWon("MatchWon");
 
 // Define network state machine stuff...
 namespace
@@ -113,10 +83,7 @@ namespace
 
 			virtual void	Enter()
 			{
-				ConnectionStatusEventArgs args;
-				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_Connected;
-				
-				m_Self->m_ConnectionStatus.push(m_Self->m_ConnectionStatusPushGuard, args);
+				m_Self->OnConnectionStatusChanged(ClientSocket::CS_Connected);
 				m_StateMachine->Notify(NEC_SendName);
 			}
 
@@ -145,35 +112,33 @@ namespace
 					{
 					case PT_ClientConnected:
 						{
-							PlayerConnectedEventArgs args;
-							packet >> args.m_PlayerName;
-							args.m_Connected = true;
-							m_Self->m_PlayerConnected.push(args);
+							std::string playerName;
+							packet >> playerName;
+							m_Self->OnPlayerConnected(playerName);
 						}
 						break;
 						
 					case PT_ClientDisconnected:
 						{
-							PlayerConnectedEventArgs args;
-							packet >> args.m_PlayerName;
-							args.m_Connected = false;
-							m_Self->m_PlayerConnected.push(args);
+							std::string playerName;
+							packet >> playerName;
+							m_Self->OnPlayerDisconnected(playerName);
 						}
 						break;
 
 					case PT_ServerBroadcastTextMessage:
 						{
-							TextBroadcastedEventArgs args;
-							packet >> args.m_Teller >> args.m_Message;
-							m_Self->m_TextBroadcasted.push(args);
+							std::string sayer, msg;
+							packet >> sayer >> msg;
+							m_Self->OnTextBroadcasted(sayer, msg);
 						}
 						break;
 
 					case PT_ServerBroadcastSystemMessage:
 						{
-							SystemMessageBroadcastedEventArgs args;
-							packet >> args.m_Message;
-							m_Self->m_SystemMessageBroadcasted.push(args);
+							std::string msg;
+							packet >> msg;
+							m_Self->OnSysMsgBroadcasted(msg);
 						}
 						break;
 
@@ -210,146 +175,145 @@ namespace
 				{
 				case BCPT_CurrentPositionning:
 					{
-						CurrentPositioningArgs args;
-						for (sf::Uint32 i = 0; i != countof(args.m_Pos); i++)
-							packet >> args.m_Pos[i];
-						m_Self->m_CurrentPositioningSent.push(args);
+						PositionningPacket pp;
+						for (sf::Uint32 i = 0; i != pp.m_Names.size(); i++)
+							packet >> pp.m_Names[i];
+						m_Self->OnPositionningReceived(pp);
 					}
 					break;
 					
 				case BCPT_GameStarting:
-					m_Self->m_GameStarting.push();
+					m_Self->OnGameStarting();
 					break;
 
 				case BCPT_Dealing:
 					{
-						PlayerDealingArgs args;
-						packet >> args.m_Who;
-						m_Self->m_PlayerDealing.push(args);
+						std::string dealerName;
+						packet >> dealerName;
+						m_Self->OnPlayerDealing(dealerName);
 					}
 					break;
 
 				case BCPT_CardsDealt:
 					{
-						CurrentCardsInHandArgs args;
-						for (sf::Uint32 i = 0; i != countof(args.m_Cards); i++)
-							packet >> args.m_Cards[i];
-						m_Self->m_CardsReceived.push(args);
+						CardsDealtPacket cdp;
+						for (sf::Uint32 i = 0; i != cdp.m_Cards.size(); i++)
+							packet >> cdp.m_Cards[i];
+						m_Self->OnCardsDealt(cdp);
 					}
 					break;
 
 				case BCPT_PotentialAsset:
 					{
-						PotentialAssetArgs args;
-						packet >> args.m_Card;
-						m_Self->m_PotentialAsset.push(args);
+						std::string cardName;
+						packet >> cardName;
+						m_Self->OnPotentialAssetReceived(cardName);
 					}
 					break;
 
 				case BCPT_AskRevealedAsset:
-					m_Self->m_AskRevealedAsset.push();
+					m_Self->OnAskingRevealedAsset();
 					break;
 
 				case BCPT_AskAnotherAsset:
-					m_Self->m_AskAnotherAsset.push();
+					m_Self->OnAskingAnotherAsset();
 					break;
 
 				case BCPT_AssetAccepted:
 					{
-						PlayerAcceptedAssetArgs args;
-						packet >> args.m_PlayerPos >> args.m_Asset >> args.m_AcceptedByNSTeam;
-						m_Self->m_PlayerAcceptedAsset.push(args);
+						AcceptedAssetPacket aap;
+						packet >> aap.m_PlayerPos >> aap.m_Asset >> aap.m_AcceptedByNSTeam;
+						m_Self->OnAcceptedAsset(aap);
 					}
 					break;
 
 				case BCPT_AssetRefused:
 					{
-						PlayerRefusedAssetArgs args;
-						packet >> args.m_PlayerPos;
-						m_Self->m_PlayerRefusedAsset.push(args);
+						int refusingPlayerPos;
+						packet >> refusingPlayerPos;
+						m_Self->OnRefusedAsset(refusingPlayerPos);
 					}
 					break;
 
 				case BCPT_TurnStarting:
-					m_Self->m_TurnStarting.push();
+					m_Self->OnTurnStarting();
 					break;
 
 				case BCPT_WaitingPlay:
 					{
-						WaitingPlayArgs args;
-						int possibleCardsCount;
-						packet >> possibleCardsCount;
-						for (sf::Uint32 i = 0; i != possibleCardsCount; i++)
-							packet >> args.m_PossibleCards[i];
-						m_Self->m_WaitingPlay.push(args);
+						WaitingPlayPacket wpp;
+						packet >> wpp.m_PossibleCardsCount;
+						for (sf::Uint32 i = 0; i != wpp.m_PossibleCardsCount; i++)
+							packet >> wpp.m_PossibleCards[i];
+						m_Self->OnWaitingPlay(wpp);
 					}
 					break;
 
 				case BCPT_CardPlayed:
 					{
-						PlayedCardArgs args;
-						packet >> args.m_Card >> args.m_Player;
-						m_Self->m_PlayedCard.push(args);
+						PlayedCardPacket pcp;
+						packet >> pcp.m_Card >> pcp.m_Player;
+						m_Self->OnPlayedCard(pcp);
 					}
 					break;
 
 				case BCPT_CurrentScores:
 					{
-						ScoresArgs args;
-						packet >> args.m_NorthSouthScore >> args.m_WestEastScore;
-						m_Self->m_CurrentScores.push(args);
+						int NSScore, WEScore;
+						packet >> NSScore >> WEScore;
+						m_Self->OnCurrentScores(NSScore, WEScore);
 					}
 					break;
 
 				case BCPT_TotalScores:
 					{
-						ScoresArgs args;
-						packet >> args.m_NorthSouthScore >> args.m_WestEastScore;
-						m_Self->m_TotalScores.push(args);
+						int NSScore, WEScore;
+						packet >> NSScore >> WEScore;
+						m_Self->OnTotalScores(NSScore, WEScore);
 					}
 					break;
 
 				case BCPT_BeloteAnnounced:
 					{
-						BeloteAnnouncedArgs args;
-						packet >> args.m_ByPlayerPos;
-						m_Self->m_BeloteAnnounced.push(args);
+						int pos;
+						packet >> pos;
+						m_Self->OnBeloteAnnounced(pos);
 					}
 					break;
 
 				case BCPT_RebeloteAnnounced:
 					{
-						BeloteAnnouncedArgs args;
-						packet >> args.m_ByPlayerPos;
-						m_Self->m_RebeloteAnnounced.push(args);
+						int pos;
+						packet >> pos;
+						m_Self->OnRebeloteAnnounced(pos);
 					}
 					break;
 
 				case BCPT_NoAssetTaken:
-					m_Self->m_NoAssetTaken.push();
+					m_Self->OnNoAssetTaken();
 					break;
 
 				case BCPT_ContractingTeamResult:
 					{
-						ContractingTeamResultArgs args;
-						packet >> args.m_IsNorthSouthTeam >> args.m_HasWon;
-						m_Self->m_ContractingTeamResult.push(args);
+						bool isNSTeamContracting, hasWon;
+						packet >> isNSTeamContracting >> hasWon;
+						m_Self->OnContractingTeamResult(isNSTeamContracting, hasWon);
 					}
 					break;
 
 				case BCPT_Litige:
 					{
-						LitigeArgs args;
-						packet >> args.m_LitigeValue;
-						m_Self->m_Litige.push(args);
+						int value;
+						packet >> value;
+						m_Self->OnLitige(value);
 					}
 					break;
 
 				case BCPT_MatchEnded:
 					{
-						MatchWonArgs args;
-						packet >> args.m_MatchWonByNSTeam;
-						m_Self->m_MatchWon.push(args);
+						bool isWonByNSTeam;
+						packet >> isWonByNSTeam;
+						m_Self->OnMatchWon(isWonByNSTeam);
 					}
 					break;
 				}
@@ -364,10 +328,7 @@ namespace
 
 			virtual void	Enter()
 			{
-				ConnectionStatusEventArgs args;
-				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_LobbyFull;
-				m_Self->m_ConnectionStatus.push(m_Self->m_ConnectionStatusPushGuard, args);
-
+				m_Self->OnConnectionStatusChanged(ClientSocket::CS_LobbyFull);
 				m_StateMachine->Notify(NEC_DisconnectionRequest);
 			}
 
@@ -382,10 +343,7 @@ namespace
 
 			virtual void	Enter()
 			{
-				ConnectionStatusEventArgs args;
-				args.m_ConnectionStatus = ConnectionStatusEventArgs::CS_Disconnected;
-				m_Self->m_ConnectionStatus.push(m_Self->m_ConnectionStatusPushGuard, args);
-
+				m_Self->OnConnectionStatusChanged(ClientSocket::CS_Disconnected);
 				m_StateMachine->Stop();
 			}
 
@@ -728,31 +686,7 @@ private:
 };
 
 ClientSocket::ClientSocket()
-: m_IsDisconnecting(false),
-	m_PlayerConnected			(EventPlayerConnected, EventNamespace),
-	m_TextBroadcasted			(EventTextBroadcasted, EventNamespace),
-	m_SystemMessageBroadcasted	(EventSystemMessageBroadcasted, EventNamespace),
-	m_CardsReceived				(EventCardsReceived, EventNamespace),
-	m_CurrentPositioningSent	(EventCurrentPositioningSent, EventNamespace),
-	m_GameStarting				(EventGameStarting, EventNamespace),
-	m_PlayerDealing				(EventPlayerDealing, EventNamespace),
-	m_ConnectionStatus			(EventConnectionStatusUpdated, EventNamespace),
-	m_PotentialAsset			(EventPotentialAsset, EventNamespace),
-	m_AskRevealedAsset			(EventAskRevealedAsset, EventNamespace),
-	m_AskAnotherAsset			(EventAskAnotherAsset, EventNamespace),
-	m_PlayerRefusedAsset		(EventPlayerRefusedAsset, EventNamespace),
-	m_PlayerAcceptedAsset		(EventPlayerAcceptedAsset, EventNamespace),
-	m_TurnStarting				(EventTurnStarting, EventNamespace),
-	m_WaitingPlay				(EventWaitingPlay, EventNamespace),
-	m_PlayedCard				(EventPlayedCard, EventNamespace),
-	m_CurrentScores				(EventCurrentScores, EventNamespace),
-	m_TotalScores				(EventTotalScores, EventNamespace),
-	m_BeloteAnnounced			(EventBeloteAnnounced, EventNamespace),
-	m_RebeloteAnnounced			(EventRebeloteAnnounced, EventNamespace),
-	m_NoAssetTaken				(EventNoAssetTaken, EventNamespace),
-	m_ContractingTeamResult		(EventContractingTeamResult, EventNamespace),
-	m_Litige					(EventLitige, EventNamespace),
-	m_MatchWon					(EventMatchWon, EventNamespace)
+: m_IsDisconnecting(false)
 {
 	m_priv = new ClientSocketPrivate(this);
 }
@@ -765,13 +699,6 @@ ClientSocket::~ClientSocket()
 void ClientSocket::Connect(const std::string &hostIP, const std::string &utf8EncodedName)
 {
 	m_IsDisconnecting = false;
-
-	m_PlayerConnected.reset();
-	m_TextBroadcasted.reset();
-	m_CardsReceived.reset();
-	m_CurrentPositioningSent.reset();
-	m_GameStarting.reset();
-	m_ConnectionStatus.reset();
 
 	m_priv->Connect(hostIP, utf8EncodedName);
 }
@@ -815,39 +742,6 @@ void ClientSocket::RefuseAsset()
 void ClientSocket::PlayCard(const std::string &cardName)
 {
 	m_priv->PlayCard(cardName);
-}
-
-void ClientSocket::Update()
-{
-	// Brute force ftw!
-	// Ok, I may consider storing current game phase to avoid this...
-
-	if (!m_IsDisconnecting)
-		m_ConnectionStatus.process(this);
-
-	m_GameStarting.process(this);
-	m_PlayerDealing.process(this);
-	m_PlayerConnected.process(this);
-	m_TextBroadcasted.process(this);
-	m_SystemMessageBroadcasted.process(this);
-	m_CurrentPositioningSent.process(this);
-	m_CardsReceived.process(this);
-	m_PotentialAsset.process(this);
-	m_AskRevealedAsset.process(this);
-	m_AskAnotherAsset.process(this);
-	m_PlayerRefusedAsset.process(this);
-	m_PlayerAcceptedAsset.process(this);
-	m_TurnStarting.process(this);
-	m_WaitingPlay.process(this);
-	m_PlayedCard.process(this);
-	m_CurrentScores.process(this);
-	m_TotalScores.process(this);
-	m_BeloteAnnounced.process(this);
-	m_RebeloteAnnounced.process(this);
-	m_NoAssetTaken.process(this);
-	m_ContractingTeamResult.process(this);
-	m_Litige.process(this);
-	m_MatchWon.process(this);
 }
 
 void ClientSocket::Wait()

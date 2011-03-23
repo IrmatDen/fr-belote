@@ -9,7 +9,7 @@
 #include "BeloteContextTypes.h"
 
 #include "GUIManager.h"
-#include "ClientSocket.h"
+#include "PlayerSocket.h"
 #include "Singleton.h"
 
 class Game : public Singleton<Game>
@@ -46,7 +46,7 @@ public:
 	void			LoadGame()									{ m_LoadGamePending = true; }
 
 	// Network related
-	ClientSocket&	GetClientSocket()			{ return m_ClientSocket; }
+	PlayerSocket&	GetPlayerSocket()			{ return m_PlayerSocket; }
 	void			StartServer()				{ m_Server.SetRuleSet(m_GameVars.m_RuleSet); m_ServerThread.Launch(); }
 	void			StopServer()				{ m_Server.Stop(); }
 
@@ -70,7 +70,7 @@ private:
 	bool				m_LoadGamePending;
 
 	// Network client vars
-	ClientSocket		m_ClientSocket;
+	PlayerSocket		m_PlayerSocket;
 
 	// Game hosting vars
 	sf::Thread			m_ServerThread;

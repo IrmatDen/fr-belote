@@ -1,6 +1,6 @@
 /*
 ** Lua binding: LuaInterface
-** Generated automatically by tolua++-1.0.92 on 03/22/11 20:36:14.
+** Generated automatically by tolua++-1.0.92 on 03/23/11 19:27:20.
 */
 
 #ifndef __cplusplus
@@ -18,7 +18,8 @@ int tolua_LuaInterface_open (lua_State* tolua_S);
 #include "SoundManager.h"
 #include "GUIManager.h"
 #include "LeftWrappedListItem.h"
-#include "ClientSocket.h"
+#include "../../include/ClientSocket.h"
+#include "PlayerSocket.h"
 
 /* function to release collected object via destructor */
 #ifdef __cplusplus
@@ -38,9 +39,10 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"Game::GameVars");
  tolua_usertype(tolua_S,"PlayedCardArgs");
  tolua_usertype(tolua_S,"PlayerConnectedEventArgs");
- tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
- tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
+ tolua_usertype(tolua_S,"PlayerSocket");
  tolua_usertype(tolua_S,"MatchWonArgs");
+ tolua_usertype(tolua_S,"ConnectionStatusEventArgs");
+ tolua_usertype(tolua_S,"CurrentCardsInHandArgs");
  tolua_usertype(tolua_S,"ClientSocket");
  tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"ContractingTeamResultArgs");
@@ -48,14 +50,14 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"CEGUI::EventArgs");
  tolua_usertype(tolua_S,"ScoresArgs");
  tolua_usertype(tolua_S,"ErrorRaisedArgs");
- tolua_usertype(tolua_S,"CEGUI::String");
+ tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
  tolua_usertype(tolua_S,"CEGUI::EventSet");
  tolua_usertype(tolua_S,"LitigeArgs");
  tolua_usertype(tolua_S,"PlayerAcceptedAssetArgs");
  tolua_usertype(tolua_S,"PlayerRefusedAssetArgs");
  tolua_usertype(tolua_S,"PotentialAssetArgs");
  tolua_usertype(tolua_S,"WaitingPlayArgs");
- tolua_usertype(tolua_S,"CEGUI::ListboxTextItem");
+ tolua_usertype(tolua_S,"CEGUI::String");
  tolua_usertype(tolua_S,"GUIManager");
  tolua_usertype(tolua_S,"LeftWrappedListItem");
  tolua_usertype(tolua_S,"CurrentPositioningArgs");
@@ -401,9 +403,9 @@ static int tolua_LuaInterface_Game_LoadGame00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: GetClientSocket of class  Game */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_GetClientSocket00
-static int tolua_LuaInterface_Game_GetClientSocket00(lua_State* tolua_S)
+/* method: GetPlayerSocket of class  Game */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_Game_GetPlayerSocket00
+static int tolua_LuaInterface_Game_GetPlayerSocket00(lua_State* tolua_S)
 {
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
@@ -417,17 +419,17 @@ static int tolua_LuaInterface_Game_GetClientSocket00(lua_State* tolua_S)
  {
   Game* self = (Game*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetClientSocket'",NULL);
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetPlayerSocket'",NULL);
 #endif
  {
-  ClientSocket& tolua_ret = (ClientSocket&)  self->GetClientSocket();
- tolua_pushusertype(tolua_S,(void*)&tolua_ret,"ClientSocket");
+  PlayerSocket& tolua_ret = (PlayerSocket&)  self->GetPlayerSocket();
+ tolua_pushusertype(tolua_S,(void*)&tolua_ret,"PlayerSocket");
  }
  }
  return 1;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'GetClientSocket'.",&tolua_err);
+ tolua_error(tolua_S,"#ferror in function 'GetPlayerSocket'.",&tolua_err);
  return 0;
 #endif
 }
@@ -666,6 +668,303 @@ static int tolua_LuaInterface_LeftWrappedListItem_new00_local(lua_State* tolua_S
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: Connect of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
+static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,3,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+  const std::string hostIP = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+  const std::string utf8EncodedName = ((const std::string)  tolua_tocppstring(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Connect'",NULL);
+#endif
+ {
+  self->Connect(hostIP,utf8EncodedName);
+ tolua_pushcppstring(tolua_S,(const char*)hostIP);
+ tolua_pushcppstring(tolua_S,(const char*)utf8EncodedName);
+ }
+ }
+ return 2;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Connect'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Disconnect of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Disconnect00
+static int tolua_LuaInterface_ClientSocket_Disconnect00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Disconnect'",NULL);
+#endif
+ {
+  self->Disconnect();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Disconnect'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SendChatMessage of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_SendChatMessage00
+static int tolua_LuaInterface_ClientSocket_SendChatMessage00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+  const std::string utf8EncodedMessage = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SendChatMessage'",NULL);
+#endif
+ {
+  self->SendChatMessage(utf8EncodedMessage);
+ tolua_pushcppstring(tolua_S,(const char*)utf8EncodedMessage);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SendChatMessage'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: ChoosePosition of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_ChoosePosition00
+static int tolua_LuaInterface_ClientSocket_ChoosePosition00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+  const std::string posName = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'ChoosePosition'",NULL);
+#endif
+ {
+  self->ChoosePosition(posName);
+ tolua_pushcppstring(tolua_S,(const char*)posName);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'ChoosePosition'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: UnseatMe of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_UnseatMe00
+static int tolua_LuaInterface_ClientSocket_UnseatMe00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'UnseatMe'",NULL);
+#endif
+ {
+  self->UnseatMe();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'UnseatMe'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: StartGame of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_StartGame00
+static int tolua_LuaInterface_ClientSocket_StartGame00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'StartGame'",NULL);
+#endif
+ {
+  self->StartGame();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'StartGame'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: AcceptAsset of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_AcceptAsset00
+static int tolua_LuaInterface_ClientSocket_AcceptAsset00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+  const std::string assetColour = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AcceptAsset'",NULL);
+#endif
+ {
+  self->AcceptAsset(assetColour);
+ tolua_pushcppstring(tolua_S,(const char*)assetColour);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'AcceptAsset'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: RefuseAsset of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_RefuseAsset00
+static int tolua_LuaInterface_ClientSocket_RefuseAsset00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'RefuseAsset'",NULL);
+#endif
+ {
+  self->RefuseAsset();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'RefuseAsset'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: PlayCard of class  ClientSocket */
+#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_PlayCard00
+static int tolua_LuaInterface_ClientSocket_PlayCard00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
+ !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
+  const std::string cardName = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'PlayCard'",NULL);
+#endif
+ {
+  self->PlayCard(cardName);
+ tolua_pushcppstring(tolua_S,(const char*)cardName);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'PlayCard'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* get function: m_ConnectionStatus of class  ConnectionStatusEventArgs */
 #ifndef TOLUA_DISABLE_tolua_get_ConnectionStatusEventArgs_m_ConnectionStatus
 static int tolua_get_ConnectionStatusEventArgs_m_ConnectionStatus(lua_State* tolua_S)
@@ -690,7 +989,7 @@ static int tolua_set_ConnectionStatusEventArgs_m_ConnectionStatus(lua_State* tol
  if (!tolua_isnumber(tolua_S,2,0,&tolua_err))
  tolua_error(tolua_S,"#vinvalid type in variable assignment.",&tolua_err);
 #endif
-  self->m_ConnectionStatus = ((ConnectionStatusEventArgs::ConnectionStatus) (int)  tolua_tonumber(tolua_S,2,0))
+  self->m_ConnectionStatus = ((ClientSocket::ConnectionStatus) (int)  tolua_tonumber(tolua_S,2,0))
 ;
  return 0;
 }
@@ -1452,300 +1751,20 @@ static int tolua_set_MatchWonArgs_m_MatchWonByNSTeam(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: Connect of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Connect00
-static int tolua_LuaInterface_ClientSocket_Connect00(lua_State* tolua_S)
+/* get function: __ClientSocket__ of class  PlayerSocket */
+#ifndef TOLUA_DISABLE_tolua_get_PlayerSocket___ClientSocket__
+static int tolua_get_PlayerSocket___ClientSocket__(lua_State* tolua_S)
 {
+  PlayerSocket* self = (PlayerSocket*)  tolua_tousertype(tolua_S,1,0);
 #ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,3,0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,4,&tolua_err)
- )
- goto tolua_lerror;
- else
+ if (!self) tolua_error(tolua_S,"invalid 'self' in accessing variable '__ClientSocket__'",NULL);
 #endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-  const std::string hostIP = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-  const std::string utf8EncodedName = ((const std::string)  tolua_tocppstring(tolua_S,3,0));
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Connect'",NULL);
+#ifdef __cplusplus
+ tolua_pushusertype(tolua_S,(void*)static_cast<ClientSocket*>(self), "ClientSocket");
+#else
+ tolua_pushusertype(tolua_S,(void*)((ClientSocket*)self), "ClientSocket");
 #endif
- {
-  self->Connect(hostIP,utf8EncodedName);
- tolua_pushcppstring(tolua_S,(const char*)hostIP);
- tolua_pushcppstring(tolua_S,(const char*)utf8EncodedName);
- }
- }
- return 2;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'Connect'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: Disconnect of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_Disconnect00
-static int tolua_LuaInterface_ClientSocket_Disconnect00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Disconnect'",NULL);
-#endif
- {
-  self->Disconnect();
- }
- }
- return 0;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'Disconnect'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: SendChatMessage of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_SendChatMessage00
-static int tolua_LuaInterface_ClientSocket_SendChatMessage00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,3,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-  const std::string utf8EncodedMessage = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SendChatMessage'",NULL);
-#endif
- {
-  self->SendChatMessage(utf8EncodedMessage);
- tolua_pushcppstring(tolua_S,(const char*)utf8EncodedMessage);
- }
- }
  return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'SendChatMessage'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: ChoosePosition of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_ChoosePosition00
-static int tolua_LuaInterface_ClientSocket_ChoosePosition00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,3,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-  const std::string posName = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'ChoosePosition'",NULL);
-#endif
- {
-  self->ChoosePosition(posName);
- tolua_pushcppstring(tolua_S,(const char*)posName);
- }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'ChoosePosition'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: UnseatMe of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_UnseatMe00
-static int tolua_LuaInterface_ClientSocket_UnseatMe00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'UnseatMe'",NULL);
-#endif
- {
-  self->UnseatMe();
- }
- }
- return 0;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'UnseatMe'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: StartGame of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_StartGame00
-static int tolua_LuaInterface_ClientSocket_StartGame00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'StartGame'",NULL);
-#endif
- {
-  self->StartGame();
- }
- }
- return 0;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'StartGame'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: AcceptAsset of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_AcceptAsset00
-static int tolua_LuaInterface_ClientSocket_AcceptAsset00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,3,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-  const std::string assetColour = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AcceptAsset'",NULL);
-#endif
- {
-  self->AcceptAsset(assetColour);
- tolua_pushcppstring(tolua_S,(const char*)assetColour);
- }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'AcceptAsset'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: RefuseAsset of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_RefuseAsset00
-static int tolua_LuaInterface_ClientSocket_RefuseAsset00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'RefuseAsset'",NULL);
-#endif
- {
-  self->RefuseAsset();
- }
- }
- return 0;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'RefuseAsset'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: PlayCard of class  ClientSocket */
-#ifndef TOLUA_DISABLE_tolua_LuaInterface_ClientSocket_PlayCard00
-static int tolua_LuaInterface_ClientSocket_PlayCard00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
- !tolua_isusertype(tolua_S,1,"ClientSocket",0,&tolua_err) ||
- !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
- !tolua_isnoobj(tolua_S,3,&tolua_err)
- )
- goto tolua_lerror;
- else
-#endif
- {
-  ClientSocket* self = (ClientSocket*)  tolua_tousertype(tolua_S,1,0);
-  const std::string cardName = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
-#ifndef TOLUA_RELEASE
- if (!self) tolua_error(tolua_S,"invalid 'self' in function 'PlayCard'",NULL);
-#endif
- {
-  self->PlayCard(cardName);
- tolua_pushcppstring(tolua_S,(const char*)cardName);
- }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'PlayCard'.",&tolua_err);
- return 0;
-#endif
 }
 #endif //#ifndef TOLUA_DISABLE
 
@@ -1781,7 +1800,7 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"GetGUIManager",tolua_LuaInterface_Game_GetGUIManager00);
   tolua_function(tolua_S,"LoadMenu",tolua_LuaInterface_Game_LoadMenu00);
   tolua_function(tolua_S,"LoadGame",tolua_LuaInterface_Game_LoadGame00);
-  tolua_function(tolua_S,"GetClientSocket",tolua_LuaInterface_Game_GetClientSocket00);
+  tolua_function(tolua_S,"GetPlayerSocket",tolua_LuaInterface_Game_GetPlayerSocket00);
   tolua_function(tolua_S,"StartServer",tolua_LuaInterface_Game_StartServer00);
   tolua_function(tolua_S,"StopServer",tolua_LuaInterface_Game_StopServer00);
  tolua_endmodule(tolua_S);
@@ -1811,11 +1830,23 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
   tolua_function(tolua_S,"new_local",tolua_LuaInterface_LeftWrappedListItem_new00_local);
   tolua_function(tolua_S,".call",tolua_LuaInterface_LeftWrappedListItem_new00_local);
  tolua_endmodule(tolua_S);
+ tolua_cclass(tolua_S,"ClientSocket","ClientSocket","",NULL);
+ tolua_beginmodule(tolua_S,"ClientSocket");
+  tolua_constant(tolua_S,"CS_Connected",ClientSocket::CS_Connected);
+  tolua_constant(tolua_S,"CS_Disconnected",ClientSocket::CS_Disconnected);
+  tolua_constant(tolua_S,"CS_LobbyFull",ClientSocket::CS_LobbyFull);
+  tolua_function(tolua_S,"Connect",tolua_LuaInterface_ClientSocket_Connect00);
+  tolua_function(tolua_S,"Disconnect",tolua_LuaInterface_ClientSocket_Disconnect00);
+  tolua_function(tolua_S,"SendChatMessage",tolua_LuaInterface_ClientSocket_SendChatMessage00);
+  tolua_function(tolua_S,"ChoosePosition",tolua_LuaInterface_ClientSocket_ChoosePosition00);
+  tolua_function(tolua_S,"UnseatMe",tolua_LuaInterface_ClientSocket_UnseatMe00);
+  tolua_function(tolua_S,"StartGame",tolua_LuaInterface_ClientSocket_StartGame00);
+  tolua_function(tolua_S,"AcceptAsset",tolua_LuaInterface_ClientSocket_AcceptAsset00);
+  tolua_function(tolua_S,"RefuseAsset",tolua_LuaInterface_ClientSocket_RefuseAsset00);
+  tolua_function(tolua_S,"PlayCard",tolua_LuaInterface_ClientSocket_PlayCard00);
+ tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"ConnectionStatusEventArgs","ConnectionStatusEventArgs","CEGUI::EventArgs",NULL);
  tolua_beginmodule(tolua_S,"ConnectionStatusEventArgs");
-  tolua_constant(tolua_S,"CS_Connected",ConnectionStatusEventArgs::CS_Connected);
-  tolua_constant(tolua_S,"CS_Disconnected",ConnectionStatusEventArgs::CS_Disconnected);
-  tolua_constant(tolua_S,"CS_LobbyFull",ConnectionStatusEventArgs::CS_LobbyFull);
   tolua_variable(tolua_S,"m_ConnectionStatus",tolua_get_ConnectionStatusEventArgs_m_ConnectionStatus,tolua_set_ConnectionStatusEventArgs_m_ConnectionStatus);
  tolua_endmodule(tolua_S);
  tolua_cclass(tolua_S,"PlayerConnectedEventArgs","PlayerConnectedEventArgs","CEGUI::EventArgs",NULL);
@@ -1889,17 +1920,9 @@ int tolua_LuaInterface_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,"MatchWonArgs");
   tolua_variable(tolua_S,"m_MatchWonByNSTeam",tolua_get_MatchWonArgs_m_MatchWonByNSTeam,tolua_set_MatchWonArgs_m_MatchWonByNSTeam);
  tolua_endmodule(tolua_S);
- tolua_cclass(tolua_S,"ClientSocket","ClientSocket","CEGUI::EventSet",NULL);
- tolua_beginmodule(tolua_S,"ClientSocket");
-  tolua_function(tolua_S,"Connect",tolua_LuaInterface_ClientSocket_Connect00);
-  tolua_function(tolua_S,"Disconnect",tolua_LuaInterface_ClientSocket_Disconnect00);
-  tolua_function(tolua_S,"SendChatMessage",tolua_LuaInterface_ClientSocket_SendChatMessage00);
-  tolua_function(tolua_S,"ChoosePosition",tolua_LuaInterface_ClientSocket_ChoosePosition00);
-  tolua_function(tolua_S,"UnseatMe",tolua_LuaInterface_ClientSocket_UnseatMe00);
-  tolua_function(tolua_S,"StartGame",tolua_LuaInterface_ClientSocket_StartGame00);
-  tolua_function(tolua_S,"AcceptAsset",tolua_LuaInterface_ClientSocket_AcceptAsset00);
-  tolua_function(tolua_S,"RefuseAsset",tolua_LuaInterface_ClientSocket_RefuseAsset00);
-  tolua_function(tolua_S,"PlayCard",tolua_LuaInterface_ClientSocket_PlayCard00);
+ tolua_cclass(tolua_S,"PlayerSocket","PlayerSocket","CEGUI::EventSet",NULL);
+ tolua_beginmodule(tolua_S,"PlayerSocket");
+  tolua_variable(tolua_S,"__ClientSocket__",tolua_get_PlayerSocket___ClientSocket__,NULL);
  tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);
  return 1;

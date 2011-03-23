@@ -15,19 +15,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ClientSocket.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\GUIManager.h" />
     <ClInclude Include="src\LeftWrappedListItem.h" />
     <ClInclude Include="src\LuaInterface.h" />
+    <ClInclude Include="src\PlayerSocket.h" />
     <ClInclude Include="src\SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ClientSocket.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GUIManager.cpp" />
     <ClCompile Include="src\LuaInterface.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\PlayerSocket.cpp" />
     <ClCompile Include="src\SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +39,7 @@
     <None Include="src\GUIManager.pkg" />
     <None Include="src\LeftWrappedListItem.pkg" />
     <None Include="src\LuaInterface.pkg" />
+    <None Include="src\PlayerSocket.pkg" />
     <None Include="src\SoundManager.pkg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

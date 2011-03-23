@@ -19,6 +19,9 @@ struct Action
 	virtual ~Action()		{ ; }
 
 	virtual void operator()() = 0;
+
+private:
+	Action& operator=(const Action &)	{ ; }
 };
 typedef std::shared_ptr<Action>	ActionPtr;
 
@@ -61,6 +64,9 @@ public:
 
 protected:
 	StateMachinePtr		m_StateMachine;
+
+private:
+	State& operator=(const State &)	{ ; }
 
 private:
 	typedef std::map<EventCode, TransitionPtr>					EventMap;

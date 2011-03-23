@@ -1,6 +1,6 @@
-$#include "ClientSocket.h"
+$#include "../../include/ClientSocket.h"
 
-class ConnectionStatusEventArgs : public CEGUI::EventArgs
+class ClientSocket
 {
 public:
 	enum ConnectionStatus
@@ -10,114 +10,6 @@ public:
 		CS_LobbyFull
 	};
 
-	ConnectionStatus	m_ConnectionStatus;
-};
-
-class PlayerConnectedEventArgs : public CEGUI::EventArgs
-{
-public:
-	bool		m_Connected;
-	std::string	m_PlayerName;
-};
-
-class TextBroadcastedEventArgs : public CEGUI::EventArgs
-{
-public:
-	std::string	m_Teller,
-				m_Message;
-};
-
-class SystemMessageBroadcastedEventArgs : public CEGUI::EventArgs
-{
-public:
-	std::string	m_Message;
-};
-
-class CurrentPositioningArgs : public CEGUI::EventArgs
-{
-public:
-	std::string		m_Pos[4];
-};
-
-class PlayerDealingArgs : public CEGUI::EventArgs
-{
-public:
-	std::string	m_Who;
-};
-
-class PlayerRefusedAssetArgs : public CEGUI::EventArgs
-{
-public:
-	int				m_PlayerPos;
-};
-
-class PlayerAcceptedAssetArgs : public CEGUI::EventArgs
-{
-public:
-	int				m_PlayerPos;
-	std::string		m_Asset;
-	bool			m_AcceptedByNSTeam;
-};
-
-class CurrentCardsInHandArgs : public CEGUI::EventArgs
-{
-public:
-	std::string		m_Cards[8];
-};
-
-class PotentialAssetArgs : public CEGUI::EventArgs
-{
-public:
-	std::string		m_Card;
-};
-
-class WaitingPlayArgs : public CEGUI::EventArgs
-{
-public:
-	std::string		m_PossibleCards[8];
-};
-
-class PlayedCardArgs : public CEGUI::EventArgs
-{
-public:
-	std::string		m_Card;
-	int				m_Player;
-};
-
-class ScoresArgs : public CEGUI::EventArgs
-{
-public:
-	int		m_NorthSouthScore,
-			m_WestEastScore;
-};
-
-class BeloteAnnouncedArgs : public CEGUI::EventArgs
-{
-public:
-	int		m_ByPlayerPos;
-};
-
-class ContractingTeamResultArgs : public CEGUI::EventArgs
-{
-public:
-	bool	m_IsNorthSouthTeam,
-			m_HasWon;
-};
-
-class LitigeArgs : public CEGUI::EventArgs
-{
-public:
-	int	m_LitigeValue;
-};
-
-class MatchWonArgs : public CEGUI::EventArgs
-{
-public:
-	bool	m_MatchWonByNSTeam;
-};
-
-class ClientSocket : public CEGUI::EventSet
-{
 public:
 	void	Connect(const std::string &hostIP, const std::string &utf8EncodedName);
 	void	Disconnect();

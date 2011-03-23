@@ -4,6 +4,8 @@
 #include <queue>
 #include <map>
 
+#include "typedefs.h"
+
 // Forward decl
 struct State;
 typedef std::shared_ptr<State>	StatePtr;
@@ -50,7 +52,7 @@ public:
 	// Setup
 	void		AddTransition(EventCode evt, StatePtr target, ActionPtr a = ActionPtr())
 	{
-		m_EventMapping[evt] = TransitionPtr(new Transition(StatePtr(this), target, a));
+		m_EventMapping[evt] = TransitionPtr(new Transition(StatePtr(this, null_deleter()), target, a));
 	}
 
 	// Infos

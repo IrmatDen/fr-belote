@@ -6,6 +6,25 @@
 #include <SFML/Config.hpp>
 #include <SFML/Network.hpp>
 
+enum PlayerPosition
+{
+	PP_South,
+	PP_West,
+	PP_North,
+	PP_East,
+
+	_PP_Count
+};
+
+enum TeamIndex
+{
+	TI_None = -1,
+	TI_NorthSouth,
+	TI_WestEast,
+
+	_TI_Count
+};
+
 typedef boost::array<std::string, 8>	PlayerHand;
 
 enum PlayDirection

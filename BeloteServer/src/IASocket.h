@@ -22,7 +22,10 @@ public:
 	virtual void	OnWaitingPlay(const WaitingPlayPacket &waitingPlay);
 
 protected:
-	bool	botInNSTeam() const	{ return m_MySeat == 1 || m_MySeat == 3; }
+	bool	botInNSTeam() const
+	{
+		return m_MySeat == PP_North || m_MySeat == PP_South;
+	}
 
 protected:
 	PlayerHand		m_MyHand;

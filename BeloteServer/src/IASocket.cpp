@@ -7,7 +7,7 @@ const std::string IASocket::BotNames[] = { "Escartefigue", "Panisse", "César", 
 int IASocket::k_CurrentBotIdx = 0;
 
 IASocket::IASocket()
-	: m_Seated(false)
+	: m_Seated(-1)
 {
 	Connect("127.0.0.1", BotNames[k_CurrentBotIdx]);
 	k_CurrentBotIdx++;
@@ -23,7 +23,7 @@ void IASocket::OnConnectionStatusChanged(ConnectionStatus newStatus)
 
 void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 {
-	if (m_Seated)
+	if (m_Seated >= 0)
 		return;
 
 	// Fill the first free spot
@@ -37,9 +37,8 @@ void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 		Disconnect();
 	}
 
-	size_t freeSeatIdx = std::distance(positionning.m_Names.begin(), it);
-	ChoosePosition(BeloteContext::PlayerPositionStrings[freeSeatIdx]);
-	m_Seated = true;
+	m_Seated = std::distance(positionning.m_Names.begin(), it);
+	ChoosePosition(BeloteContext::PlayerPositionStrings[m_Seated]);
 }
 
 void IASocket::OnCardsDealt(const CardsDealtPacket &cards)
@@ -49,7 +48,7 @@ void IASocket::OnCardsDealt(const CardsDealtPacket &cards)
 
 void IASocket::OnPotentialAssetReceived(const std::string &assetCard)
 {
-	m_PotentialAsset = assetCard;
+	m_Asset = assetCard;
 }
 
 void IASocket::OnAskingRevealedAsset()
@@ -58,13 +57,14 @@ void IASocket::OnAskingRevealedAsset()
 	if (r < 0.6f)
 		RefuseAsset();
 	else
-		AcceptAsset(m_PotentialAsset);
+		AcceptAsset(m_Asset);
 }
 
 void IASocket::OnAskingAnotherAsset()
 {
 	std::string potentialAssets("HSDC");
-	potentialAssets.erase(potentialAssets.find_first_of(m_PotentialAsset.front()));
+	const size_t assetPos = potentialAssets.find(m_Asset.front());
+	potentialAssets.erase(assetPos, 1);
 
 	float r = sf::Randomizer::Random(0.f, 1.f);
 	if (r < 0.25f)
@@ -75,4 +75,19 @@ void IASocket::OnAskingAnotherAsset()
 		AcceptAsset(potentialAssets.substr(1, 1));
 	else
 		AcceptAsset(potentialAssets.substr(2, 1));
+}
+
+void IASocket::OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset)
+{
+	m_Asset = acceptedAsset.m_Asset;
+
+	const bool botIsInNSTeam = botInNSTeam();
+	m_AssetTakenByOpponent =	( botIsInNSTeam && !acceptedAsset.m_AcceptedByNSTeam) ||
+								(!botIsInNSTeam &&  acceptedAsset.m_AcceptedByNSTeam);
+}
+
+void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
+{
+	int playedCard = sf::Randomizer::Random(0, waitingPlay.m_PossibleCardsCount - 1);
+	PlayCard(waitingPlay.m_PossibleCards[playedCard]);
 }

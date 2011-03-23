@@ -17,30 +17,23 @@ public:
 	virtual void	OnPotentialAssetReceived(const std::string &assetCard);
 	virtual void	OnAskingRevealedAsset();
 	virtual void	OnAskingAnotherAsset();
-	/*virtual void	OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset);
-	virtual void	OnRefusedAsset(int refusingPlayerPos);
-	virtual void	OnTurnStarting();
+	virtual void	OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset);
 	virtual void	OnWaitingPlay(const WaitingPlayPacket &waitingPlay);
-	virtual void	OnPlayedCard(const PlayedCardPacket &playedCard);
-	virtual void	OnCurrentScores(int NSScore, int WEScore);
-	virtual void	OnTotalScores(int NSScore, int WEScore);
-	virtual void	OnBeloteAnnounced(int announcingPos);
-	virtual void	OnRebeloteAnnounced(int announcingPos);
-	virtual void	OnNoAssetTaken();
-	virtual void	OnContractingTeamResult(bool isNSTeamContracting, bool hasWon);
-	virtual void	OnLitige(int litigeValue);
-	virtual void	OnMatchWon(bool isWonByNSTeam);*/
+
+protected:
+	bool	botInNSTeam() const	{ return m_Seated == 1 || m_Seated == 3; }
 
 protected:
 	PlayerHand		m_MyHand;
-	std::string		m_PotentialAsset;
+	std::string		m_Asset;
+	bool			m_AssetTakenByOpponent;
 
 private:
 	static const std::string	BotNames[];
 	static int					k_CurrentBotIdx;
 
 private:
-	bool	m_Seated;
+	int		m_Seated;
 };
 
 typedef std::shared_ptr<IASocket> IASocketPtr;

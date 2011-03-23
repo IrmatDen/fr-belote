@@ -10,6 +10,7 @@ class IASocket : public ClientSocket
 {
 public:
 	IASocket();
+	~IASocket();
 
 	virtual void	OnConnectionStatusChanged(ConnectionStatus newStatus);
 	virtual void	OnPositionningReceived(const PositionningPacket &positionning);
@@ -21,7 +22,7 @@ public:
 	virtual void	OnWaitingPlay(const WaitingPlayPacket &waitingPlay);
 
 protected:
-	bool	botInNSTeam() const	{ return m_Seated == 1 || m_Seated == 3; }
+	bool	botInNSTeam() const	{ return m_MySeat == 1 || m_MySeat == 3; }
 
 protected:
 	PlayerHand		m_MyHand;
@@ -29,11 +30,9 @@ protected:
 	bool			m_AssetTakenByOpponent;
 
 private:
-	static const std::string	BotNames[];
-	static int					k_CurrentBotIdx;
-
-private:
-	int		m_Seated;
+	std::string		m_MyName;
+	int				m_MyNameIndex;
+	int				m_MySeat;
 };
 
 typedef std::shared_ptr<IASocket> IASocketPtr;

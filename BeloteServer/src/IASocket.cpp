@@ -1,16 +1,67 @@
 #include <iostream>
+#include <utility>
+#include <queue>
+
+#include "Tools.h"
 
 #include "IASocket.h"
 #include "BeloteContext.h"
 
-const std::string IASocket::BotNames[] = { "Escartefigue", "Panisse", "César", "M. Brun" };
-int IASocket::k_CurrentBotIdx = 0;
+class BotNameProvider
+{
+public:
+	typedef std::pair<int, std::string> NameInfo;
+
+public:
+	static NameInfo GetName()
+	{
+		Init();
+
+		const int nameIdx = FreeNames.front();
+		FreeNames.pop();
+
+		return std::make_pair(nameIdx, BotNames[nameIdx]);
+	}
+
+	static void FreeName(int nameIdx)
+	{
+		FreeNames.push(nameIdx);
+	}
+
+private:
+	static void Init()
+	{
+		if (BotNameProviderInitialized)
+			return;
+
+		for (int i = 0; i != BotNamesCount; i++)
+			FreeNames.push(i);
+
+		BotNameProviderInitialized = true;
+	}
+
+	static const int			BotNamesCount = 4;
+	static const std::string	BotNames[BotNamesCount];
+	static bool					BotNameProviderInitialized;
+	static std::queue<int>		FreeNames;
+};
+	
+const std::string	BotNameProvider::BotNames[BotNamesCount]	= { "Escartefigue", "Panisse", "César", "M. Brun" };
+bool				BotNameProvider::BotNameProviderInitialized = false;
+std::queue<int>		BotNameProvider::FreeNames;
 
 IASocket::IASocket()
-	: m_Seated(-1)
+	: m_MySeat(-1)
 {
-	Connect("127.0.0.1", BotNames[k_CurrentBotIdx]);
-	k_CurrentBotIdx++;
+	BotNameProvider::NameInfo ni = BotNameProvider::GetName();
+	m_MyNameIndex	= ni.first;
+	m_MyName		= ni.second;
+	Connect("127.0.0.1", m_MyName);
+}
+
+IASocket::~IASocket()
+{
+	BotNameProvider::FreeName(m_MyNameIndex);
 }
 
 void IASocket::OnConnectionStatusChanged(ConnectionStatus newStatus)
@@ -23,7 +74,8 @@ void IASocket::OnConnectionStatusChanged(ConnectionStatus newStatus)
 
 void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 {
-	if (m_Seated >= 0)
+	// Check that the seat hasn't been stolen; if it was, just take another one.
+	if (m_MySeat >= 0 && positionning.m_Names[m_MySeat] == m_MyName)
 		return;
 
 	// Fill the first free spot
@@ -37,8 +89,8 @@ void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 		Disconnect();
 	}
 
-	m_Seated = std::distance(positionning.m_Names.begin(), it);
-	ChoosePosition(BeloteContext::PlayerPositionStrings[m_Seated]);
+	m_MySeat = std::distance(positionning.m_Names.begin(), it);
+	ChoosePosition(BeloteContext::PlayerPositionStrings[m_MySeat]);
 }
 
 void IASocket::OnCardsDealt(const CardsDealtPacket &cards)

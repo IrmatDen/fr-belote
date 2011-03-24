@@ -1,7 +1,11 @@
 #ifndef BELOTESERVER_IASOCKET_H
 #define BELOTESERVER_IASOCKET_H
 
-#include <xxshared>
+#include <memory>
+
+#include <boost/bind.hpp>
+
+#include "Timer.h"
 
 #include "ClientSocket.h"
 #include "BeloteContextTypes.h"
@@ -25,6 +29,15 @@ protected:
 	bool	botInNSTeam() const
 	{
 		return m_MySeat == PP_North || m_MySeat == PP_South;
+	}
+
+	template <typename Func>
+	void	DelayReaction(Func f, int minDelay = 250, int maxDelay = 2000)
+	{
+		assert(minDelay >= 0);
+		assert(minDelay < maxDelay);
+		const sf::Uint32 reactionTime = static_cast<sf::Uint32>(sf::Randomizer::Random(minDelay, maxDelay));
+		Timer::SingleShot(reactionTime, Timer::TimeoutFunc(f));
 	}
 
 protected:

@@ -5,6 +5,8 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/System/Randomizer.hpp>
 
+#include "TimerPool.h"
+
 #include "Game.h"
 #include "SoundManager.h"
 
@@ -33,6 +35,7 @@ void Game::Init()
 {
 	new Game();
 	SoundManager::Init();
+	TimerPool::Init();
 
 	sf::Randomizer::SetSeed((unsigned int)time(0));
 }
@@ -63,6 +66,7 @@ void Game::Run()
 			m_LoadGamePending = false;
 		}
 
+		TimerPool::getSingleton().Update();
 		m_PlayerSocket.Update();
 		m_Server.Update();
 

@@ -42,14 +42,17 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\vc2010_propsheets\boost.props" />
+    <Import Project="..\..\vc2010_propsheets\sfml.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\vc2010_propsheets\boost.props" />
+    <Import Project="..\..\vc2010_propsheets\sfml.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDbgInfo|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\vc2010_propsheets\boost.props" />
+    <Import Project="..\..\vc2010_propsheets\sfml.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -110,11 +113,14 @@
   <ItemGroup>
     <ClInclude Include="src\Singleton.h" />
     <ClInclude Include="src\StateMachine.h" />
+    <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\TimerPool.h" />
     <ClInclude Include="src\Tools.h" />
     <ClInclude Include="src\typedefs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\StateMachine.cpp" />
+    <ClCompile Include="src\TimerPool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

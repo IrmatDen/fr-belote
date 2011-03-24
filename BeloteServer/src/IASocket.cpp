@@ -2,6 +2,7 @@
 #include <utility>
 #include <queue>
 
+#include "Timer.h"
 #include "Tools.h"
 
 #include "IASocket.h"
@@ -108,11 +109,11 @@ void IASocket::OnPotentialAssetReceived(const std::string &assetCard)
 
 void IASocket::OnAskingRevealedAsset()
 {
-	float r = sf::Randomizer::Random(0.f, 1.f);
+	const float r = sf::Randomizer::Random(0.f, 1.f);
 	if (r < 0.6f)
-		RefuseAsset();
+		DelayReaction(boost::bind(&ClientSocket::RefuseAsset, this));
 	else
-		AcceptAsset(m_Asset);
+		DelayReaction(boost::bind(&ClientSocket::AcceptAsset, this, m_Asset));
 }
 
 void IASocket::OnAskingAnotherAsset()
@@ -123,13 +124,18 @@ void IASocket::OnAskingAnotherAsset()
 
 	float r = sf::Randomizer::Random(0.f, 1.f);
 	if (r < 0.25f)
-		RefuseAsset();
+	{
+		DelayReaction(boost::bind(&ClientSocket::RefuseAsset, this));
+		return;
+	}
 	else if (r < 0.5f)
-		AcceptAsset(potentialAssets.substr(0, 1));
+		potentialAssets = potentialAssets.substr(0, 1);
 	else if (r < 0.75f)
-		AcceptAsset(potentialAssets.substr(1, 1));
+		potentialAssets = potentialAssets.substr(1, 1);
 	else
-		AcceptAsset(potentialAssets.substr(2, 1));
+		potentialAssets = potentialAssets.substr(2, 1);
+	
+	DelayReaction(boost::bind(&ClientSocket::AcceptAsset, this, potentialAssets));
 }
 
 void IASocket::OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset)
@@ -144,5 +150,5 @@ void IASocket::OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset)
 void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 {
 	int playedCard = sf::Randomizer::Random(0, waitingPlay.m_PossibleCardsCount - 1);
-	PlayCard(waitingPlay.m_PossibleCards[playedCard]);
+	DelayReaction(boost::bind(&ClientSocket::PlayCard, this, waitingPlay.m_PossibleCards[playedCard]));
 }

@@ -5,4 +5,3 @@
 * Afficher les IPs de l'hôte
 * Stocker le dernier nom utilisé + ruleset + dernière ip connectée (pour join seulement)
 * Faire plusieurs IA
-* Timer les réactions des IA

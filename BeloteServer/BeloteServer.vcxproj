@@ -70,7 +70,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -80,7 +80,8 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy include\*.h ..\include /I /Y</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <Lib>
       <Verbose>false</Verbose>
@@ -94,7 +95,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -106,7 +107,8 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy include\*.h ..\include /I /Y</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDbgInfo|Win32'">
@@ -131,11 +133,11 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\BeloteContextPackets.h" />
-    <ClInclude Include="include\BeloteContextTypes.h" />
-    <ClInclude Include="include\ClientSocket.h" />
-    <ClInclude Include="include\Packets.h" />
-    <ClInclude Include="include\Server.h" />
+    <ClInclude Include="..\include\BeloteContextPackets.h" />
+    <ClInclude Include="..\include\BeloteContextTypes.h" />
+    <ClInclude Include="..\include\ClientSocket.h" />
+    <ClInclude Include="..\include\Packets.h" />
+    <ClInclude Include="..\include\Server.h" />
     <ClInclude Include="src\BeloteContext.h" />
     <ClInclude Include="src\IASocket.h" />
     <ClInclude Include="src\ServerSocket.h" />

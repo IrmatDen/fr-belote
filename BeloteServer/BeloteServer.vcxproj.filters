@@ -15,28 +15,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ServerSocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Packets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\BeloteContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BeloteContextPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BeloteContextTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ClientSocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\IASocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BeloteContextPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BeloteContextTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ClientSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Packets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

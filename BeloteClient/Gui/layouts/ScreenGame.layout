@@ -5,14 +5,14 @@
 	<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
 		<Window Type="DefaultWindow" Name="UIPanel" >
 			<Property Name="UnifiedAreaRect" Value="{{1,-240},{0,0},{1,0},{1,0}}" />
-			<Window Type="OgreTray/FrameWindow" Name="UIPanel/Scores" >
+			<Window Type="OgreTray/FrameWindow" Name="Scores" >
 				<Property Name="Text" Value="Scores" />
 				<Property Name="CaptionFont" Value="DejaVuSans-8-Bold" />
 				<Property Name="InheritsAlpha" Value="False" />
 				<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 				<Property Name="TitlebarEnabled" Value="True" />
 				<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.99,0},{0.5,0}}" />
-				<Window Type="OgreTray/MultiColumnList" Name="UIPanel/Scores/Table" >
+				<Window Type="OgreTray/MultiColumnList" Name="Table" >
 					<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{0.98,0},{1,0}}" />
 					<Property Name="ColumnHeader" Value="text:[font='DejaVuSans-8']          Eux width:{0.499,0} id:0" />
 					<Property Name="ColumnHeader" Value="text:[font='DejaVuSans-8']          Nous width:{0.499,0} id:1" />
@@ -22,32 +22,32 @@
 					<Property Name="SortSettingEnabled" Value="False" />
 				</Window>
 			</Window>
-			<Window Type="OgreTray/FrameWindow" Name="UIPanel/ChatBox" >
+			<Window Type="OgreTray/FrameWindow" Name="ChatBox" >
 				<Property Name="Text" Value="Chat" />
 				<Property Name="CaptionFont" Value="DejaVuSans-8-Bold" />
 				<Property Name="InheritsAlpha" Value="False" />
 				<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 				<Property Name="TitlebarEnabled" Value="True" />
 				<Property Name="UnifiedAreaRect" Value="{{0,0},{0.5,0},{0.99,0},{0.885,0}}" />
-				<Window Type="OgreTray/Listbox" Name="UIPanel/ChatBox/List" >
+				<Window Type="OgreTray/Listbox" Name="List" >
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 					<Property Name="UnifiedAreaRect" Value="{{0.02,0},{0,0},{0.98,0},{1,-30}}" />
 				</Window>
-				<Window Type="OgreTray/Editbox" Name="UIPanel/ChatBox/Text" >
+				<Window Type="OgreTray/Editbox" Name="Text" >
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="MaxTextLength" Value="1073741823" />
 					<Property Name="UnifiedMaxSize" Value="{{1,0},{1,0}}" />
 					<Property Name="UnifiedAreaRect" Value="{{0.02,0},{1,-30},{0.98,0},{1,-5}}" />
 				</Window>
 			</Window>
-            <Window Type="OgreTray/Button" Name="UIPanel/ButtonSeeLastTurn" >
+            <Window Type="OgreTray/Button" Name="BtnSeeLastTurn" >
                 <Property Name="Text" Value="Voir le dernier pli" />
                 <Property Name="Disabled" Value="True" />
                 <Property Name="Font" Value="DejaVuSans-8" />
                 <Property Name="UnifiedAreaRect" Value="{{0,0},{0.89,0},{0.99,0},{0.935,0}}" />
             </Window>
-            <Window Type="OgreTray/Button" Name="UIPanel/ButtonQuitTable" >
+            <Window Type="OgreTray/Button" Name="BtnQuitTable" >
                 <Property Name="Text" Value="Retour au menu" />
                 <Property Name="Font" Value="DejaVuSans-8" />
                 <Property Name="UnifiedAreaRect" Value="{{0,0},{0.94,0},{0.99,0},{0.99,0}}" />
@@ -55,100 +55,100 @@
         </Window>
 		<Window Type="DefaultWindow" Name="GameArea" >
 			<Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,-240},{1,0}}" />
-			<Window Type="DefaultWindow" Name="GameSetup" >
+			<Window Type="DefaultWindow" Name="Setup" >
 				<Property Name="Visible" Value="True" />
-				<Window Type="OgreTray/Button" Name="ButtonSouth" >
+				<Window Type="OgreTray/Button" Name="BtnSouth" >
 					<Property Name="Text" Value="Sud" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{1,-85},{0.5,75},{1,-50}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonUnseatSouth" >
+				<Window Type="OgreTray/Button" Name="BtnUnseatSouth" >
 					<Property Name="Visible" Value="False" />
 					<Property Name="Text" Value="X" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,80},{1,-85},{0.5,120},{1,-50}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonWest" >
+				<Window Type="OgreTray/Button" Name="BtnWest" >
 					<Property Name="Text" Value="Ouest" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.2,-75},{0.5,-17.5},{0.2,75},{0.5,17.5}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonUnseatWest" >
+				<Window Type="OgreTray/Button" Name="BtnUnseatWest" >
 					<Property Name="Visible" Value="False" />
 					<Property Name="Text" Value="X" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.2,-20},{0.5,22.5},{0.2,20},{0.5,57.5}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonNorth" >
+				<Window Type="OgreTray/Button" Name="BtnNorth" >
 					<Property Name="Text" Value="Nord" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{0,50},{0.5,75},{0,85}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonUnseatNorth" >
+				<Window Type="OgreTray/Button" Name="BtnUnseatNorth" >
 					<Property Name="Visible" Value="False" />
 					<Property Name="Text" Value="X" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,80},{0,50},{0.5,120},{0,85}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonEast" >
+				<Window Type="OgreTray/Button" Name="BtnEast" >
 					<Property Name="Text" Value="Est" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.8,-75},{0.5,-17.5},{0.8,75},{0.5,17.5}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonUnseatEast" >
+				<Window Type="OgreTray/Button" Name="BtnUnseatEast" >
 					<Property Name="Visible" Value="False" />
 					<Property Name="Text" Value="X" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.8,-20},{0.5,22.5},{0.8,20},{0.5,57.5}}" />
 				</Window>
-				<Window Type="OgreTray/Button" Name="ButtonStartGame" >
+				<Window Type="OgreTray/Button" Name="BtnStart" >
 					<Property Name="Text" Value="Démarrer la partie" />
 					<Property Name="Font" Value="DejaVuSans-8" />
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-75},{0.5,-17.5},{0.5,75},{0.5,17.5}}" />
 				</Window>
 			</Window>
-			<Window Type="DefaultWindow" Name="GameInProgress" >
+			<Window Type="DefaultWindow" Name="InProgress" >
 				<Property Name="Visible" Value="False" />
-				<Window Type="DefaultWindow" Name="GameArea/AssetProposal" >
+				<Window Type="DefaultWindow" Name="AssetProposal" >
 					<Property Name="RiseOnClick" Value="False" />
 					<Property Name="Visible" Value="False" />
-					<Window Type="OgreTray/StaticImage" Name="AssetProposalImg">
+					<Window Type="OgreTray/StaticImage" Name="Img">
 						<Property Name="UnifiedAreaRect" Value="{{0.5,-48},{0.5,-89},{0.5, 48},{0.5,44.5}}" />
 						<Property Name="FrameEnabled" Value="False" />
 						<Property Name="Image" Value="" />
 					</Window>
-					<Window Type="DefaultWindow" Name="AssetProposalFirstTurn">
-						<Window Type="OgreTray/Button" Name="ButtonAcceptAsset" >
+					<Window Type="DefaultWindow" Name="FirstTurn">
+						<Window Type="OgreTray/Button" Name="BtnAccept" >
 							<Property Name="Text" Value="Prendre" />
 							<Property Name="Font" Value="DejaVuSans-8" />
 							<Property Name="UnifiedAreaRect" Value="{{0.5,-100},{0.5,55},{0.5, -12},{0.5,85}}" />
 						</Window>
-						<Window Type="OgreTray/Button" Name="ButtonRefuseAsset" >
+						<Window Type="OgreTray/Button" Name="BtnRefuse" >
 							<Property Name="Text" Value="Passer" />
 							<Property Name="Font" Value="DejaVuSans-8" />
 							<Property Name="UnifiedAreaRect" Value="{{0.5,12},{0.5,55},{0.5, 100},{0.5,85}}" />
 						</Window>
 					</Window>
-					<Window Type="DefaultWindow" Name="AssetProposalSecondTurn">
-						<Window Type="OgreTray/StaticImage" Name="AssetImgAlternate1">
+					<Window Type="DefaultWindow" Name="SecondTurn">
+						<Window Type="OgreTray/StaticImage" Name="Alt1">
 							<Property Name="UnifiedPosition" Value="{{0.5,-100},{0.5,55}}" />
 							<Property Name="UnifiedSize" Value="{{0,30},{0,30}}" />
 							<Property Name="Image" Value="PlayingCards/AssetD" />
 							<Property Name="FrameEnabled" Value="False" />
 						</Window>
-						<Window Type="OgreTray/StaticImage" Name="AssetImgAlternate2">
+						<Window Type="OgreTray/StaticImage" Name="Alt2">
 							<Property Name="UnifiedPosition" Value="{{0.5,-65},{0.5,55}}" />
 							<Property Name="UnifiedSize" Value="{{0,30},{0,30}}" />
 							<Property Name="Image" Value="PlayingCards/AssetH" />
 							<Property Name="FrameEnabled" Value="False" />
 						</Window>
-						<Window Type="OgreTray/StaticImage" Name="AssetImgAlternate3">
+						<Window Type="OgreTray/StaticImage" Name="Alt3">
 							<Property Name="UnifiedPosition" Value="{{0.5,-30},{0.5,55}}" />
 							<Property Name="UnifiedSize" Value="{{0,30},{0,30}}" />
 							<Property Name="Image" Value="PlayingCards/AssetS" />
 							<Property Name="FrameEnabled" Value="False" />
 						</Window>
-						<Window Type="OgreTray/Button" Name="ButtonRefuseAsset2" >
+						<Window Type="OgreTray/Button" Name="BtnRefuse" >
 							<Property Name="Text" Value="Passer" />
 							<Property Name="Font" Value="DejaVuSans-8" />
 							<Property Name="UnifiedAreaRect" Value="{{0.5,12},{0.5,55},{0.5, 100},{0.5,85}}" />
@@ -157,71 +157,74 @@
 				</Window>
 				<Window Type="DefaultWindow" Name="PlayersNames" >
 					<Property Name="MousePassThroughEnabled" Value="True" />
-					<Window Type="OgreTray/StaticText" Name="PlayerLeft" >
+					<Window Type="OgreTray/StaticText" Name="Left" >
 						<Property Name="Font" Value="DejaVuSans-8" />
 						<Property Name="FrameEnabled" Value="True" />
 						<Property Name="HorzFormatting" Value="HorzCentred" />
 						<Property Name="UnifiedAreaRect" Value="{{0.1,-50},{0.5,-20.5},{0.1,60},{0.5,20.5}}" />
 					</Window>
-					<Window Type="OgreTray/StaticText" Name="PlayerPartner" >
+					<Window Type="OgreTray/StaticText" Name="Partner" >
 						<Property Name="Font" Value="DejaVuSans-8" />
 						<Property Name="FrameEnabled" Value="True" />
 						<Property Name="HorzFormatting" Value="HorzCentred" />
 						<Property Name="UnifiedAreaRect" Value="{{0.5,-60},{0,15},{0.5,60},{0,56}}" />
 					</Window>
-					<Window Type="OgreTray/StaticText" Name="PlayerRight" >
+					<Window Type="OgreTray/StaticText" Name="Right" >
 						<Property Name="Font" Value="DejaVuSans-8" />
 						<Property Name="FrameEnabled" Value="True" />
 						<Property Name="HorzFormatting" Value="HorzCentred" />
 						<Property Name="UnifiedAreaRect" Value="{{0.9,-60},{0.5,-20.5},{0.9,50},{0.5,20.5}}" />
 					</Window>
 				</Window>
-				<Window Type="OgreTray/StaticImage" Name="LPlayerSpeakArea" >
-					<Property Name="UnifiedPosition" Value="{{0.1,-10},{0.5,-75}}" />
-					<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
-					<Property Name="FrameEnabled" Value="False" />
-					<Property Name="BackgroundEnabled" Value="False" />
-					<Property Name="Alpha" Value="0" />
-					<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneL" />
-					<Window Type="OgreTray/StaticText" Name="LPlayerSpeakArea/Txt" >
-						<Property Name="Font" Value="DejaVuSans-8" />
+				<Window Type="DefaultWindow" Name="SpeakAreas" >
+					<Property Name="MousePassThroughEnabled" Value="True" />
+					<Window Type="OgreTray/StaticImage" Name="LPlayer" >
+						<Property Name="UnifiedPosition" Value="{{0.1,-10},{0.5,-75}}" />
+						<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
 						<Property Name="FrameEnabled" Value="False" />
 						<Property Name="BackgroundEnabled" Value="False" />
-						<Property Name="HorzFormatting" Value="HorzCentred" />
-						<Property Name="Text" Value="Je passe" />
-						<Property Name="UnifiedAreaRect" Value="{{0,12},{0,6},{1,-12},{0,25}}" />
+						<Property Name="Alpha" Value="0" />
+						<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneL" />
+						<Window Type="OgreTray/StaticText" Name="Txt" >
+							<Property Name="Font" Value="DejaVuSans-8" />
+							<Property Name="FrameEnabled" Value="False" />
+							<Property Name="BackgroundEnabled" Value="False" />
+							<Property Name="HorzFormatting" Value="HorzCentred" />
+							<Property Name="Text" Value="Je passe" />
+							<Property Name="UnifiedAreaRect" Value="{{0,12},{0,6},{1,-12},{0,25}}" />
+						</Window>
 					</Window>
-				</Window>
-				<Window Type="OgreTray/StaticImage" Name="RPlayerSpeakArea" >
-					<Property Name="UnifiedPosition" Value="{{0.9,-100},{0.5,-75}}" />
-					<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
-					<Property Name="FrameEnabled" Value="False" />
-					<Property Name="BackgroundEnabled" Value="False" />
-					<Property Name="Alpha" Value="0" />
-					<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneR" />
-					<Window Type="OgreTray/StaticText" Name="RPlayerSpeakArea/Txt" >
-						<Property Name="Font" Value="DejaVuSans-8" />
+					<Window Type="OgreTray/StaticImage" Name="RPlayer" >
+						<Property Name="UnifiedPosition" Value="{{0.9,-100},{0.5,-75}}" />
+						<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
 						<Property Name="FrameEnabled" Value="False" />
 						<Property Name="BackgroundEnabled" Value="False" />
-						<Property Name="HorzFormatting" Value="HorzCentred" />
-						<Property Name="Text" Value="Je passe" />
-						<Property Name="UnifiedAreaRect" Value="{{0,12},{0,6},{1,-12},{0,25}}" />
+						<Property Name="Alpha" Value="0" />
+						<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneR" />
+						<Window Type="OgreTray/StaticText" Name="Txt" >
+							<Property Name="Font" Value="DejaVuSans-8" />
+							<Property Name="FrameEnabled" Value="False" />
+							<Property Name="BackgroundEnabled" Value="False" />
+							<Property Name="HorzFormatting" Value="HorzCentred" />
+							<Property Name="Text" Value="Je passe" />
+							<Property Name="UnifiedAreaRect" Value="{{0,12},{0,6},{1,-12},{0,25}}" />
+						</Window>
 					</Window>
-				</Window>
-				<Window Type="OgreTray/StaticImage" Name="TPlayerSpeakArea" >
-					<Property Name="UnifiedPosition" Value="{{0.5,-25},{0,65}}" />
-					<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
-					<Property Name="FrameEnabled" Value="False" />
-					<Property Name="BackgroundEnabled" Value="False" />
-					<Property Name="Alpha" Value="0" />
-					<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneT" />
-					<Window Type="OgreTray/StaticText" Name="TPlayerSpeakArea/Txt" >
-						<Property Name="Font" Value="DejaVuSans-8" />
+					<Window Type="OgreTray/StaticImage" Name="TPlayer" >
+						<Property Name="UnifiedPosition" Value="{{0.5,-25},{0,65}}" />
+						<Property Name="UnifiedSize" Value="{{0,121},{0,49}}" />
 						<Property Name="FrameEnabled" Value="False" />
 						<Property Name="BackgroundEnabled" Value="False" />
-						<Property Name="HorzFormatting" Value="HorzCentred" />
-						<Property Name="Text" Value="Je passe" />
-						<Property Name="UnifiedAreaRect" Value="{{0,12},{0,25},{1,-12},{0,39}}" />
+						<Property Name="Alpha" Value="0" />
+						<Property Name="Image" Value="OgreTrayImages/PlayerSpeakingZoneT" />
+						<Window Type="OgreTray/StaticText" Name="Txt" >
+							<Property Name="Font" Value="DejaVuSans-8" />
+							<Property Name="FrameEnabled" Value="False" />
+							<Property Name="BackgroundEnabled" Value="False" />
+							<Property Name="HorzFormatting" Value="HorzCentred" />
+							<Property Name="Text" Value="Je passe" />
+							<Property Name="UnifiedAreaRect" Value="{{0,12},{0,25},{1,-12},{0,39}}" />
+						</Window>
 					</Window>
 				</Window>
 				<Window Type="OgreTray/StaticText" Name="TurnInfo" >
@@ -234,12 +237,12 @@
 					<Property Name="HorzFormatting" Value="LeftAligned" />
 					<Property Name="UnifiedAreaRect" Value="{{0,10},{0,15},{0,160},{0,90}}" />
 				</Window>
-				<Window Type="DefaultWindow" Name="GameArea/PlayedCards" >
+				<Window Type="DefaultWindow" Name="PlayedCards" >
 					<Property Name="MousePassThroughEnabled" Value="True" />
 					<Property Name="UnifiedPosition" Value="{{0.5,-108},{0.5,-166}}" />
 					<Property Name="UnifiedSize" Value="{{0,216},{0,232}}" />
 				</Window>
-				<Window Type="DefaultWindow" Name="GameArea/PlayerCards" >
+				<Window Type="DefaultWindow" Name="PlayerCards" >
 					<Property Name="UnifiedAreaRect" Value="{{0.5,-256},{1,-193},{0.5, 400},{1,-15}}" />
 				</Window>
 			</Window>
@@ -251,11 +254,11 @@
 			<Property Name="AlwaysOnTop" Value="True" />
 			<Property Name="UnifiedPosition" Value="{{0,10},{0.15,0}}" />
 			<Property Name="UnifiedSize" Value="{{0,270},{0,330}}" />
-			<Window Type="DefaultWindow" Name="GameArea/PlayedCardsLastTurn" >
+			<Window Type="DefaultWindow" Name="PlayedCardsLastTurn" >
 				<Property Name="UnifiedPosition" Value="{{0.5,-108},{0,0}}" />
 				<Property Name="UnifiedSize" Value="{{0,216},{0,232}}" />
 			</Window>
-			<Window Type="OgreTray/Button" Name="ButtonDoneSeeingLastTurn" >
+			<Window Type="OgreTray/Button" Name="BtnDoneSeeingLastTurn" >
 				<Property Name="Text" Value="Retour au jeu" />
 				<Property Name="Font" Value="DejaVuSans-8" />
 				<Property Name="UnifiedPosition" Value="{{0.5,-60},{1,-35}}" />

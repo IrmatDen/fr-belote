@@ -1,6 +1,11 @@
 -----------------------------------------
--- Utilities
+-- Script global attributes
 -----------------------------------------
+
+local wndRoot = {}
+local wndUIPanel = {}
+local wndGameArea = {}
+local wndLastTurn = {}
 
 local CardWidth					= 96
 local CardHeight				= 133.5
@@ -11,11 +16,11 @@ local animInstances = { }
 
 local SpeakDisplayPropertyName	= "AnimInstanceIdx"
 local speakAnimInstances		= { }
-local SpeakAreaNames			= { "LPlayerSpeakArea/Txt", "TPlayerSpeakArea/Txt", "RPlayerSpeakArea/Txt", "" }
+local SpeakAreaNames			= { "LPlayer/Txt", "TPlayer/Txt", "RPlayer/Txt", "" }
 
 local PositionButtonTexts		= { "Sud", "Ouest", "Nord", "Est" }
-local PositionButtonNames		= { "ButtonSouth", "ButtonWest", "ButtonNorth", "ButtonEast" }
-local UnseatButtonNames			= { "ButtonUnseatSouth", "ButtonUnseatWest", "ButtonUnseatNorth", "ButtonUnseatEast" }
+local PositionButtonNames		= { "BtnSouth", "BtnWest", "BtnNorth", "BtnEast" }
+local UnseatButtonNames			= { "BtnUnseatSouth", "BtnUnseatWest", "BtnUnseatNorth", "BtnUnseatEast" }
 local myPosition				= 0
 local currentPositionning		= { }
 
@@ -24,6 +29,9 @@ local AssetTranslation		= { H = "Coeur", S = "Pique", D = "Carreau", C = "Trèfl
 local taker = ""
 local asset = ""
 
+-----------------------------------------
+-- Utilities
+-----------------------------------------
 
 local PlayedPositions = {	CEGUI.UVector2(CEGUI.UDim(0, 0),				CEGUI.UDim(0.5, -CardHeight / 2)),
 							CEGUI.UVector2(CEGUI.UDim(0.5, -CardWidth / 2),	CEGUI.UDim(0, 0)),
@@ -100,7 +108,7 @@ function addCard(cardName)
 	local winMgr	= CEGUI.WindowManager:getSingleton()
 	local animMgr	= CEGUI.AnimationManager:getSingleton()
 	
-	local playerHandArea		= winMgr:getWindow("GameArea/PlayerCards")
+	local playerHandArea		= wndGameArea:getChild("InProgress/PlayerCards")
 	local playerHandAreaHeight	= playerHandArea:getHeight().offset
 	
 	-- Define new windows & animation
@@ -135,8 +143,7 @@ end
 
 -- Reposition all cards in hand based on how many there are
 function rearrangeCards()
-	local winMgr			= CEGUI.WindowManager:getSingleton()
-	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local playerHandArea	= wndGameArea:getChild("InProgress/PlayerCards")
 	local cardsCount		= playerHandArea:getChildCount() - 1
 	local cardVisibleWidth	= CardWidth / 3
 	local startX			= (playerHandArea:getWidth().offset / 2)
@@ -152,8 +159,7 @@ end
 
 -- Update playable property on all player's hand's cards
 function updatePlayableCards()
-	local winMgr			= CEGUI.WindowManager:getSingleton()
-	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local playerHandArea	= wndGameArea:getChild("InProgress/PlayerCards")
 	local cardsCount		= playerHandArea:getChildCount() - 1
 	
 	for cardIdx = 0, cardsCount do
@@ -168,8 +174,7 @@ function updatePlayableCards()
 end
 
 function resetPlayableCards()
-	local winMgr			= CEGUI.WindowManager:getSingleton()
-	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local playerHandArea	= wndGameArea:getChild("InProgress/PlayerCards")
 	local cardsCount		= playerHandArea:getChildCount() - 1
 	
 	for cardIdx = 0, cardsCount do
@@ -183,21 +188,21 @@ function isCardPlayable(c)
 end
 
 function setupPlayersName()
-	local winMgr				= CEGUI.WindowManager:getSingleton()
-	local playerNamesWindows	= { "PlayerLeft", "PlayerPartner", "PlayerRight" }
+	local playerNamesWindows = { "Left", "Partner", "Right" }
 	for i = 2, 4 do
 		local relativePos = myPosition + i - 1
 		if relativePos > 4 then
 			relativePos = relativePos - 4
 		end
 		
-		winMgr:getWindow(playerNamesWindows[i - 1]):setText(currentPositionning[relativePos])
+		local name = "InProgress/PlayersNames/" .. playerNamesWindows[i - 1]
+		local wnd = wndGameArea:getChild(name)
+		wnd:setText(currentPositionning[relativePos])
 	end
 end
 
 function appendTextToChatBox(text)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local chatBox = CEGUI.toListbox(winMgr:getWindow("UIPanel/ChatBox/List"))
+	local chatBox = CEGUI.toListbox(wndUIPanel:getChild("ChatBox/List"))
 	local chatItem = LeftWrappedListItem(text)
 	chatBox:addItem(chatItem);
 	chatBox:ensureItemIsVisible(chatBox:getItemCount());
@@ -205,8 +210,7 @@ function appendTextToChatBox(text)
 end
 
 function updateTurnInfoBox(ourScore, theirScore)
-	local winMgr	= CEGUI.WindowManager:getSingleton()
-	local ti		= winMgr:getWindow("TurnInfo")
+	local ti		= wndGameArea:getChild("InProgress/TurnInfo")
 	local tiText	= "Preneur : " .. taker
 	tiText			= tiText .. "\nAtout : " .. asset
 	tiText			= tiText .. "\nEux : " .. theirScore
@@ -226,8 +230,7 @@ function IsPlayerPartOfNSTeam()
 end
 
 function setupAnimForSpeakArea(which)
-	local winMgr	= CEGUI.WindowManager:getSingleton()
-	local wnd		= winMgr:getWindow(which)
+	local wnd		= wndGameArea:getChild("InProgress/SpeakAreas/" .. which)
 	wnd:setUserString(SpeakDisplayPropertyName, #speakAnimInstances + 1)
 	
 	local animMgr	= CEGUI.AnimationManager:getSingleton()
@@ -240,8 +243,8 @@ function playerSays(playerPos, text)
 	local relativePos = getRelativePosition(playerPos)
 	if relativePos == 4 then return end
 	
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local window = winMgr:getWindow(SpeakAreaNames[relativePos])
+	local name = "InProgress/SpeakAreas/" .. SpeakAreaNames[relativePos]
+	local window = wndGameArea:getChild(name)
 	window:setText(text)
 	
 	local animIdx = window:getParent():getUserString(SpeakDisplayPropertyName)
@@ -274,8 +277,7 @@ end
 
 function onCurrentPositioningSent(args)
 	local curPosArgs 		= toCurrentPositioningArgs(args)
-	local winMgr			= CEGUI.WindowManager:getSingleton()
-	local setupBtnsParent	= winMgr:getWindow("GameSetup")
+	local setupBtnsParent	= wndGameArea:getChild("Setup")
 	local playersReady		= 0
 	for i = 0, 3 do
 		currentPositionning[i + 1] = curPosArgs.m_Pos[i]
@@ -287,18 +289,18 @@ function onCurrentPositioningSent(args)
 			playersReady = playersReady + 1
 			
 			if myPosition == i + 1 then
-				winMgr:getWindow(UnseatButtonNames[i + 1]):show()
+				setupBtnsParent:getChild(UnseatButtonNames[i + 1]):show()
 			else
-				winMgr:getWindow(UnseatButtonNames[i + 1]):hide()
+				setupBtnsParent:getChild(UnseatButtonNames[i + 1]):hide()
 			end
 		else
 			btn:setText(PositionButtonTexts[i + 1])
 			btn:enable()
-			winMgr:getWindow(UnseatButtonNames[i + 1]):hide()
+			setupBtnsParent:getChild(UnseatButtonNames[i + 1]):hide()
 		end
 	end
 	
-	local startBtn = setupBtnsParent:getChild("ButtonStartGame")
+	local startBtn = setupBtnsParent:getChild("BtnStart")
 	--if playersReady == 4 then
 		startBtn:enable()
 	--else
@@ -307,9 +309,8 @@ function onCurrentPositioningSent(args)
 end
 
 function onGameStarting(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("GameSetup"):setVisible(false)
-	winMgr:getWindow("GameInProgress"):setVisible(true)
+	wndGameArea:getChild("Setup"):setVisible(false)
+	wndGameArea:getChild("InProgress"):setVisible(true)
 	
 	setupPlayersName()
 end
@@ -320,23 +321,19 @@ function onPlayerDealing(args)
 	
 	appendTextToChatBox(text)
 	
-	local winMgr = CEGUI.WindowManager:getSingleton()
+	wndUIPanel:getChild("BtnSeeLastTurn"):disable()
 	
-	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
-	
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("GameArea/AssetProposal"):setVisible(true)
-	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
-	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
+	wndGameArea:getChild("InProgress/AssetProposal"):setVisible(true)
+	wndGameArea:getChild("InProgress/AssetProposal/FirstTurn"):setVisible(false)
+	wndGameArea:getChild("InProgress/AssetProposal/SecondTurn"):setVisible(false)
 end
 
 function onCardsReceived(args)
 	local handContent	= toCurrentCardsInHandArgs(args)
-	local winMgr		= CEGUI.WindowManager:getSingleton()
 	
-	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayerCards"))
-	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCards"))
-	deleteAllChildFromWindow(winMgr:getWindow("GameArea/PlayedCardsLastTurn"))
+	deleteAllChildFromWindow(wndGameArea:getChild("InProgress/PlayerCards"))
+	deleteAllChildFromWindow(wndGameArea:getChild("InProgress/PlayedCards"))
+	deleteAllChildFromWindow(wndLastTurn:getChild("PlayedCardsLastTurn"))
 	
 	for i = 0, 7 do
 		local name = handContent.m_Cards[i]
@@ -350,22 +347,20 @@ function onCardsReceived(args)
 end
 
 function onPotentialAsset(args)
-	local winMgr	= CEGUI.WindowManager:getSingleton()
 	local asset		= toPotentialAssetArgs(args).m_Card
-	winMgr:getWindow("AssetProposalImg"):setProperty("Image", "PlayingCards/" .. asset)
+	wndGameArea:getChild("InProgress/AssetProposal/Img"):setProperty("Image", "PlayingCards/" .. asset)
 end
 
 function onAskRevealedAsset(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(true)
+	wndGameArea:getChild("InProgress/AssetProposal/FirstTurn"):setVisible(true)
 end
 
 function onAskAnotherAsset(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(true)
+	local wndAssetProposal = wndGameArea:getChild("InProgress/AssetProposal")
+	wndAssetProposal:getChild("SecondTurn"):setVisible(true)
 	
 	-- Build current proposed asset name
-	local imgName	= winMgr:getWindow("AssetProposalImg"):getProperty("Image")
+	local imgName	= wndAssetProposal:getChild("Img"):getProperty("Image")
 	local colour	= imgName:sub(string.len("PlayingCards/") + 1):sub(1, 1)
 	local forbiddenAsset = "PlayingCards/Asset" .. colour
 	
@@ -382,7 +377,7 @@ function onAskAnotherAsset(args)
 	
 	-- Set the potential asset image on the 3 proposal buttons
 	for i = 1, #allAssets do
-		local assetImg = winMgr:getWindow("AssetImgAlternate" .. i)
+		local assetImg = wndAssetProposal:getChild("SecondTurn/Alt" .. i)
 		assetImg:setProperty("Image", allAssets[i])
 	end
 end
@@ -416,14 +411,12 @@ function onPlayerRefusedAsset(args)
 end
 
 function onTurnStarting(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("GameArea/AssetProposal"):setVisible(false)
+	wndGameArea:getChild("InProgress/AssetProposal"):setVisible(false)
 end
 
 function onWaitingPlay(args)
 	local possibleCards		= toWaitingPlayArgs(args).m_PossibleCards
-	local winMgr			= CEGUI.WindowManager:getSingleton()
-	local playerHandArea	= winMgr:getWindow("GameArea/PlayerCards")
+	local playerHandArea	= wndGameArea:getChild("InProgress/PlayerCards")
 	
 	resetPlayableCards()
 	
@@ -444,12 +437,12 @@ function onPlayedCard(args)
 	local pcArgs = toPlayedCardArgs(args)
 	
 	local winMgr		= CEGUI.WindowManager:getSingleton()
-	local playedArea	= winMgr:getWindow("GameArea/PlayedCards")
+	local playedArea	= wndGameArea:getChild("InProgress/PlayedCards")
 	
 	-- Check if 4 cards are currently in the played area; if so, move 'em to last turn area
 	if playedArea:getChildCount() == 4 then
-		winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):enable()
-		local playedLastTurnArea = winMgr:getWindow("GameArea/PlayedCardsLastTurn")
+		wndUIPanel:getChild("BtnSeeLastTurn"):enable()
+		local playedLastTurnArea = wndLastTurn:getChild("PlayedCardsLastTurn")
 		deleteAllChildFromWindow(playedLastTurnArea)
 		
 		while playedArea:getChildCount() > 0 do
@@ -500,8 +493,7 @@ function onTotalScores(args)
 		theirScore = scores.m_NorthSouthScore
 	end
 	
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local scoresTable = CEGUI.toMultiColumnList(winMgr:getWindow("UIPanel/Scores/Table"))
+	local scoresTable = CEGUI.toMultiColumnList(wndUIPanel:getChild("Scores/Table"))
 	local row = scoresTable:addRow()
 	
 	local theirScoreItem = CEGUI.createListboxTextItem("[font='DejaVuSans-8']     " .. theirScore)
@@ -579,8 +571,7 @@ function onContractingTeamResult(args)
 	
 	appendTextToChatBox(text)
 	
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
+	wndUIPanel:getChild("BtnSeeLastTurn"):disable()
 end
 
 function onLitige(args)
@@ -588,13 +579,10 @@ function onLitige(args)
 	local text = "[font='DejaVuSans-8-Bold'] Partie en litige!"
 	appendTextToChatBox(text)
 	
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):disable()
+	wndUIPanel:getChild("BtnSeeLastTurn"):disable()
 end
 
 function onMatchWon(args)
-	--local wonByNSTeam = toMatchWonArgs(args).m_MatchWonByNSTeam
-	
 	local text = "[font='DejaVuSans-8-Bold'] Partie terminée!"
 	appendTextToChatBox(text)
 end
@@ -603,7 +591,7 @@ end
 function onChoosePosition(args)
 	local window	= CEGUI.toWindowEventArgs(args).window
 	local posStr	= window:getName()
-	local posName	= posStr:sub(string.len("Button") + 1)
+	local posName	= posStr:sub(string.len("Btn") + 1)
 	
 	local client	= Game:getSingleton():GetPlayerSocket()
 	client.__ClientSocket__:ChoosePosition(posName)
@@ -632,11 +620,11 @@ end
 
 function onAcceptAsset(args)
 	local winSrc	= CEGUI.toWindowEventArgs(args).window
-	local winMgr	= CEGUI.WindowManager:getSingleton()
 	local assetCol	= ""
+	local wndAssetProposal = wndGameArea:getChild("InProgress/AssetProposal")
 	
-	if winSrc:getName() == "ButtonAcceptAsset" then
-		local imgName	= winMgr:getWindow("AssetProposalImg"):getProperty("Image")
+	if winSrc:getName() == "BtnAccept" then
+		local imgName	= wndAssetProposal:getChild("Img"):getProperty("Image")
 		assetCol		= imgName:sub(string.len("PlayingCards/") + 1)
 	else
 		local imgName	= winSrc:getProperty("Image")
@@ -646,17 +634,17 @@ function onAcceptAsset(args)
 	local client	= Game:getSingleton():GetPlayerSocket()
 	client.__ClientSocket__:AcceptAsset(assetCol)
 	
-	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
-	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
+	wndAssetProposal:getChild("FirstTurn"):setVisible(false)
+	wndAssetProposal:getChild("SecondTurn"):setVisible(false)
 end
 
 function onRefuseAsset(args)
 	local client	= Game:getSingleton():GetPlayerSocket()
 	client.__ClientSocket__:RefuseAsset()
 	
-	local winMgr	= CEGUI.WindowManager:getSingleton()
-	winMgr:getWindow("AssetProposalFirstTurn"):setVisible(false)
-	winMgr:getWindow("AssetProposalSecondTurn"):setVisible(false)
+	local wndAssetProposal = wndGameArea:getChild("InProgress/AssetProposal")
+	wndAssetProposal:getChild("FirstTurn"):setVisible(false)
+	wndAssetProposal:getChild("SecondTurn"):setVisible(false)
 end
 
 function onCardHoverIn(args)
@@ -727,17 +715,13 @@ function onSendChatText(args)
 end
 
 function onSeeLastTurn(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local lastTurnWnd = winMgr:getWindow("LastTurnWindow")
-	lastTurnWnd:show()
-	lastTurnWnd:setModalState(true)
+	wndLastTurn:show()
+	wndLastTurn:setModalState(true)
 end
 
 function onDoneSeeingLastTurn(args)
-	local winMgr = CEGUI.WindowManager:getSingleton()
-	local lastTurnWnd = winMgr:getWindow("LastTurnWindow")
-	lastTurnWnd:hide()
-	lastTurnWnd:setModalState(false)
+	wndLastTurn:hide()
+	wndLastTurn:setModalState(false)
 end
 
 function onQuitTable(args)
@@ -764,40 +748,44 @@ local winMgr	= CEGUI.WindowManager:getSingleton()
 local game		= Game:getSingleton()
 local client	= game:GetPlayerSocket()
 
-schemeMgr:create("OgreTray.scheme");
-local root = winMgr:loadWindowLayout("ScreenGame.layout")
-guiSystem:setGUISheet(root)
+schemeMgr:createFromFile("OgreTray.scheme");
+wndRoot = winMgr:loadLayoutFromFile("ScreenGame.layout")
+guiSystem:setGUISheet(wndRoot)
 
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
 
+wndUIPanel = wndRoot:getChild("UIPanel")
+wndGameArea = wndRoot:getChild("GameArea")
+wndLastTurn = wndRoot:getChild("LastTurnWindow")
+
 -- Setup animations for speaking areas
-setupAnimForSpeakArea("LPlayerSpeakArea")
-setupAnimForSpeakArea("RPlayerSpeakArea")
-setupAnimForSpeakArea("TPlayerSpeakArea")
+setupAnimForSpeakArea("LPlayer")
+setupAnimForSpeakArea("RPlayer")
+setupAnimForSpeakArea("TPlayer")
 
 -- subscribe required events
 	-- UI Panel events
-local chatTextBox = CEGUI.toEditbox(winMgr:getWindow("UIPanel/ChatBox/Text"))
+local chatTextBox = CEGUI.toEditbox(wndRoot:getChild("UIPanel/ChatBox/Text"))
 chatTextBox:subscribeEvent("TextAccepted", "onSendChatText")
-winMgr:getWindow("UIPanel/ButtonQuitTable"):subscribeEvent("Clicked", "onQuitTable")
-winMgr:getWindow("UIPanel/ButtonSeeLastTurn"):subscribeEvent("Clicked", "onSeeLastTurn")
-winMgr:getWindow("ButtonDoneSeeingLastTurn"):subscribeEvent("Clicked", "onDoneSeeingLastTurn")
-winMgr:getWindow("ButtonSouth"):subscribeEvent("Clicked", "onChoosePosition")
-winMgr:getWindow("ButtonUnseatSouth"):subscribeEvent("Clicked", "onUnseat")
-winMgr:getWindow("ButtonWest"):subscribeEvent("Clicked", "onChoosePosition")
-winMgr:getWindow("ButtonUnseatWest"):subscribeEvent("Clicked", "onUnseat")
-winMgr:getWindow("ButtonNorth"):subscribeEvent("Clicked", "onChoosePosition")
-winMgr:getWindow("ButtonUnseatNorth"):subscribeEvent("Clicked", "onUnseat")
-winMgr:getWindow("ButtonEast"):subscribeEvent("Clicked", "onChoosePosition")
-winMgr:getWindow("ButtonUnseatEast"):subscribeEvent("Clicked", "onUnseat")
-winMgr:getWindow("ButtonStartGame"):subscribeEvent("Clicked", "onStartGameBtn")
-winMgr:getWindow("ButtonAcceptAsset"):subscribeEvent("Clicked", "onAcceptAsset")
-winMgr:getWindow("ButtonRefuseAsset"):subscribeEvent("Clicked", "onRefuseAsset")
-winMgr:getWindow("AssetImgAlternate1"):subscribeEvent("MouseClick", "onAcceptAsset")
-winMgr:getWindow("AssetImgAlternate2"):subscribeEvent("MouseClick", "onAcceptAsset")
-winMgr:getWindow("AssetImgAlternate3"):subscribeEvent("MouseClick", "onAcceptAsset")
-winMgr:getWindow("ButtonRefuseAsset2"):subscribeEvent("Clicked", "onRefuseAsset")
+wndUIPanel:getChild("BtnQuitTable"):subscribeEvent("Clicked", "onQuitTable")
+wndUIPanel:getChild("BtnSeeLastTurn"):subscribeEvent("Clicked", "onSeeLastTurn")
+wndGameArea:getChild("Setup/BtnSouth"):subscribeEvent("Clicked", "onChoosePosition")
+wndGameArea:getChild("Setup/BtnUnseatSouth"):subscribeEvent("Clicked", "onUnseat")
+wndGameArea:getChild("Setup/BtnWest"):subscribeEvent("Clicked", "onChoosePosition")
+wndGameArea:getChild("Setup/BtnUnseatWest"):subscribeEvent("Clicked", "onUnseat")
+wndGameArea:getChild("Setup/BtnNorth"):subscribeEvent("Clicked", "onChoosePosition")
+wndGameArea:getChild("Setup/BtnUnseatNorth"):subscribeEvent("Clicked", "onUnseat")
+wndGameArea:getChild("Setup/BtnEast"):subscribeEvent("Clicked", "onChoosePosition")
+wndGameArea:getChild("Setup/BtnUnseatEast"):subscribeEvent("Clicked", "onUnseat")
+wndGameArea:getChild("Setup/BtnStart"):subscribeEvent("Clicked", "onStartGameBtn")
+wndGameArea:getChild("InProgress/AssetProposal/FirstTurn/BtnAccept"):subscribeEvent("Clicked", "onAcceptAsset")
+wndGameArea:getChild("InProgress/AssetProposal/FirstTurn/BtnRefuse"):subscribeEvent("Clicked", "onRefuseAsset")
+wndGameArea:getChild("InProgress/AssetProposal/SecondTurn/Alt1"):subscribeEvent("MouseClick", "onAcceptAsset")
+wndGameArea:getChild("InProgress/AssetProposal/SecondTurn/Alt2"):subscribeEvent("MouseClick", "onAcceptAsset")
+wndGameArea:getChild("InProgress/AssetProposal/SecondTurn/Alt3"):subscribeEvent("MouseClick", "onAcceptAsset")
+wndGameArea:getChild("InProgress/AssetProposal/SecondTurn/BtnRefuse"):subscribeEvent("Clicked", "onRefuseAsset")
+wndLastTurn:getChild("BtnDoneSeeingLastTurn"):subscribeEvent("Clicked", "onDoneSeeingLastTurn")
 	-- Network events
 client:subscribeEvent("ConnectionStatusUpdated", "onConnectionStatusUpdated")
 client:subscribeEvent("PlayerConnected", "onPlayerConnectedStateChange")

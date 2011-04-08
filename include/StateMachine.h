@@ -52,6 +52,7 @@ public:
 	// Setup
 	void		AddTransition(EventCode evt, StatePtr target, ActionPtr a = ActionPtr())
 	{
+		// FIXME shared ptr with null deleter isn't the cleanest way to get this done...
 		m_EventMapping[evt] = TransitionPtr(new Transition(StatePtr(this, null_deleter()), target, a));
 	}
 

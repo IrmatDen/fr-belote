@@ -1,4 +1,3 @@
-* [Menu] Le message "Impossible de se connecter" apparaît parfois au lieu de "Connection en cours..."
+* [Menu] Le message "Impossible de se connecter" apparaît parfois au lieu de "Connexion en cours..."
 * [Jeu] Il semblerait que les bots puissent se faire piquer la place et ne pas se repositionner ensuite
-* [Jeu] Crash possible dans BeloteContext::GameEnded:857: output iterator invalide pour boost.array
-Assertion failed: it != container->end(), file f:\src\belote\include\typedefs.h, line 41
+* [Menu] Checkbox des bots semble souvent ne pas reagir correctement

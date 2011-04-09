@@ -5,3 +5,25 @@
 * Afficher les IPs de l'hôte
 * Stocker le dernier nom utilisé + ruleset + dernière ip connectée (pour join seulement)
 * Faire plusieurs IA
+
+
+Fred:
+-----
+* Présentation arrondie des cartes
+* mise à l'échelle en changement de résolution
+* dans info de la partie mettre une icône représentant l'atout
+* splitter partageant Score/Chat
+* graphisme des cartes à changer
+* changer l'interface selon la résolution (occuper l'espace vide?)
+* enlever les scores pendant la partie (=> options)
+* Savoir qui tient le pli (astérisque dans le nom ?)
+* Savoir qui a pris (jeton comme jeton dealer?)
+* Délai avant fin de partie
+* Coupe paramétrable (slider ou tas de carte)
+* Supporter les styles d'UI
+* Distribution optionnelle par le dealer
+* Dans les scores: ajouter le score de la partie
+* Dans les scores: ajouter l'icône de l'atout du côté des preneurs
+* Dans les scores: faire un trait pour l'équipe dedans
+* Fenetre dernier pli non modale
+* score pour gagner: max + 1

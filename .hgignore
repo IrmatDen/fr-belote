@@ -20,3 +20,5 @@ bordel*
 ./lib
 ./CodeAnalyst
 glob:*.suo
+*distrib*
+*.project

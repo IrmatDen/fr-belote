@@ -873,8 +873,8 @@ void BeloteContext::GameEnded()
 
 bool BeloteContext::CheckMatchEnd() const
 {
-	return	d->m_TotalScores[0] >= d->m_RuleSet.m_WinningScore ||
-			d->m_TotalScores[1] >= d->m_RuleSet.m_WinningScore;
+	return	d->m_TotalScores[0] > d->m_RuleSet.m_WinningScore ||
+			d->m_TotalScores[1] > d->m_RuleSet.m_WinningScore;
 }
 
 TeamIndex BeloteContext::GetMatchWinningTeam() const

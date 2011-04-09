@@ -33,6 +33,7 @@ enum PlayDirection
 	PD_CCW,
 };
 
+//! Customizable rules sent by the host to the game's context.
 struct BeloteContextRuleSet
 {
 	BeloteContextRuleSet() : m_PlayDir(PD_CW), m_WinningScore(1000), m_AllowBots(false)

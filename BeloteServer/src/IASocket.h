@@ -40,6 +40,11 @@ protected:
 		Timer::SingleShot(reactionTime, Timer::TimeoutFunc(f));
 	}
 
+private:
+	size_t	CountCardsForAsset(char asset) const;
+	bool	HasBelote(char asset) const;
+	void	FinalizeAssetProposal(char asset, size_t cardsCountInHand);
+
 protected:
 	PlayerHand		m_MyHand;
 	std::string		m_Asset;
@@ -49,6 +54,7 @@ private:
 	std::string		m_MyName;
 	int				m_MyNameIndex;
 	int				m_MySeat;
+	int				m_PartnerSeat;
 };
 
 typedef std::shared_ptr<IASocket> IASocketPtr;

@@ -27,3 +27,5 @@ Fred:
 * Dans les scores: faire un trait pour l'équipe dedans
 * Fenetre dernier pli non modale
 * score pour gagner: max + 1
+* Afficher la belote pour le joueur la posant
+* Supporter sans atouts et tout atouts

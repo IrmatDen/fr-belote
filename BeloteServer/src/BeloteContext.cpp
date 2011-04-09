@@ -45,6 +45,9 @@ void BeloteContext::Reset()
 
 	d->m_RequiredBotsCount = 0;
 	d->m_Bots.swap(Bots());
+
+	d->m_TeamPlayedCards[0].swap(std::vector<std::string>());
+	d->m_TeamPlayedCards[1].swap(std::vector<std::string>());
 }
 
 void BeloteContext::HandleGameContextPacket(sf::Packet &packet, ServerSocketPtr sourcePlayer)

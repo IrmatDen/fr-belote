@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BeloteContext.cpp" />
+    <ClCompile Include="src\BeloteContextTypes.cpp" />
     <ClCompile Include="src\ClientSocket.cpp" />
     <ClCompile Include="src\IASocket.cpp" />
     <ClCompile Include="src\Server.cpp" />

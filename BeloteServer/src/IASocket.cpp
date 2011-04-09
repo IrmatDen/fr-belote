@@ -118,7 +118,7 @@ void IASocket::OnAskingRevealedAsset()
 
 void IASocket::OnAskingAnotherAsset()
 {
-	std::string potentialAssets("HSDC");
+	std::string potentialAssets(ColourPreffixes);
 	const size_t assetPos = potentialAssets.find(m_Asset.front());
 	potentialAssets.erase(assetPos, 1);
 

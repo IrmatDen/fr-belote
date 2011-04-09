@@ -40,11 +40,6 @@ private:
 
 	typedef boost::array<size_t, 8>	Scores;
 
-	static const std::string	ValueOrder;
-	static const std::string	ValueOrderAtAsset;
-
-	static const int			NormalScores[];
-	static const int			AssetScores[];
 	static const sf::Uint32		LastTurnScore	= 10;
 	static const sf::Uint32		BeloteScore		= 20;
 	static const sf::Uint32		MinScoreToWin	= 82;
@@ -209,25 +204,12 @@ private:
 				return 0;
 
 			if (card.front() == d->m_CurrentAsset.front())
-				return 100 + ValueOrderAtAsset.rfind(card.c_str() + 1);
+				return 100 + CardDefToScore::ValueOrderAtAsset.rfind(card.c_str() + 1);
 
 			if (card.front() == d->m_PlayedCards[0].front())
-				return ValueOrder.rfind(card.c_str() + 1);
+				return CardDefToScore::ValueOrder.rfind(card.c_str() + 1);
 
 			return 0;
-		}
-	};
-
-	struct CardDefToScore : public std::binary_function<ContextDataPtr, std::string, size_t>
-	{
-		size_t operator()(const ContextDataPtr d, const std::string &card) const
-		{
-			assert(card.size() > 0);
-
-			if (card.front() == d->m_CurrentAsset.front())
-				return AssetScores[ValueOrderAtAsset.rfind(card.c_str() + 1)];
-
-			return NormalScores[ValueOrder.rfind(card.c_str() + 1)];
 		}
 	};
 

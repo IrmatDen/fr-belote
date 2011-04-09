@@ -18,10 +18,6 @@
 #include "BeloteContextPackets.h"
 #include "Server.h"
 
-const std::string					BeloteContext::ValueOrder("789JQK101");
-const int							BeloteContext::NormalScores[] = {0, 0, 0, 2, 3, 4, 10, 0xFFFF, 11};
-const std::string					BeloteContext::ValueOrderAtAsset("78QK1019J");
-const int							BeloteContext::AssetScores[] = {0, 0, 3, 4, 10, 0xFFFF, 11, 14, 20};
 const BeloteContext::StringArray4	BeloteContext::PlayerPositionStrings = { "South", "West", "North", "East" };
 
 BeloteContext::BeloteContext(ServerPtr server)
@@ -751,7 +747,7 @@ void BeloteContext::ComputeAndReportTurnScore(PlayerPosition winner)
 	std::fill(scores.begin(), scores.end(), 0);
 	std::transform(	d->m_PlayedCards.begin(), d->m_PlayedCards.end(),
 					boost_array_iterator(scores),
-					std::bind1st(CardDefToScore(), d));
+					std::bind1st(CardDefToScore(), d->m_CurrentAsset));
 
 	Scores::value_type score = std::accumulate(scores.begin(), scores.end(), 0);
 
@@ -895,15 +891,14 @@ void BeloteContext::OrderHands()
 						if (c1 == "")	return false;
 						if (c2 == "")	return true;
 						
-						static const std::string colourOrder("HSDC");
-						const size_t	c1ColourIdx = colourOrder.find(c1.front()),
-										c2ColourIdx = colourOrder.find(c2.front());
+						const size_t	c1ColourIdx = ColourPreffixes.find(c1.front()),
+										c2ColourIdx = ColourPreffixes.find(c2.front());
 						if (c1ColourIdx < c2ColourIdx)	return true;
 						if (c2ColourIdx < c1ColourIdx)	return false;
 						
 						const bool		isAsset		= (d->m_CurrentAsset != "" && d->m_CurrentAsset.front() == c1.front());
-						const size_t	c1ValueIdx	= (isAsset ? ValueOrderAtAsset : ValueOrder).rfind(c1.c_str() + 1),
-										c2ValueIdx	= (isAsset ? ValueOrderAtAsset : ValueOrder).rfind(c2.c_str() + 1);
+						const size_t	c1ValueIdx	= (isAsset ? CardDefToScore::ValueOrderAtAsset : CardDefToScore::ValueOrder).rfind(c1.c_str() + 1),
+										c2ValueIdx	= (isAsset ? CardDefToScore::ValueOrderAtAsset : CardDefToScore::ValueOrder).rfind(c2.c_str() + 1);
 						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
 					};
 

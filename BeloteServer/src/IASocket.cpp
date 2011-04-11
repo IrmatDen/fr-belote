@@ -236,27 +236,19 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 	// First, check if we must try to have as much asset played (often because our team accepted the contract)
 	if (isFirstPlaying && !m_AssetTakenByOpponent)
 	{
-		// Count how many assets I've in hand.
-		const int assetsInHand = CountCardsForColour(m_Asset.front());
-		if (assetsInHand > 0)
+		if (ShouldPlayAsset())
 		{
-			// Play either the highest or lowest depending on if I'm owning the turn
-			const int assetsMissing = 8 - assetsInHand - m_AssetsPlayed;
-			if (assetsMissing > 0)
-			{
-				// Find my highest card (ordering was performed server-side when cards were dealt)
-				cardToPlay = GetStrongestCardForColour(m_Asset);
-				assert(!cardToPlay.empty());
+			// Find my highest card (ordering was performed server-side when cards were dealt)
+			cardToPlay = GetStrongestCardForColour(m_Asset);
+			assert(!cardToPlay.empty());
 
-				if (!IsCardOwningTurn(cardToPlay))
-				{
-					cardToPlay = GetWeakestCardForColour(m_Asset);
-					assert(!cardToPlay.empty());
-				}
+			if (!IsCardOwningTurn(cardToPlay))
+			{
+				cardToPlay = GetWeakestCardForColour(m_Asset);
+				assert(!cardToPlay.empty());
 			}
 		}
 	}
-
 
 	if (cardToPlay.empty())
 	{
@@ -271,6 +263,14 @@ bool IASocket::IsFirstPlayingInTurn() const
 	array<std::string, 4>::const_iterator it =
 		find_if_not(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(), mem_fun_ref(&string::empty));
 	return it == m_CurrentTurnCards.end();
+}
+
+bool IASocket::ShouldPlayAsset() const
+{
+	const int assetsInHand	= CountCardsForColour(m_Asset.front());
+	const int assetsMissing	= 8 - assetsInHand - m_AssetsPlayed;
+
+	return assetsInHand > 0 && assetsMissing > 0;
 }
 
 string IASocket::GetStrongestCardForColour(const string &colour) const

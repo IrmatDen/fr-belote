@@ -40,8 +40,8 @@ private:
 	bool	HasBelote(char asset) const;
 	void	FinalizeAssetProposal(char asset, size_t cardsCountInHand);
 	
-	bool	IsFirstPlayingInTurn() const;
-
+	bool		IsFirstPlayingInTurn() const;
+	bool		ShouldPlayAsset() const;
 	std::string	GetStrongestCardForColour(const std::string &colour) const;
 	std::string	GetWeakestCardForColour(const std::string &colour) const;
 	bool		IsCardOwningTurn(const std::string & card) const;

@@ -68,8 +68,6 @@ IASocket::IASocket()
 	m_MyNameIndex	= ni.first;
 	m_MyName		= ni.second;
 	Connect("127.0.0.1", m_MyName);
-
-	fill(m_PlayedCards.begin(), m_PlayedCards.end(), -1);
 }
 
 IASocket::~IASocket()
@@ -195,9 +193,8 @@ void IASocket::OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset)
 {
 	m_Asset = acceptedAsset.m_Asset;
 
-	const bool botIsInNSTeam = botInNSTeam();
-	m_AssetTakenByOpponent =	( botIsInNSTeam && !acceptedAsset.m_AcceptedByNSTeam) ||
-								(!botIsInNSTeam &&  acceptedAsset.m_AcceptedByNSTeam);
+	const bool botIsInNSTeam	= botInNSTeam();
+	m_AssetTakenByOpponent		= botIsInNSTeam ^ acceptedAsset.m_AcceptedByNSTeam;
 }
 
 void IASocket::OnTurnStarting()
@@ -248,8 +245,8 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 			const int colourIndex = ColourPreffixes.find(m_Asset.front());
 
 			// Check how much assets have already been played
-			array<int, 32>::const_iterator first = m_PlayedCards.begin() + colourIndex * 8;
-			array<int, 32>::const_iterator last(first + 8);
+			DeckPlayed::const_iterator first = m_PlayedCards.begin() + colourIndex * 8;
+			DeckPlayed::const_iterator last(first + 8);
 			const int assetsPlayed = accumulate(first, last, 0,
 				[] (int n, int p) -> int
 				{
@@ -284,12 +281,12 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 				}
 				else
 				{
-					array<int, 32>::const_iterator first	= m_PlayedCards.begin() + higherCardIndex;
-					array<int, 32>::const_iterator last		= m_PlayedCards.begin() + higherCardIndex + (colourIndex + 1) * 8 - higherCardIndex;
+					DeckPlayed::const_iterator first	= m_PlayedCards.begin() + higherCardIndex;
+					DeckPlayed::const_iterator last		= m_PlayedCards.begin() + higherCardIndex + (colourIndex + 1) * 8 - higherCardIndex;
 					if (last > m_PlayedCards.end())
 						last = m_PlayedCards.end();
 
-					array<int, 32>::const_iterator it = find_if(first, last, [] (int c) -> bool { return c == -1; } );
+					DeckPlayed::const_iterator it = find_if(first, last, [] (int c) -> bool { return c == -1; } );
 					owningTheTurn = it == last;
 				}
 

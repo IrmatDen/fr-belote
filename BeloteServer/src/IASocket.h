@@ -52,6 +52,9 @@ private:
 	}
 
 private:
+	typedef boost::array<int, 32> DeckPlayed;
+
+private:
 	std::string		m_MyName;
 	int				m_MyNameIndex;
 	int				m_MySeat;
@@ -62,7 +65,7 @@ private:
 	bool			m_AssetTakenByOpponent;
 
 	boost::array<std::string, 4>	m_CurrentTurnCards;
-	boost::array<int, 32>			m_PlayedCards;
+	DeckPlayed						m_PlayedCards;
 };
 
 typedef std::shared_ptr<IASocket> IASocketPtr;

@@ -67,6 +67,9 @@ IASocket::IASocket()
 	BotNameProvider::NameInfo ni = BotNameProvider::GetName();
 	m_MyNameIndex	= ni.first;
 	m_MyName		= ni.second;
+
+	m_Timer.SetMode(Timer::TM_ONESHOT);
+
 	Connect("127.0.0.1", m_MyName);
 }
 

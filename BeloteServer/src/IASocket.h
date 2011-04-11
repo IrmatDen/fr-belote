@@ -51,14 +51,19 @@ private:
 	{
 		assert(minDelay >= 0);
 		assert(minDelay < maxDelay);
+
 		const sf::Uint32 reactionTime = static_cast<sf::Uint32>(sf::Randomizer::Random(minDelay, maxDelay));
-		Timer::SingleShot(reactionTime, Timer::TimeoutFunc(f));
+		m_Timer.SetPeriod(reactionTime);
+		m_Timer.SetTimeoutFunc(f);
+		m_Timer.Start();
 	}
 
 private:
 	typedef boost::array<int, 32> DeckPlayed;
 
 private:
+	Timer			m_Timer;
+
 	std::string		m_MyName;
 	int				m_MyNameIndex;
 	int				m_MySeat;

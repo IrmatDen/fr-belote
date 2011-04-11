@@ -1,4 +1,3 @@
 * [Menu] Le message "Impossible de se connecter" apparaît parfois au lieu de "Connexion en cours..."
-* [Jeu] Il semblerait que les bots puissent se faire piquer la place et ne pas se repositionner ensuite
+* [Jeu] Les bots peuvent se piquer mutuellement la place et ne pas se repositionner ensuite
 * [Menu] Checkbox des bots semble souvent ne pas reagir correctement
-* [Jeu] Timer: lorsqu'on quitte une partie en cours avec des bots, il y a de grandes chances qu'un timer soit toujours actif => crash car la socket a été libéré

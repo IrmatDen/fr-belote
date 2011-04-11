@@ -41,9 +41,10 @@ private:
 	void	FinalizeAssetProposal(char asset, size_t cardsCountInHand);
 	
 	bool		IsFirstPlayingInTurn() const;
+	std::string	GetBestOpener() const;
 	bool		ShouldPlayAsset() const;
-	std::string	GetStrongestCardForColour(const std::string &colour) const;
-	std::string	GetWeakestCardForColour(const std::string &colour) const;
+	std::string	GetStrongestCardForColour(const std::string &colour, const PlayerHand &cardsToCheck) const;
+	std::string	GetWeakestCardForColour(const std::string &colour, const PlayerHand &cardsToCheck) const;
 	bool		IsCardOwningTurn(const std::string & card) const;
 
 	template <typename Func>
@@ -70,6 +71,7 @@ private:
 	int				m_PartnerSeat;
 
 	PlayerHand		m_MyHand;
+	int				m_CardsRemainingInHand;
 	std::string		m_Asset;
 	bool			m_AssetTakenByOpponent;
 	int				m_AssetsPlayed;

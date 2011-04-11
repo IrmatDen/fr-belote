@@ -107,7 +107,7 @@ void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 	ChoosePosition(BeloteContext::PlayerPositionStrings[m_MySeat]);
 
 	m_PartnerSeat = m_MySeat + 2;
-	if (m_PartnerSeat > 4)
+	if (m_PartnerSeat >= 4)
 		m_PartnerSeat = 4 - m_PartnerSeat;
 }
 
@@ -117,6 +117,9 @@ void IASocket::OnCardsDealt(const CardsDealtPacket &cards)
 
 	fill(m_PlayedCards.begin(), m_PlayedCards.end(), -1);
 	m_AssetsPlayed = 0;
+
+	// No worries about having only 5 cards: we don't play until we get 8 anyway.
+	m_CardsRemainingInHand = 8;
 }
 
 void IASocket::OnPotentialAssetReceived(const std::string &assetCard)
@@ -134,7 +137,7 @@ void IASocket::OnAskingRevealedAsset()
 void IASocket::OnAskingAnotherAsset()
 {
 	// Check which colours I'd be able to play
-	std::string potentialAssets(BeloteUtils::ColourPreffixes);
+	string potentialAssets(BeloteUtils::ColourPreffixes);
 	const size_t assetPos = potentialAssets.find(m_Asset.front());
 	potentialAssets.erase(assetPos, 1);
 
@@ -228,29 +231,21 @@ void IASocket::OnPlayedCard(const PlayedCardPacket &playedCard)
 		assert(it != m_MyHand.end());
 
 		swap(*it, string());
+		m_CardsRemainingInHand--;
 	}
 }
 
 void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 {
 	string cardToPlay;
-	const bool isFirstPlaying = IsFirstPlayingInTurn();
 
-	// First, check if we must try to have as much asset played (often because our team accepted the contract)
-	if (isFirstPlaying && !m_AssetTakenByOpponent)
+	if (IsFirstPlayingInTurn())
 	{
-		if (ShouldPlayAsset())
-		{
-			// Find my highest card (ordering was performed server-side when cards were dealt)
-			cardToPlay = GetStrongestCardForColour(m_Asset);
-			assert(!cardToPlay.empty());
-
-			if (!IsCardOwningTurn(cardToPlay))
-			{
-				cardToPlay = GetWeakestCardForColour(m_Asset);
-				assert(!cardToPlay.empty());
-			}
-		}
+		cardToPlay = GetBestOpener();
+		assert(!cardToPlay.empty());
+	}
+	else
+	{
 	}
 
 	if (cardToPlay.empty())
@@ -268,41 +263,107 @@ bool IASocket::IsFirstPlayingInTurn() const
 	return it == m_CurrentTurnCards.end();
 }
 
+std::string IASocket::GetBestOpener() const
+{
+	string cardToPlay;
+
+	if (ShouldPlayAsset())
+	{
+		// Find my highest card (ordering was performed server-side when cards were dealt)
+		cardToPlay = GetStrongestCardForColour(m_Asset, m_MyHand);
+		assert(!cardToPlay.empty());
+
+		if (!IsCardOwningTurn(cardToPlay))
+		{
+			cardToPlay = GetWeakestCardForColour(m_Asset, m_MyHand);
+			assert(!cardToPlay.empty());
+		}
+	}
+	else // Play first card that is owning the turn or the weakest one.
+	{
+		string normalColours(BeloteUtils::ColourPreffixes);
+		const size_t assetPos = normalColours.find(m_Asset.front());
+		normalColours.erase(assetPos, 1);
+
+		// Check if one my cards should own the turn
+		string::const_iterator it = find_if(normalColours.begin(), normalColours.end(),
+			[&] (const char &colour) -> bool
+			{
+				cardToPlay = GetStrongestCardForColour(string() + colour, m_MyHand);
+				if (cardToPlay.empty())
+					return false;
+
+				return IsCardOwningTurn(cardToPlay);
+			} );
+			
+		// No best card, check which one will make me lose the less points
+		if (it == normalColours.end())
+		{
+			CardDefToScore scoreFunc;
+			size_t minScore = 0;
+
+			for_each(normalColours.begin(), normalColours.end(),
+				[&] (const char &colour)
+				{
+					const string card	= GetWeakestCardForColour(string() + colour, m_MyHand);
+					if (card.empty())
+						return;
+
+					if (cardToPlay.empty())
+					{
+						cardToPlay	= card;
+						minScore	= scoreFunc(m_Asset, cardToPlay);
+						return;
+					}
+
+					const size_t score	= scoreFunc(m_Asset, card);
+					if (score < minScore)
+						cardToPlay	= card;
+				} );
+		}
+	}
+
+	return cardToPlay;
+}
+
 bool IASocket::ShouldPlayAsset() const
 {
 	const int assetsInHand	= CountCardsForColour(m_Asset.front());
+	if (m_CardsRemainingInHand == assetsInHand)
+		return true;
+
 	const int assetsMissing	= 8 - assetsInHand - m_AssetsPlayed;
 
-	return assetsInHand > 0 && assetsMissing > 0;
+	return !m_AssetTakenByOpponent && assetsInHand > 0 && assetsMissing > 0;
 }
 
-string IASocket::GetStrongestCardForColour(const string &colour) const
+string IASocket::GetStrongestCardForColour(const string &colour, const PlayerHand &cardsToCheck) const
 {
 	PlayerHand::const_reverse_iterator it =
-		find_if(m_MyHand.rbegin(), m_MyHand.rend(),
+		find_if(cardsToCheck.rbegin(), cardsToCheck.rend(),
 			[&] (const string &c) -> bool
 			{
 				if (c.empty()) return false;
 				return c.front() == colour.front();
 			} );
 
-	if (it == m_MyHand.rend())
+	if (it == cardsToCheck.rend())
 		return "";
 
 	return *it;
 }
 
-string IASocket::GetWeakestCardForColour(const string &colour) const
+string IASocket::GetWeakestCardForColour(const string &colour, const PlayerHand &cardsToCheck) const
 {
 	PlayerHand::const_iterator it =
-		find_if(m_MyHand.begin(), m_MyHand.end(),
+		find_if(cardsToCheck.begin(), cardsToCheck.end(),
 			[&] (const string &c) -> bool
 			{
 				if (c.empty()) return false;
 				return c.front() == colour.front();
 			} );
 
-	if (it == m_MyHand.end())
+	if (it == cardsToCheck.end())
 		return "";
 
 	return *it;

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <numeric>
 #include <queue>
@@ -11,6 +12,7 @@
 #include "BeloteContext.h"
 
 using namespace std;
+using namespace boost;
 
 namespace
 {
@@ -66,6 +68,8 @@ IASocket::IASocket()
 	m_MyNameIndex	= ni.first;
 	m_MyName		= ni.second;
 	Connect("127.0.0.1", m_MyName);
+
+	fill(m_PlayedCards.begin(), m_PlayedCards.end(), -1);
 }
 
 IASocket::~IASocket()
@@ -109,6 +113,8 @@ void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 void IASocket::OnCardsDealt(const CardsDealtPacket &cards)
 {
 	m_MyHand = cards.m_Cards;
+
+	fill(m_PlayedCards.begin(), m_PlayedCards.end(), -1);
 }
 
 void IASocket::OnPotentialAssetReceived(const std::string &assetCard)
@@ -119,7 +125,7 @@ void IASocket::OnPotentialAssetReceived(const std::string &assetCard)
 void IASocket::OnAskingRevealedAsset()
 {
 	// Count the number of cards I have at the proposed asset to deduce if it's worth trying.
-	const size_t n = CountCardsForAsset(m_Asset.front());
+	const size_t n = CountCardsForColour(m_Asset.front());
 	FinalizeAssetProposal(m_Asset.front(), n);
 }
 
@@ -138,7 +144,7 @@ void IASocket::OnAskingAnotherAsset()
 	for_each(potentialAssets.begin(), potentialAssets.end(),
 		[&] (const char &potentialAsset)
 		{
-			cardsCount[idx] = CountCardsForAsset(potentialAsset);
+			cardsCount[idx] = CountCardsForColour(potentialAsset);
 			if (cardsCount[idx] > cardsCount[bestOption])
 				bestOption = idx;
 
@@ -148,7 +154,7 @@ void IASocket::OnAskingAnotherAsset()
 	FinalizeAssetProposal(potentialAssets[bestOption], cardsCount[bestOption]);
 }
 
-size_t IASocket::CountCardsForAsset(char asset) const
+size_t IASocket::CountCardsForColour(char col) const
 {
 	return accumulate(m_MyHand.begin(), m_MyHand.end(), 0,
 		[&] (size_t v, const std::string &card) -> size_t
@@ -156,7 +162,7 @@ size_t IASocket::CountCardsForAsset(char asset) const
 			if (card.empty())
 				return v;
 
-			return v + (card.front() == asset ? 1 : 0);
+			return v + (card.front() == col ? 1 : 0);
 		} );
 }
 
@@ -194,8 +200,131 @@ void IASocket::OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset)
 								(!botIsInNSTeam &&  acceptedAsset.m_AcceptedByNSTeam);
 }
 
+void IASocket::OnTurnStarting()
+{
+	fill(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(), "");
+}
+
+void IASocket::OnPlayedCard(const PlayedCardPacket &playedCard)
+{
+	// Update turn state
+	m_CurrentTurnCards[playedCard.m_Player] = playedCard.m_Card;
+
+	// Update play state
+	const size_t colIdx = ColourPreffixes.find(playedCard.m_Card.front());
+	assert(colIdx < 4);
+
+	const bool isCardAsset			= m_Asset.front() == playedCard.m_Card.front();
+	const char * const cardVal		= playedCard.m_Card.c_str() + 1;
+	const std::string &cardOrder	= isCardAsset ? CardDefToScore::ValueOrderAtAsset : CardDefToScore::ValueOrder;
+	const int cardIdx				= cardOrder.rfind(cardVal);
+	// Take the fact that "10" is 2 char. I'm starting to regret using strings. Stupid! Stupid! Stupid! Stupid!
+	const int cardOffset			= isCardAsset ? (cardIdx > 5 ? -1 : 0) : (cardIdx == 8 ? -1 : 0);
+
+	m_PlayedCards[colIdx * 8 + cardIdx + cardOffset] = playedCard.m_Player;
+
+	// And update my hand if it's me playing
+	if (playedCard.m_Player == m_MySeat)
+	{
+		PlayerHand::iterator it = find(m_MyHand.begin(), m_MyHand.end(), playedCard.m_Card);
+		assert(it != m_MyHand.end());
+
+		swap(*it, string());
+	}
+}
+
 void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 {
-	int playedCard = sf::Randomizer::Random(0, waitingPlay.m_PossibleCardsCount - 1);
-	DelayReaction(boost::bind(&ClientSocket::PlayCard, this, waitingPlay.m_PossibleCards[playedCard]));
+	string cardToPlay;
+	const bool isFirstPlaying = IsFirstPlayingInTurn();
+
+	// First, check if we must try to have as much asset played (often because our team accepted the contract)
+	if (isFirstPlaying && !m_AssetTakenByOpponent)
+	{
+		// Count how many assets I've in hand.
+		const int assetsInHand = CountCardsForColour(m_Asset.front());
+		if (assetsInHand > 0)
+		{
+			const int colourIndex = ColourPreffixes.find(m_Asset.front());
+
+			// Check how much assets have already been played
+			array<int, 32>::const_iterator first = m_PlayedCards.begin() + colourIndex * 8;
+			array<int, 32>::const_iterator last(first + 8);
+			const int assetsPlayed = accumulate(first, last, 0,
+				[] (int n, int p) -> int
+				{
+					if (p == -1)	return n;
+					return n + 1;
+				} );
+
+			// And play either the highest or lowest depending on if I'm owning the turn
+			const int assetsMissing = 8 - assetsInHand - assetsPlayed;
+			if (assetsMissing > 0)
+			{
+				// Find my highest card (ordering was performed server-side when cards were dealt)
+				PlayerHand::const_reverse_iterator highestCardIt =
+					find_if(m_MyHand.rbegin(), m_MyHand.rend(),
+						[&] (const string &c) -> bool
+						{
+							if (c.empty()) return false;
+							return c.front() == m_Asset.front();
+						} );
+				assert(highestCardIt != m_MyHand.rend());
+
+				// Check if my highest card is owning the turn
+				const char * const cardVal	= highestCardIt->c_str() + 1;
+				const int cardIdx			= CardDefToScore::ValueOrderAtAsset.rfind(cardVal);
+				const int cardOffset		= cardIdx > 5 ? -1 : 0;
+				
+				bool owningTheTurn				= false;
+				const size_t higherCardIndex	= colourIndex * 8 + 1 + cardIdx + cardOffset;
+				if (higherCardIndex == m_PlayedCards.size())
+				{
+					owningTheTurn = true;
+				}
+				else
+				{
+					array<int, 32>::const_iterator first	= m_PlayedCards.begin() + higherCardIndex;
+					array<int, 32>::const_iterator last		= m_PlayedCards.begin() + higherCardIndex + (colourIndex + 1) * 8 - higherCardIndex;
+					if (last > m_PlayedCards.end())
+						last = m_PlayedCards.end();
+
+					array<int, 32>::const_iterator it = find_if(first, last, [] (int c) -> bool { return c == -1; } );
+					owningTheTurn = it == last;
+				}
+
+				if (owningTheTurn)
+				{
+					cardToPlay = *highestCardIt;
+				}
+				else // Find my lowest card to play
+				{
+					PlayerHand::const_iterator lowestCardIt =
+						find_if(m_MyHand.begin(), m_MyHand.end(),
+							[&] (const string &c) -> bool
+							{
+								if (c.empty()) return false;
+								return c.front() == m_Asset.front();
+							} );
+					assert(lowestCardIt != m_MyHand.end());
+					cardToPlay = *lowestCardIt;
+				}
+			}
+		}
+	}
+
+
+	if (cardToPlay.empty())
+	{
+		int playedCard = sf::Randomizer::Random(0, waitingPlay.m_PossibleCardsCount - 1);
+		cardToPlay = waitingPlay.m_PossibleCards[playedCard];
+	}
+	DelayReaction(boost::bind(&ClientSocket::PlayCard, this, cardToPlay));
+}
+
+bool IASocket::IsFirstPlayingInTurn() const
+{
+	array<std::string, 4>::const_iterator it =
+		find_if_not(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(), mem_fun_ref(&string::empty));
+	return it == m_CurrentTurnCards.end();
 }

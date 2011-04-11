@@ -38,7 +38,7 @@ BeloteContext::~BeloteContext()
 
 void BeloteContext::Reset()
 {
-	auto resetPlayerPtr = [] (ServerSocketPtr &p) { p.reset(); } ;
+	auto resetPlayerPtr = std::mem_fun_ref(&ServerSocketPtr::reset);
 
 	std::for_each(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), resetPlayerPtr);
 	std::for_each(d->m_Players.begin(),d->m_Players.end(), resetPlayerPtr);

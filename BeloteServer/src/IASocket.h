@@ -18,18 +18,29 @@ public:
 
 	virtual void	OnConnectionStatusChanged(ConnectionStatus newStatus);
 	virtual void	OnPositionningReceived(const PositionningPacket &positionning);
+
 	virtual void	OnCardsDealt(const CardsDealtPacket &cards);
+
 	virtual void	OnPotentialAssetReceived(const std::string &assetCard);
 	virtual void	OnAskingRevealedAsset();
 	virtual void	OnAskingAnotherAsset();
 	virtual void	OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset);
+
+	virtual void	OnTurnStarting();
+	virtual void	OnPlayedCard(const PlayedCardPacket &playedCard);
 	virtual void	OnWaitingPlay(const WaitingPlayPacket &waitingPlay);
 
-protected:
+private:
 	bool	botInNSTeam() const
 	{
 		return m_MySeat == PP_North || m_MySeat == PP_South;
 	}
+
+	size_t	CountCardsForColour(char col) const;
+	bool	HasBelote(char asset) const;
+	void	FinalizeAssetProposal(char asset, size_t cardsCountInHand);
+	
+	bool	IsFirstPlayingInTurn() const;
 
 	template <typename Func>
 	void	DelayReaction(Func f, int minDelay = 250, int maxDelay = 2000)
@@ -41,20 +52,17 @@ protected:
 	}
 
 private:
-	size_t	CountCardsForAsset(char asset) const;
-	bool	HasBelote(char asset) const;
-	void	FinalizeAssetProposal(char asset, size_t cardsCountInHand);
-
-protected:
-	PlayerHand		m_MyHand;
-	std::string		m_Asset;
-	bool			m_AssetTakenByOpponent;
-
-private:
 	std::string		m_MyName;
 	int				m_MyNameIndex;
 	int				m_MySeat;
 	int				m_PartnerSeat;
+
+	PlayerHand		m_MyHand;
+	std::string		m_Asset;
+	bool			m_AssetTakenByOpponent;
+
+	boost::array<std::string, 4>	m_CurrentTurnCards;
+	boost::array<int, 32>			m_PlayedCards;
 };
 
 typedef std::shared_ptr<IASocket> IASocketPtr;

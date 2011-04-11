@@ -42,7 +42,9 @@ private:
 	
 	bool	IsFirstPlayingInTurn() const;
 
-	void	GetStrongestCardOwningTurn() const;
+	std::string	GetStrongestCardForColour(const std::string &colour) const;
+	std::string	GetWeakestCardForColour(const std::string &colour) const;
+	bool		IsCardOwningTurn(const std::string & card) const;
 
 	template <typename Func>
 	void	DelayReaction(Func f, int minDelay = 250, int maxDelay = 2000)

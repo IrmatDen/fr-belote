@@ -240,55 +240,18 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 		const int assetsInHand = CountCardsForColour(m_Asset.front());
 		if (assetsInHand > 0)
 		{
-			const int colourIndex = BeloteUtils::ColourPreffixes.find(m_Asset.front());
-
 			// Play either the highest or lowest depending on if I'm owning the turn
 			const int assetsMissing = 8 - assetsInHand - m_AssetsPlayed;
 			if (assetsMissing > 0)
 			{
 				// Find my highest card (ordering was performed server-side when cards were dealt)
-				PlayerHand::const_reverse_iterator highestCardIt =
-					find_if(m_MyHand.rbegin(), m_MyHand.rend(),
-						[&] (const string &c) -> bool
-						{
-							if (c.empty()) return false;
-							return c.front() == m_Asset.front();
-						} );
-				assert(highestCardIt != m_MyHand.rend());
+				cardToPlay = GetStrongestCardForColour(m_Asset);
+				assert(!cardToPlay.empty());
 
-				// Check if my highest card is owning the turn
-				bool owningTheTurn				= false;
-				const size_t higherCardIndex	= colourIndex * 8 + BeloteUtils::GetCardIndex(*highestCardIt, m_Asset) + 1;
-				if (higherCardIndex == m_PlayedCards.size())
+				if (!IsCardOwningTurn(cardToPlay))
 				{
-					owningTheTurn = true;
-				}
-				else
-				{
-					DeckPlayed::const_iterator first	= m_PlayedCards.begin() + higherCardIndex;
-					DeckPlayed::const_iterator last		= m_PlayedCards.begin() + higherCardIndex + (colourIndex + 1) * 8 - higherCardIndex;
-					if (last > m_PlayedCards.end())
-						last = m_PlayedCards.end();
-
-					DeckPlayed::const_iterator it = find_if(first, last, [] (int c) -> bool { return c == -1; } );
-					owningTheTurn = it == last;
-				}
-
-				if (owningTheTurn)
-				{
-					cardToPlay = *highestCardIt;
-				}
-				else // Find my lowest card to play
-				{
-					PlayerHand::const_iterator lowestCardIt =
-						find_if(m_MyHand.begin(), m_MyHand.end(),
-							[&] (const string &c) -> bool
-							{
-								if (c.empty()) return false;
-								return c.front() == m_Asset.front();
-							} );
-					assert(lowestCardIt != m_MyHand.end());
-					cardToPlay = *lowestCardIt;
+					cardToPlay = GetWeakestCardForColour(m_Asset);
+					assert(!cardToPlay.empty());
 				}
 			}
 		}
@@ -308,4 +271,52 @@ bool IASocket::IsFirstPlayingInTurn() const
 	array<std::string, 4>::const_iterator it =
 		find_if_not(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(), mem_fun_ref(&string::empty));
 	return it == m_CurrentTurnCards.end();
+}
+
+string IASocket::GetStrongestCardForColour(const string &colour) const
+{
+	PlayerHand::const_reverse_iterator it =
+		find_if(m_MyHand.rbegin(), m_MyHand.rend(),
+			[&] (const string &c) -> bool
+			{
+				if (c.empty()) return false;
+				return c.front() == colour.front();
+			} );
+
+	if (it == m_MyHand.rend())
+		return "";
+
+	return *it;
+}
+
+string IASocket::GetWeakestCardForColour(const string &colour) const
+{
+	PlayerHand::const_iterator it =
+		find_if(m_MyHand.begin(), m_MyHand.end(),
+			[&] (const string &c) -> bool
+			{
+				if (c.empty()) return false;
+				return c.front() == colour.front();
+			} );
+
+	if (it == m_MyHand.end())
+		return "";
+
+	return *it;
+}
+
+bool IASocket::IsCardOwningTurn(const std::string & card) const
+{
+	const int colourIndex			= BeloteUtils::ColourPreffixes.find(card.front());
+	const size_t higherCardIndex	= colourIndex * 8 + BeloteUtils::GetCardIndex(card, m_Asset) + 1;
+	if (higherCardIndex == m_PlayedCards.size())
+		return true;
+
+	DeckPlayed::const_iterator first	= m_PlayedCards.begin() + higherCardIndex;
+	DeckPlayed::const_iterator last		= m_PlayedCards.begin() + higherCardIndex + (colourIndex + 1) * 8 - higherCardIndex;
+	if (last > m_PlayedCards.end())
+		last = m_PlayedCards.end();
+
+	DeckPlayed::const_iterator it = find_if(first, last, [] (int c) -> bool { return c == -1; } );
+	return it == last;
 }

@@ -204,10 +204,10 @@ private:
 				return 0;
 
 			if (card.front() == d->m_CurrentAsset.front())
-				return 100 + CardDefToScore::ValueOrderAtAsset.rfind(card.c_str() + 1);
+				return 100 + BeloteUtils::ValueOrderAtAsset.rfind(card.c_str() + 1);
 
 			if (card.front() == d->m_PlayedCards[0].front())
-				return CardDefToScore::ValueOrder.rfind(card.c_str() + 1);
+				return BeloteUtils::ValueOrder.rfind(card.c_str() + 1);
 
 			return 0;
 		}

@@ -42,6 +42,8 @@ private:
 	
 	bool	IsFirstPlayingInTurn() const;
 
+	void	GetStrongestCardOwningTurn() const;
+
 	template <typename Func>
 	void	DelayReaction(Func f, int minDelay = 250, int maxDelay = 2000)
 	{
@@ -63,6 +65,7 @@ private:
 	PlayerHand		m_MyHand;
 	std::string		m_Asset;
 	bool			m_AssetTakenByOpponent;
+	int				m_AssetsPlayed;
 
 	boost::array<std::string, 4>	m_CurrentTurnCards;
 	DeckPlayed						m_PlayedCards;

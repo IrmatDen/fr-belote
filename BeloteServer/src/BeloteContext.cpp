@@ -894,14 +894,13 @@ void BeloteContext::OrderHands()
 						if (c1 == "")	return false;
 						if (c2 == "")	return true;
 						
-						const size_t	c1ColourIdx = ColourPreffixes.find(c1.front()),
-										c2ColourIdx = ColourPreffixes.find(c2.front());
+						const size_t	c1ColourIdx = BeloteUtils::ColourPreffixes.find(c1.front()),
+										c2ColourIdx = BeloteUtils::ColourPreffixes.find(c2.front());
 						if (c1ColourIdx < c2ColourIdx)	return true;
 						if (c2ColourIdx < c1ColourIdx)	return false;
 						
-						const bool		isAsset		= (d->m_CurrentAsset != "" && d->m_CurrentAsset.front() == c1.front());
-						const size_t	c1ValueIdx	= (isAsset ? CardDefToScore::ValueOrderAtAsset : CardDefToScore::ValueOrder).rfind(c1.c_str() + 1),
-										c2ValueIdx	= (isAsset ? CardDefToScore::ValueOrderAtAsset : CardDefToScore::ValueOrder).rfind(c2.c_str() + 1);
+						const int	c1ValueIdx	= BeloteUtils::GetCardIndex(c1, d->m_CurrentAsset),
+									c2ValueIdx	= BeloteUtils::GetCardIndex(c2, d->m_CurrentAsset);
 						return c1ValueIdx < c2ValueIdx; // Same colour, sort by card.
 					};
 

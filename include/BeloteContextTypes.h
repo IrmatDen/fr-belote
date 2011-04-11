@@ -33,25 +33,31 @@ enum PlayDirection
 
 typedef boost::array<std::string, 8>	PlayerHand;
 
-//! Defines the 4 colour preffixes
-extern const std::string ColourPreffixes;
-
-//! Scoring functor; return the points value of the requested card according to the current asset
-struct CardDefToScore : public std::binary_function<std::string, std::string, size_t>
+//! Class containing misc data used by belote
+struct BeloteUtils
 {
+	//! Defines the 4 colour preffixes
+	static const std::string	ColourPreffixes;
 	static const std::string	ValueOrder;
 	static const std::string	ValueOrderAtAsset;
 	static const int			NormalScores[];
 	static const int			AssetScores[];
 
+	static int GetCardIndex(const std::string &card, const std::string &asset);
+};
+
+
+//! Scoring functor; return the points value of the requested card according to the current asset
+struct CardDefToScore : public std::binary_function<std::string, std::string, size_t>
+{
 	size_t operator()(const std::string &currentAsset, const std::string &card) const
 	{
 		assert(card.size() > 0);
 
 		if (card.front() == currentAsset.front())
-			return AssetScores[ValueOrderAtAsset.rfind(card.c_str() + 1)];
+			return BeloteUtils::AssetScores[BeloteUtils::ValueOrderAtAsset.rfind(card.c_str() + 1)];
 
-		return NormalScores[ValueOrder.rfind(card.c_str() + 1)];
+		return BeloteUtils::NormalScores[BeloteUtils::ValueOrder.rfind(card.c_str() + 1)];
 	}
 };
 

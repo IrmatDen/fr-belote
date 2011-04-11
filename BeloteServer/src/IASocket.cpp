@@ -113,6 +113,7 @@ void IASocket::OnCardsDealt(const CardsDealtPacket &cards)
 	m_MyHand = cards.m_Cards;
 
 	fill(m_PlayedCards.begin(), m_PlayedCards.end(), -1);
+	m_AssetsPlayed = 0;
 }
 
 void IASocket::OnPotentialAssetReceived(const std::string &assetCard)
@@ -130,7 +131,7 @@ void IASocket::OnAskingRevealedAsset()
 void IASocket::OnAskingAnotherAsset()
 {
 	// Check which colours I'd be able to play
-	std::string potentialAssets(ColourPreffixes);
+	std::string potentialAssets(BeloteUtils::ColourPreffixes);
 	const size_t assetPos = potentialAssets.find(m_Asset.front());
 	potentialAssets.erase(assetPos, 1);
 
@@ -208,17 +209,14 @@ void IASocket::OnPlayedCard(const PlayedCardPacket &playedCard)
 	m_CurrentTurnCards[playedCard.m_Player] = playedCard.m_Card;
 
 	// Update play state
-	const size_t colIdx = ColourPreffixes.find(playedCard.m_Card.front());
+	const size_t colIdx = BeloteUtils::ColourPreffixes.find(playedCard.m_Card.front());
 	assert(colIdx < 4);
 
-	const bool isCardAsset			= m_Asset.front() == playedCard.m_Card.front();
-	const char * const cardVal		= playedCard.m_Card.c_str() + 1;
-	const std::string &cardOrder	= isCardAsset ? CardDefToScore::ValueOrderAtAsset : CardDefToScore::ValueOrder;
-	const int cardIdx				= cardOrder.rfind(cardVal);
-	// Take the fact that "10" is 2 char. I'm starting to regret using strings. Stupid! Stupid! Stupid! Stupid!
-	const int cardOffset			= isCardAsset ? (cardIdx > 5 ? -1 : 0) : (cardIdx == 8 ? -1 : 0);
+	const int cardIdx = BeloteUtils::GetCardIndex(playedCard.m_Card, m_Asset);
+	m_PlayedCards[colIdx * 8 + cardIdx] = playedCard.m_Player;
 
-	m_PlayedCards[colIdx * 8 + cardIdx + cardOffset] = playedCard.m_Player;
+	if (playedCard.m_Card.front() == m_Asset.front())
+		m_AssetsPlayed++;
 
 	// And update my hand if it's me playing
 	if (playedCard.m_Player == m_MySeat)
@@ -242,20 +240,10 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 		const int assetsInHand = CountCardsForColour(m_Asset.front());
 		if (assetsInHand > 0)
 		{
-			const int colourIndex = ColourPreffixes.find(m_Asset.front());
+			const int colourIndex = BeloteUtils::ColourPreffixes.find(m_Asset.front());
 
-			// Check how much assets have already been played
-			DeckPlayed::const_iterator first = m_PlayedCards.begin() + colourIndex * 8;
-			DeckPlayed::const_iterator last(first + 8);
-			const int assetsPlayed = accumulate(first, last, 0,
-				[] (int n, int p) -> int
-				{
-					if (p == -1)	return n;
-					return n + 1;
-				} );
-
-			// And play either the highest or lowest depending on if I'm owning the turn
-			const int assetsMissing = 8 - assetsInHand - assetsPlayed;
+			// Play either the highest or lowest depending on if I'm owning the turn
+			const int assetsMissing = 8 - assetsInHand - m_AssetsPlayed;
 			if (assetsMissing > 0)
 			{
 				// Find my highest card (ordering was performed server-side when cards were dealt)
@@ -269,12 +257,8 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 				assert(highestCardIt != m_MyHand.rend());
 
 				// Check if my highest card is owning the turn
-				const char * const cardVal	= highestCardIt->c_str() + 1;
-				const int cardIdx			= CardDefToScore::ValueOrderAtAsset.rfind(cardVal);
-				const int cardOffset		= cardIdx > 5 ? -1 : 0;
-				
 				bool owningTheTurn				= false;
-				const size_t higherCardIndex	= colourIndex * 8 + 1 + cardIdx + cardOffset;
+				const size_t higherCardIndex	= colourIndex * 8 + BeloteUtils::GetCardIndex(*highestCardIt, m_Asset) + 1;
 				if (higherCardIndex == m_PlayedCards.size())
 				{
 					owningTheTurn = true;

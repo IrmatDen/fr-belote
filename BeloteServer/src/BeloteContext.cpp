@@ -601,10 +601,13 @@ bool BeloteContext::PlayerMustCut() const
 	Scores scores;
 	EvaluatePlayedCards(scores);
 	
-	// Check if partner's card is not the master.
+	// Check if partner's card is not the master and if he .
 	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
-	if (d->m_PlayedCards[0].front() != d->m_PlayedCards[partnerCardIndex].front())
+	if (d->m_PlayedCards[0].front() != d->m_PlayedCards[partnerCardIndex].front() &&
+		d->m_PlayedCards[partnerCardIndex].front() != d->m_CurrentAsset.front())
+	{
 		return true;
+	}
 
 	return scores[partnerCardIndex] != *std::max_element(scores.begin(), scores.end());
 }

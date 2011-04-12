@@ -71,10 +71,12 @@ private:
 	int				m_PartnerSeat;
 
 	PlayerHand		m_MyHand;
-	int				m_CardsRemainingInHand;
 	std::string		m_Asset;
 	bool			m_AssetTakenByOpponent;
+
+	int				m_CardsRemainingInHand;
 	int				m_AssetsPlayed;
+	std::string		m_FirstCardThisTurn;
 
 	boost::array<std::string, 4>	m_CurrentTurnCards;
 	DeckPlayed						m_PlayedCards;

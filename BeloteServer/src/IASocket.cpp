@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <numeric>
 #include <queue>
 #include <utility>
@@ -206,7 +207,23 @@ void IASocket::OnAcceptedAsset(const AcceptedAssetPacket &acceptedAsset)
 
 void IASocket::OnTurnStarting()
 {
+	// Update played card table
+	int pos = 0;
+	for_each(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(),
+		[&] (const string &card)
+		{
+			if (card.empty())
+				return;
+			const size_t colIdx = BeloteUtils::ColourPreffixes.find(card.front());
+			assert(colIdx < 4);
+
+			const int cardIdx = BeloteUtils::GetCardIndex(card, m_Asset);
+			m_PlayedCards[colIdx * 8 + cardIdx] = pos++;
+		} );
+
+	// Reset turn related states
 	fill(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(), "");
+	m_FirstCardThisTurn.swap(string());
 }
 
 void IASocket::OnPlayedCard(const PlayedCardPacket &playedCard)
@@ -214,13 +231,10 @@ void IASocket::OnPlayedCard(const PlayedCardPacket &playedCard)
 	// Update turn state
 	m_CurrentTurnCards[playedCard.m_Player] = playedCard.m_Card;
 
+	if (m_FirstCardThisTurn.empty())
+		m_FirstCardThisTurn = playedCard.m_Card;
+
 	// Update play state
-	const size_t colIdx = BeloteUtils::ColourPreffixes.find(playedCard.m_Card.front());
-	assert(colIdx < 4);
-
-	const int cardIdx = BeloteUtils::GetCardIndex(playedCard.m_Card, m_Asset);
-	m_PlayedCards[colIdx * 8 + cardIdx] = playedCard.m_Player;
-
 	if (playedCard.m_Card.front() == m_Asset.front())
 		m_AssetsPlayed++;
 
@@ -246,24 +260,56 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 	}
 	else
 	{
+		cardToPlay = GetStrongestCardForColour(m_FirstCardThisTurn, waitingPlay.m_PossibleCards);
+		if (cardToPlay.empty() || !IsCardOwningTurn(cardToPlay))
+		{
+			cardToPlay = GetWeakestCardForColour(m_FirstCardThisTurn, waitingPlay.m_PossibleCards);
+			if (cardToPlay.empty())
+			{
+				string normalColours(BeloteUtils::ColourPreffixes);
+
+				// Check if cutting is required
+				if (CountCardsForColour(m_FirstCardThisTurn.front()) != 0)
+				{
+					const size_t assetPos = normalColours.find(m_Asset.front());
+					normalColours.erase(assetPos, 1);
+				}
+
+				CardDefToScore scoreFunc;
+				size_t minScore = 0;
+
+				for_each(normalColours.begin(), normalColours.end(),
+					[&] (const char &colour)
+					{
+						const string card = GetWeakestCardForColour(string() + colour, waitingPlay.m_PossibleCards);
+						if (card.empty())
+							return;
+
+						if (cardToPlay.empty())
+						{
+							cardToPlay	= card;
+							minScore	= scoreFunc(m_Asset, cardToPlay);
+							return;
+						}
+
+						const size_t score	= scoreFunc(m_Asset, card);
+						if (score < minScore)
+							cardToPlay	= card;
+					} );
+			}
+		}
 	}
 
-	if (cardToPlay.empty())
-	{
-		int playedCard = sf::Randomizer::Random(0, waitingPlay.m_PossibleCardsCount - 1);
-		cardToPlay = waitingPlay.m_PossibleCards[playedCard];
-	}
+	assert(!cardToPlay.empty());
 	DelayReaction(boost::bind(&ClientSocket::PlayCard, this, cardToPlay));
 }
 
 bool IASocket::IsFirstPlayingInTurn() const
 {
-	array<std::string, 4>::const_iterator it =
-		find_if_not(m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(), mem_fun_ref(&string::empty));
-	return it == m_CurrentTurnCards.end();
+	return m_FirstCardThisTurn.empty();
 }
 
-std::string IASocket::GetBestOpener() const
+string IASocket::GetBestOpener() const
 {
 	string cardToPlay;
 
@@ -300,12 +346,12 @@ std::string IASocket::GetBestOpener() const
 		if (it == normalColours.end())
 		{
 			CardDefToScore scoreFunc;
-			size_t minScore = 0;
+			size_t minScore = numeric_limits<size_t>::max();
 
 			for_each(normalColours.begin(), normalColours.end(),
 				[&] (const char &colour)
 				{
-					const string card	= GetWeakestCardForColour(string() + colour, m_MyHand);
+					const string card = GetWeakestCardForColour(string() + colour, m_MyHand);
 					if (card.empty())
 						return;
 
@@ -333,7 +379,6 @@ bool IASocket::ShouldPlayAsset() const
 		return true;
 
 	const int assetsMissing	= 8 - assetsInHand - m_AssetsPlayed;
-
 	return !m_AssetTakenByOpponent && assetsInHand > 0 && assetsMissing > 0;
 }
 

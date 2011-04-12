@@ -538,7 +538,7 @@ void BeloteContext::EvaluatePlayedCards(Scores &scores) const
 	std::fill(scores.begin(), scores.end(), 0);
 	std::transform(	d->m_PlayedCards.begin(), d->m_PlayedCards.end(),
 					boost_array_iterator(scores),
-					std::bind1st(CardDefToValue(), d));
+					CardDefToValue(d->m_CurrentAsset, d->m_PlayedCards[0]));
 }
 
 size_t BeloteContext::GetMaxScoreFromPlayedCards() const
@@ -569,14 +569,14 @@ void BeloteContext::DumpOvercuttingCardsTo(std::vector<std::string> &out) const
 	const size_t maxPlayedScore	= GetMaxScoreFromPlayedCards();
 
 	// And use it to filter which cards from player's hand is playable.
-	CardDefToValue scoringFunc;
+	CardDefToValue scoringFunc(d->m_CurrentAsset, d->m_PlayedCards[0]);
 
 	std::copy_if(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
 					d->m_PlayersHand[d->m_CurrentPlayer].begin() + d->m_RemainingCards[d->m_CurrentPlayer],
 					std::back_inserter(out),
 					[&] (const std::string &card) -> bool
 					{
-						const size_t score = scoringFunc(d, card);
+						const size_t score = scoringFunc(card);
 						return score > maxPlayedScore;
 					} );
 }
@@ -601,14 +601,8 @@ bool BeloteContext::PlayerMustCut() const
 	Scores scores;
 	EvaluatePlayedCards(scores);
 	
-	// Check if partner's card is not the master and if he .
-	const int partnerCardIndex	= d->m_CurrentlyPlayedCards - 2;
-	if (d->m_PlayedCards[0].front() != d->m_PlayedCards[partnerCardIndex].front() &&
-		d->m_PlayedCards[partnerCardIndex].front() != d->m_CurrentAsset.front())
-	{
-		return true;
-	}
-
+	// Check if partner's card is not already the master.
+	const int partnerCardIndex = d->m_CurrentlyPlayedCards - 2;
 	return scores[partnerCardIndex] != *std::max_element(scores.begin(), scores.end());
 }
 
@@ -620,7 +614,7 @@ bool BeloteContext::PlayerCanOvercut() const
 	std::transform(	d->m_PlayersHand[d->m_CurrentPlayer].begin(),
 					d->m_PlayersHand[d->m_CurrentPlayer].end(),
 					boost_array_iterator(handScores),
-					std::bind1st(CardDefToValue(), d));
+					CardDefToValue(d->m_CurrentAsset, d->m_PlayedCards[0]));
 
 	const size_t maxHandScore = *std::max_element(handScores.begin(), handScores.end());
 

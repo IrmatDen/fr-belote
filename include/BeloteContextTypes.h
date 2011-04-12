@@ -32,6 +32,7 @@ enum PlayDirection
 };
 
 typedef boost::array<std::string, 8>	PlayerHand;
+typedef boost::array<size_t, 8>			Scores;
 
 //! Class containing misc data used by belote
 struct BeloteUtils
@@ -60,6 +61,41 @@ struct CardDefToScore : public std::binary_function<std::string, std::string, si
 		return BeloteUtils::NormalScores[BeloteUtils::ValueOrder.rfind(card.c_str() + 1)];
 	}
 };
+
+//! Value functor: allows ordering of cards where asset cards are guaranteed to be the highest ones
+struct CardDefToValue : public std::unary_function<std::string, size_t>
+{
+	CardDefToValue(const std::string &currentAsset, const std::string &requestedCard)
+		: m_CurrentAsset(currentAsset), m_RequestedCard(requestedCard)
+	{
+	}
+
+	CardDefToValue(const CardDefToValue &other)
+		: m_CurrentAsset(other.m_CurrentAsset), m_RequestedCard(other.m_RequestedCard)
+	{
+	}
+
+	const std::string &m_CurrentAsset;
+	const std::string &m_RequestedCard;
+
+	size_t operator()(const std::string &card) const
+	{
+		if (card.size() == 0)
+			return 0;
+
+		if (card.front() == m_CurrentAsset.front())
+			return 100 + BeloteUtils::ValueOrderAtAsset.rfind(card.c_str() + 1);
+
+		if (card.front() == m_RequestedCard.front())
+			return BeloteUtils::ValueOrder.rfind(card.c_str() + 1);
+
+		return 0;
+	}
+
+private:
+	CardDefToValue& operator=(const CardDefToValue &other);
+};
+
 
 //! Customizable rules sent by the host to the game's context.
 struct BeloteContextRuleSet

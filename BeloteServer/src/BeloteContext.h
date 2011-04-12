@@ -38,8 +38,6 @@ private:
 		TE_MatchEnded,
 	};
 
-	typedef boost::array<size_t, 8>	Scores;
-
 	static const sf::Uint32		LastTurnScore	= 10;
 	static const sf::Uint32		BeloteScore		= 20;
 	static const sf::Uint32		MinScoreToWin	= 82;
@@ -193,23 +191,6 @@ private:
 		bool operator()(const std::string &testedColour, const std::string &card) const
 		{
 			return card.size() > 0 && card.front() == testedColour.front();
-		}
-	};
-
-	struct CardDefToValue : public std::binary_function<ContextDataPtr, std::string, size_t>
-	{
-		size_t operator()(const ContextDataPtr d, const std::string &card) const
-		{
-			if (card.size() == 0)
-				return 0;
-
-			if (card.front() == d->m_CurrentAsset.front())
-				return 100 + BeloteUtils::ValueOrderAtAsset.rfind(card.c_str() + 1);
-
-			if (card.front() == d->m_PlayedCards[0].front())
-				return BeloteUtils::ValueOrder.rfind(card.c_str() + 1);
-
-			return 0;
 		}
 	};
 

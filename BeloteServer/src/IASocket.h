@@ -41,6 +41,7 @@ private:
 	void	FinalizeAssetProposal(char asset, size_t cardsCountInHand);
 	
 	bool		IsFirstPlayingInTurn() const;
+	bool		IsPartnerOwningTurn() const;
 	std::string	GetBestOpener() const;
 	bool		ShouldPlayAsset() const;
 	std::string	GetStrongestCardForColour(const std::string &colour, const PlayerHand &cardsToCheck) const;

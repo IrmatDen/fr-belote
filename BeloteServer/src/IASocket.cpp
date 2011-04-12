@@ -109,7 +109,7 @@ void IASocket::OnPositionningReceived(const PositionningPacket &positionning)
 
 	m_PartnerSeat = m_MySeat + 2;
 	if (m_PartnerSeat >= 4)
-		m_PartnerSeat = 4 - m_PartnerSeat;
+		m_PartnerSeat = m_PartnerSeat - 4;
 }
 
 void IASocket::OnCardsDealt(const CardsDealtPacket &cards)
@@ -269,7 +269,8 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 				string normalColours(BeloteUtils::ColourPreffixes);
 
 				// Check if cutting is required
-				if (CountCardsForColour(m_FirstCardThisTurn.front()) != 0)
+				const int assetsInHand	= CountCardsForColour(m_Asset.front());
+				if (IsPartnerOwningTurn() && m_CardsRemainingInHand != assetsInHand)
 				{
 					const size_t assetPos = normalColours.find(m_Asset.front());
 					normalColours.erase(assetPos, 1);
@@ -307,6 +308,21 @@ void IASocket::OnWaitingPlay(const WaitingPlayPacket &waitingPlay)
 bool IASocket::IsFirstPlayingInTurn() const
 {
 	return m_FirstCardThisTurn.empty();
+}
+
+bool IASocket::IsPartnerOwningTurn() const
+{
+	const string &partnerCard = m_CurrentTurnCards[m_PartnerSeat];
+	if (partnerCard.empty())
+		return false;
+	
+	Scores scores;
+	fill(scores.begin(), scores.end(), 0);
+	transform(	m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(),
+				boost_array_iterator(scores),
+				CardDefToValue(m_Asset, m_FirstCardThisTurn));
+	
+	return scores[m_PartnerSeat] == *std::max_element(scores.begin(), scores.end());
 }
 
 string IASocket::GetBestOpener() const
@@ -427,5 +443,21 @@ bool IASocket::IsCardOwningTurn(const std::string & card) const
 		last = m_PlayedCards.end();
 
 	DeckPlayed::const_iterator it = find_if(first, last, [] (int c) -> bool { return c == -1; } );
-	return it == last;
+	if (it != last)
+		return false;
+
+	// Check if an opponent has played a stronger card this turn
+	if (m_FirstCardThisTurn.empty())
+		return true;
+
+	CardDefToValue evalFunc(m_Asset, m_FirstCardThisTurn);
+	const size_t cardValue = evalFunc(card);
+
+	Scores scores;
+	fill(scores.begin(), scores.end(), 0);
+	transform(	m_CurrentTurnCards.begin(), m_CurrentTurnCards.end(),
+				boost_array_iterator(scores),
+				evalFunc);
+
+	return count_if(scores.begin(), scores.end(), bind2nd(greater<size_t>(), cardValue)) == 0;
 }

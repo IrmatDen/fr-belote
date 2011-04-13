@@ -1,4 +1,0 @@
-* [Menu] Le message "Impossible de se connecter" apparaît parfois au lieu de "Connexion en cours..."
-* [Jeu] Les bots peuvent se piquer mutuellement la place et ne pas se repositionner ensuite
-* [Menu] Checkbox des bots semble souvent ne pas reagir correctement
-* Mode release crash sur les pcs non-devs?

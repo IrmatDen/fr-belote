@@ -432,6 +432,7 @@ string IASocket::GetWeakestCardForColour(const string &colour, const PlayerHand 
 
 bool IASocket::IsCardOwningTurn(const std::string & card) const
 {
+	// First, look into pastly played cards to check if stronger cards may be played
 	const int colourIndex			= BeloteUtils::ColourPreffixes.find(card.front());
 	const size_t higherCardIndex	= colourIndex * 8 + BeloteUtils::GetCardIndex(card, m_Asset) + 1;
 	if (higherCardIndex == m_PlayedCards.size())

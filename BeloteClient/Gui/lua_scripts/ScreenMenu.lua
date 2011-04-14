@@ -2,6 +2,7 @@
 -- Script global attributes
 -----------------------------------------
 
+local logger = CEGUI.Logger:getSingleton()
 local rootWindow = {}
 
 -----------------------------------------
@@ -169,6 +170,7 @@ end
 -----------------------------------------
 -- Script Entry Point
 -----------------------------------------
+logger:logEvent("Entering ScreenMenu.lua")
 local guiSystem	= CEGUI.System:getSingleton()
 local schemeMgr	= CEGUI.SchemeManager:getSingleton()
 local winMgr	= CEGUI.WindowManager:getSingleton()
@@ -178,11 +180,14 @@ local client	= game:GetPlayerSocket()
 schemeMgr:createFromFile("OgreTray.scheme");
 rootWindow = winMgr:loadLayoutFromFile("ScreenMenu.layout")
 guiSystem:setGUISheet(rootWindow)
+logger:logEvent("Finished loading menu layout")
 
 -- set default mouse cursor
 guiSystem:setDefaultMouseCursor("OgreTrayImages/MouseArrow")
 -- set the Tooltip type
 guiSystem:setDefaultTooltip("OgreTray/Tooltip")
+
+logger:logEvent("Defaults setup")
 
 -- Setup screens & screen stack
 local screensCount = rootWindow:getChildCount()
@@ -190,6 +195,8 @@ for screen = 0, screensCount do
 	rootWindow:getChildAtIdx(screen):setVisible(false)
 end
 displayScreen("MenuScreenMain")
+
+logger:logEvent("Screens initialized")
 
 -- Misc. setup
 local hostNameBox = CEGUI.toEditbox(rootWindow:getChild("MenuScreenRules/RulesBg/PlayerName"))
@@ -202,6 +209,8 @@ local gameRotCB = CEGUI.toCombobox(rootWindow:getChild("MenuScreenRules/RulesBg/
 gameRotCB:addItem(CEGUI.createListboxTextItem("Horaire", 0, nil, false, true))
 gameRotCB:addItem(CEGUI.createListboxTextItem("Anti-horaire", 0, nil, false, true))
 gameRotCB:setItemSelectState(0, true)
+
+logger:logEvent("Input fields initialized")
 
 -- subscribe required events
 	-- Network & errors events
@@ -232,7 +241,11 @@ hostIpBox:subscribeEvent("InvalidEntryAttempted", "disableJoinGame")
 	-- Error event
 rootWindow:getChild("ErrorMsgBox/OK"):subscribeEvent("Clicked", "onErrorOk")
 
+logger:logEvent("Events suscribed")
+
 -- Finish setup parts which fire events
 scoreMaxBox:setText("1000")
 clientNameBox:setText("Client")
 hostIpBox:setText("127.0.0.1")
+
+logger:logEvent("Input fields initialized #2")

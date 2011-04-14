@@ -82,8 +82,8 @@ private:
 class StateMachine
 {
 public:
-	StateMachine()				{ ; }
-	virtual ~StateMachine()		{ ; }
+	StateMachine() : m_StopFlag(true)	{ ; }
+	virtual ~StateMachine()				{ ; }
 
 	void	Start(StatePtr startState)
 	{

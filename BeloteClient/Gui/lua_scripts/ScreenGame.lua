@@ -716,12 +716,10 @@ end
 
 function onSeeLastTurn(args)
 	wndLastTurn:show()
-	wndLastTurn:setModalState(true)
 end
 
 function onDoneSeeingLastTurn(args)
 	wndLastTurn:hide()
-	wndLastTurn:setModalState(false)
 end
 
 function onQuitTable(args)

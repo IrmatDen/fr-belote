@@ -81,7 +81,7 @@ void Game::HandleEvents()
 {
 	sf::Event event;
 
-	while (!m_QuitPending && m_RenderWindow->GetEvent(event))
+	while (!m_QuitPending && m_RenderWindow->PollEvent(event))
 	{
 		if (m_GuiManager.HandleEvent(event))
 			continue;

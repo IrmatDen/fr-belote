@@ -133,10 +133,11 @@ void BeloteContext::SetPlayerPos(ServerSocketPtr player, const std::string &posN
 	PlayersIt playerIt = std::find(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player);
 	if (playerIt != d->m_UnplacedPlayers.end())
 	{
-		d->m_UnplacedPlayers.erase(std::remove(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player), d->m_UnplacedPlayers.end());
-
-		// TODO conccurrency issue lurking here! last arrived impose his will!
-		d->m_Players[posIdx] = player;
+        if (d->m_Players[posIdx] == nullptr)
+        {
+		    d->m_Players[posIdx] = player;
+            d->m_UnplacedPlayers.erase(std::remove(d->m_UnplacedPlayers.begin(), d->m_UnplacedPlayers.end(), player), d->m_UnplacedPlayers.end());
+        }
 	}
 	else
 	{
@@ -212,7 +213,7 @@ void BeloteContext::Update()
 		StartGame();
 	}
 
-	std::for_each(d->m_Bots.begin(), d->m_Bots.end(), [](IASocketPtr p) {p->Update();} );
+	std::for_each(d->m_Bots.begin(), d->m_Bots.end(), [] (IASocketPtr p) { p->Update(); } );
 }
 
 void BeloteContext::StartGame()

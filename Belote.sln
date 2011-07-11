@@ -14,6 +14,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BeloteServer", "BeloteServe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CuteBelote", "CuteBelote\CuteBelote.vcxproj", "{022D0C92-A1CF-45C4-94B5-0B2EE6230179}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C25B160B-5EF9-429D-9A6A-EA251AE63AB1} = {C25B160B-5EF9-429D-9A6A-EA251AE63AB1}
+		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4} = {3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,6 +45,12 @@ Global
 		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.Release|Win32.Build.0 = Release|Win32
 		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.ReleaseWithDbgInfo|Win32.ActiveCfg = ReleaseWithDbgInfo|Win32
 		{3C96B2FC-9B08-42E2-AB40-FF3E80B5F3A4}.ReleaseWithDbgInfo|Win32.Build.0 = ReleaseWithDbgInfo|Win32
+		{022D0C92-A1CF-45C4-94B5-0B2EE6230179}.Debug|Win32.ActiveCfg = Debug|Win32
+		{022D0C92-A1CF-45C4-94B5-0B2EE6230179}.Debug|Win32.Build.0 = Debug|Win32
+		{022D0C92-A1CF-45C4-94B5-0B2EE6230179}.Release|Win32.ActiveCfg = Release|Win32
+		{022D0C92-A1CF-45C4-94B5-0B2EE6230179}.Release|Win32.Build.0 = Release|Win32
+		{022D0C92-A1CF-45C4-94B5-0B2EE6230179}.ReleaseWithDbgInfo|Win32.ActiveCfg = Release|Win32
+		{022D0C92-A1CF-45C4-94B5-0B2EE6230179}.ReleaseWithDbgInfo|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

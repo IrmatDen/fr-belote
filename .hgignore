@@ -12,7 +12,6 @@ syntax: glob
 *.pdb
 *.idb
 *.lib
-*Belote*.exe
 *.ilk
 bordel*
 *.ipch
@@ -23,3 +22,10 @@ glob:*.suo
 *distrib*
 *.project
 bin/*.exp
+CuteBelote/Makefile*
+*belote*.exe
+*.vcxproj*
+*Makefile*
+*Belote*.exe
+*moc_*.cpp
+*ui_*.h

@@ -25,11 +25,14 @@ CONFIG(release, debug|release) {
 
 # Input
 FORMS += src/mainwindow.ui          \
-         src/GameSettings.ui
+         src/GameSettings.ui        \
+         src/JoinGame.ui
 
 HEADERS +=	src/MainWindow.h        \
-            src/GameSettings.h
+            src/GameSettings.h      \
+            src/JoinGame.h
 
 SOURCES += src/main.cpp			    \
            src/MainWindow.cpp       \
-           src/GameSettings.cpp
+           src/GameSettings.cpp     \
+           src/JoinGame.cpp

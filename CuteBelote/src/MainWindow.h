@@ -6,6 +6,7 @@
 #include <QtGui/QMainWindow>
 
 class GameSettings;
+class JoinGame;
 
 class MainWindow : public QMainWindow
 {
@@ -19,9 +20,10 @@ private slots:
 	void OnJoinGame();
 
 private:
-	Ui::MainWindow			mUi;
+	Ui::MainWindow		mUi;
 
-    GameSettings        *   mGameSettings;
+    GameSettings    *   mGameSettings;
+    JoinGame        *   mJoinGame;
 };
 
 #endif

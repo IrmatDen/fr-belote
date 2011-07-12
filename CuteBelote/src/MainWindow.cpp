@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "GameSettings.h"
+#include "JoinGame.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(mUi.actionJoinGame,	    SIGNAL(triggered()), this, SLOT(OnJoinGame()));
 
     mGameSettings = new GameSettings(this);
+    mJoinGame = new JoinGame(this);
 }
 
 void MainWindow::OnCreateGame()
@@ -22,4 +24,8 @@ void MainWindow::OnCreateGame()
 
 void MainWindow::OnJoinGame()
 {
+    if (mJoinGame->exec() != QDialog::Accepted)
+        return;
+
+    qDebug("Joining server...");
 }

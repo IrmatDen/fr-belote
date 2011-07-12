@@ -14,14 +14,11 @@ class GameSettings : public QDialog
 public:
     GameSettings(QWidget *parent = nullptr);
 
-    QString         playerName() const;
-
-    PlayDirection   playDirection() const;
-    
-    sf::Uint32      winningScore() const;
-
 public slots:
     virtual void accept();
+
+private:
+    PlayDirection   playDirection() const;
 
 private:
 	Ui::GameSettings    mUi;

@@ -15,12 +15,12 @@ LIBS += -L../lib -L$$(SFML2_PATH)/lib -L$$(BOOST_PATH)/lib
 CONFIG(debug, debug|release) {
     CONFIG += console
 	TARGET = $$member(TARGET, 0)_d
-	LIBS += -lsfml-network-d
+	LIBS += -lsfml-system-d -lsfml-network-d -lBeloteServer_d -lCommon_d
 }
 
 CONFIG(release, debug|release) {
 	TARGET = $$member(TARGET, 0)
-	LIBS += -lsfml-network
+	LIBS += -lsfml-system -lsfml-network -lBeloteServer -lCommon
 }
 
 # Input
@@ -30,9 +30,13 @@ FORMS += src/mainwindow.ui          \
 
 HEADERS +=	src/MainWindow.h        \
             src/GameSettings.h      \
-            src/JoinGame.h
+            src/JoinGame.h          \
+            src/BeloteApplication.h \
+            src/PlayerSocket.h
 
-SOURCES += src/main.cpp			    \
-           src/MainWindow.cpp       \
-           src/GameSettings.cpp     \
-           src/JoinGame.cpp
+SOURCES += src/main.cpp			        \
+           src/MainWindow.cpp           \
+           src/GameSettings.cpp         \
+           src/JoinGame.cpp             \
+           src/BeloteApplication.cpp    \
+           src/PlayerSocket.cpp

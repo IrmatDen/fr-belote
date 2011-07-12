@@ -1,19 +1,10 @@
 #include "GameSettings.h"
+#include "BeloteApplication.h"
 
 GameSettings::GameSettings(QWidget *parent)
     : QDialog(parent)
 {
     mUi.setupUi(this);
-}
-
-void GameSettings::accept()
-{
-    QDialog::accept();
-}
-
-QString GameSettings::playerName() const
-{
-    return mUi.PlayerName->text();
 }
 
 PlayDirection GameSettings::playDirection() const
@@ -23,8 +14,18 @@ PlayDirection GameSettings::playDirection() const
 
     return PD_CCW;
 }
-    
-sf::Uint32 GameSettings::winningScore() const
+
+void GameSettings::accept()
 {
-    return static_cast<sf::Uint32>(mUi.MaxScore->value());
+    // Save game settings
+    bApp->m_GameVars.m_PlayerName               = mUi.PlayerName->text();
+	bApp->m_GameVars.m_RuleSet.m_PlayDir        = playDirection();
+	bApp->m_GameVars.m_RuleSet.m_WinningScore   = static_cast<sf::Uint32>(mUi.MaxScore->value());
+    bApp->m_GameVars.m_RuleSet.m_AllowBots      = (mUi.AllowBots->checkState() == Qt::Checked);
+
+    // Start local server
+    bApp->StartServer();
+    bApp->GetPlayerSocket().Connect("127.0.0.1", bApp->m_GameVars.m_PlayerName.toStdString());
+
+    QDialog::accept();
 }

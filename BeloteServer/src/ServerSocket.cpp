@@ -361,7 +361,7 @@ private:
 ServerSocket::ServerSocket(ServerPtr server, BeloteContextPtr beloteContext)
 	: m_BeloteContext(beloteContext)
 {
-	m_priv		= ServerSocketPrivatePtr(new ServerSocketPrivate(server, ServerSocketPtr(this)));
+	m_priv = ServerSocketPrivatePtr(new ServerSocketPrivate(server, shared_from_this()));
 }
 
 ServerSocket::~ServerSocket()

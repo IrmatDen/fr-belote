@@ -14,12 +14,12 @@
 Server::Server()
 	: m_Running(false)
 {
-	m_BeloteContext = BeloteContextPtr(new BeloteContext(ServerPtr(this)));
+	m_BeloteContext = BeloteContextPtr(new BeloteContext(shared_from_this()));
 
 	m_Clients.resize(MAX_CLIENTS);
 	std::generate(m_Clients.begin(), m_Clients.end(),
 			[&] () -> Clients::value_type
-			{ return ServerSocketPtr(new ServerSocket(ServerPtr(this), m_BeloteContext)); }
+			{ return ServerSocketPtr(new ServerSocket(shared_from_this(), m_BeloteContext)); }
 		);
 }
 

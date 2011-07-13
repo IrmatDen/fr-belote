@@ -28,11 +28,12 @@ public:
 
 public:
     BeloteApplication(int &argc, char **argv);
+    ~BeloteApplication();
 
 	// Network related
 	PlayerSocket&	GetPlayerSocket()		{ return m_PlayerSocket; }
-	void			StartServer()			{ m_Server.SetRuleSet(m_GameVars.m_RuleSet); m_Server.Start(); }
-	void			StopServer()			{ m_Server.Stop(); }
+	void			StartServer()			{ m_Server->SetRuleSet(m_GameVars.m_RuleSet); m_Server->Start(); }
+	void			StopServer()			{ m_Server->Stop(); }
 
 private slots:
     void OnAboutToQuit();
@@ -42,7 +43,7 @@ private:
 	PlayerSocket		m_PlayerSocket;
 
 	// Game hosting vars
-	Server				m_Server;
+	ServerPtr			m_Server;
 };
 
 #define bApp (static_cast<BeloteApplication *>(QCoreApplication::instance()))

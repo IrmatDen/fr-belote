@@ -11,7 +11,7 @@ class BeloteContext;
 class ServerSocketPrivate;
 typedef std::shared_ptr<ServerSocketPrivate> ServerSocketPrivatePtr;
 
-class ServerSocket
+class ServerSocket : public std::enable_shared_from_this<ServerSocket>
 {
 public:
 	ServerSocket(std::shared_ptr<Server> server, std::shared_ptr<BeloteContext> beloteContext);

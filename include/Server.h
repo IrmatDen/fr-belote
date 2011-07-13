@@ -11,7 +11,7 @@ typedef std::shared_ptr<BeloteContext> BeloteContextPtr;
 
 struct BeloteContextRuleSet;
 
-class Server
+class Server : public std::enable_shared_from_this<Server>
 {
 public:
 	static const unsigned short		PORT					= 45000;

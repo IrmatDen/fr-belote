@@ -3,6 +3,7 @@
 
 #include "ui_mainwindow.h"
 #include "ui_chat.h"
+#include "ui_scores.h"
 
 class GameSettings;
 class JoinGame;
@@ -21,6 +22,7 @@ private slots:
 private:
 	Ui::MainWindow		mUi;
     Ui::Chat            mChatUi;
+    Ui::Scores          mScoresUi;
 
     GameSettings    *   mGameSettings;
     JoinGame        *   mJoinGame;

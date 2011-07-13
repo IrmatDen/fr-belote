@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>603</width>
-    <height>529</height>
+    <width>891</width>
+    <height>710</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>603</width>
+     <width>891</width>
      <height>18</height>
     </rect>
    </property>
@@ -40,6 +40,15 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents"/>
+  </widget>
+  <widget class="QDockWidget" name="ScoresDockWidget">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2"/>
   </widget>
   <action name="actionCreateGame">
    <property name="text">

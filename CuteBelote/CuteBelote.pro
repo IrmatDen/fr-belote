@@ -26,7 +26,8 @@ CONFIG(release, debug|release) {
 # Input
 FORMS += src/mainwindow.ui          \
          src/GameSettings.ui        \
-         src/JoinGame.ui
+         src/JoinGame.ui            \
+         src/Chat.ui
 
 HEADERS +=	src/MainWindow.h        \
             src/GameSettings.h      \

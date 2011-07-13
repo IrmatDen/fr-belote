@@ -2,8 +2,7 @@
 #define CUTE_BELOTE_MAIN_WINDOW_H
 
 #include "ui_mainwindow.h"
-
-#include <QtGui/QMainWindow>
+#include "ui_chat.h"
 
 class GameSettings;
 class JoinGame;
@@ -21,6 +20,7 @@ private slots:
 
 private:
 	Ui::MainWindow		mUi;
+    Ui::Chat            mChatUi;
 
     GameSettings    *   mGameSettings;
     JoinGame        *   mJoinGame;

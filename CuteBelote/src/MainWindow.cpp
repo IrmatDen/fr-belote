@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     mUi.setupUi(this);
+    mChatUi.setupUi(mUi.ChatDockWidget);
 
 	connect(mUi.actionCreateGame,   SIGNAL(triggered()), this, SLOT(OnCreateGame()));
 	connect(mUi.actionJoinGame,	    SIGNAL(triggered()), this, SLOT(OnJoinGame()));

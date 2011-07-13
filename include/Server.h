@@ -24,6 +24,7 @@ public:
 
 	unsigned int	GetClientCount() const		{ return m_ClientsCount; }
 
+    void    Init();
 	void	Start();
 	void	Update();
 	void	Stop();

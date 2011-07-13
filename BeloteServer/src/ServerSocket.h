@@ -14,7 +14,8 @@ typedef std::shared_ptr<ServerSocketPrivate> ServerSocketPrivatePtr;
 class ServerSocket : public std::enable_shared_from_this<ServerSocket>
 {
 public:
-	ServerSocket(std::shared_ptr<Server> server, std::shared_ptr<BeloteContext> beloteContext);
+    static std::shared_ptr<ServerSocket> Create(std::shared_ptr<Server> server, std::shared_ptr<BeloteContext> beloteContext);
+
 	~ServerSocket();
 
 	bool	CheckConnection(sf::TcpListener &listener);
@@ -31,6 +32,10 @@ public:
 
 	std::shared_ptr<BeloteContext>	GetBeloteContext()					{ return m_BeloteContext; }
 	sf::TcpSocket&					GetSocket()							{ return m_Socket; }
+
+private:
+	ServerSocket(std::shared_ptr<BeloteContext> beloteContext);
+    void Init(std::shared_ptr<Server> server);
 
 private:
 	ServerSocketPrivatePtr				m_priv;

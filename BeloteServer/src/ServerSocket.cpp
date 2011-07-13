@@ -358,8 +358,19 @@ private:
 	Actions::BroadcastTextMessagePtr		m_ActionBroadcastText;
 };
 
-ServerSocket::ServerSocket(ServerPtr server, BeloteContextPtr beloteContext)
+ServerSocketPtr ServerSocket::Create(ServerPtr server, BeloteContextPtr beloteContext)
+{
+    ServerSocketPtr ss(new ServerSocket(beloteContext));
+    ss->Init(server);
+    return ss;
+}
+
+ServerSocket::ServerSocket(BeloteContextPtr beloteContext)
 	: m_BeloteContext(beloteContext)
+{
+}
+
+void ServerSocket::Init(ServerPtr server)
 {
 	m_priv = ServerSocketPrivatePtr(new ServerSocketPrivate(server, shared_from_this()));
 }

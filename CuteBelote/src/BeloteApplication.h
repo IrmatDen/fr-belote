@@ -36,6 +36,7 @@ public:
 	void			StopServer()			{ m_Server->Stop(); }
 
 private slots:
+    void OnUpdate();
     void OnAboutToQuit();
 
 private:

@@ -29,6 +29,7 @@
     </property>
     <addaction name="actionCreateGame"/>
     <addaction name="actionJoinGame"/>
+    <addaction name="actionLeaveGame"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -36,19 +37,31 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="ChatDockWidget">
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents"/>
-  </widget>
-  <widget class="QDockWidget" name="ScoresDockWidget">
-   <property name="floating">
+   <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="Chat" name="ChatWidgetContent"/>
+  </widget>
+  <widget class="QDockWidget" name="ScoresDockWidget">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="ScoresWidgetContent"/>
   </widget>
   <action name="actionCreateGame">
    <property name="text">
@@ -71,7 +84,23 @@
     <string>Quitter</string>
    </property>
   </action>
+  <action name="actionLeaveGame">
+   <property name="text">
+    <string>Quitter la table</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Chat</class>
+   <extends>QWidget</extends>
+   <header>Chat.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

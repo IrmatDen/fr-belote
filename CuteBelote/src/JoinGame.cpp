@@ -3,6 +3,7 @@
 #include <QtGui/QPushButton>
 
 #include "JoinGame.h"
+#include "BeloteApplication.h"
 
 JoinGame::JoinGame(QWidget *parent)
     : QDialog(parent)
@@ -30,7 +31,14 @@ QString JoinGame::serverIp() const
 
 void JoinGame::accept()
 {
+    bApp->m_GameVars.m_GameMode     = BeloteApplication::GM_CLIENT;
+    bApp->m_GameVars.m_PlayerName   = mUi.PlayerName->text();
+
     QDialog::accept();
+    
+    bApp->StopServer();
+    bApp->GetPlayerSocket().Connect(mUi.ServerIp->text().toStdString(),
+                                    bApp->m_GameVars.m_PlayerName.toUtf8().constData());
 }
 
 void JoinGame::onIpChanged(const QString&)

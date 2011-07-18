@@ -2,8 +2,9 @@
 #define CUTE_BELOTE_MAIN_WINDOW_H
 
 #include "ui_mainwindow.h"
-#include "ui_chat.h"
 #include "ui_scores.h"
+
+#include "ClientSocket.h"
 
 class GameSettings;
 class JoinGame;
@@ -18,10 +19,11 @@ public:
 private slots:
 	void OnCreateGame();
 	void OnJoinGame();
+    void OnLeaveGame();
+    void OnConnectionStatusChanged(ClientSocket::ConnectionStatus newStatus, ClientSocket::ConnectionStatus prevStatus);
 
 private:
 	Ui::MainWindow		mUi;
-    Ui::Chat            mChatUi;
     Ui::Scores          mScoresUi;
 
     GameSettings    *   mGameSettings;

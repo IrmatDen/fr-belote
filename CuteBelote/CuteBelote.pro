@@ -33,6 +33,7 @@ FORMS += src/mainwindow.ui          \
 HEADERS +=	src/MainWindow.h        \
             src/GameSettings.h      \
             src/JoinGame.h          \
+            src/Chat.h              \
             src/BeloteApplication.h \
             src/PlayerSocket.h
 
@@ -40,5 +41,6 @@ SOURCES += src/main.cpp			        \
            src/MainWindow.cpp           \
            src/GameSettings.cpp         \
            src/JoinGame.cpp             \
+           src/Chat.cpp                 \
            src/BeloteApplication.cpp    \
            src/PlayerSocket.cpp

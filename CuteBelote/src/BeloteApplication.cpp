@@ -16,8 +16,8 @@ BeloteApplication::BeloteApplication(int &argc, char **argv)
     m_Server->Init();
 
     QTimer *updateTimer(new QTimer(this));
-    updateTimer->setInterval(35);
     updateTimer->setSingleShot(false);
+    updateTimer->start(35);
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdate()));
 }
 

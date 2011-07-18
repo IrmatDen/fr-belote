@@ -42,7 +42,7 @@ public:
 	virtual void	OnMatchWon(bool isWonByNSTeam);
 
 signals:
-    void    ConnectionStatusChanged(ConnectionStatus newStatus);
+    void    ConnectionStatusChanged(ClientSocket::ConnectionStatus newStatus, ClientSocket::ConnectionStatus prevStatus);
     void    PlayerConnectionStatusChanged(const QString &playerName, bool connected);
     void    TextBroadcasted(const QString &sayer, const QString &msg);
     void    SysMsgBroadcasted(const QString &msg);
@@ -66,6 +66,9 @@ signals:
     void    ContractingTeamResult(bool isNSTeamContracting, bool hasWon);
     void    Litige(int litigeValue);
     void    MatchWon(bool isWonByNSTeam);
+
+private:
+    ConnectionStatus  mCurrentConnectionStatus;
 };
 
 #endif

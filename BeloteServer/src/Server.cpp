@@ -33,6 +33,9 @@ void Server::Init()
 
 void Server::Start()
 {
+    if (m_Running)
+        Stop();
+
 	m_Running = true;
 
 	m_Listener.SetBlocking(false);

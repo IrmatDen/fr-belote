@@ -3,7 +3,7 @@
 #include "PlayerSocket.h"
 
 PlayerSocket::PlayerSocket(QObject *parent)
-    : QObject(parent)
+    : QObject(parent), mCurrentConnectionStatus(CS_Disconnected)
 {
 }
 
@@ -14,27 +14,28 @@ void PlayerSocket::Update()
 
 void PlayerSocket::OnConnectionStatusChanged(ConnectionStatus newStatus)
 {
-	emit ConnectionStatusChanged(newStatus);
+	emit ConnectionStatusChanged(newStatus, mCurrentConnectionStatus);
+    mCurrentConnectionStatus = newStatus;
 }
 
 void PlayerSocket::OnPlayerConnected(const std::string &playerName)
 {
-    emit PlayerConnectionStatusChanged(QString::fromStdString(playerName), true);
+    emit PlayerConnectionStatusChanged(QString::fromUtf8(playerName.c_str()), true);
 }
 
 void PlayerSocket::OnPlayerDisconnected(const std::string &playerName)
 {
-	emit PlayerConnectionStatusChanged(QString::fromStdString(playerName), false);
+	emit PlayerConnectionStatusChanged(QString::fromUtf8(playerName.c_str()), false);
 }
 
 void PlayerSocket::OnTextBroadcasted(const std::string &sayer, const std::string &msg)
 {
-	emit TextBroadcasted(QString::fromStdString(sayer), QString::fromStdString(msg));
+	emit TextBroadcasted(QString::fromUtf8(sayer.c_str()), QString::fromUtf8(msg.c_str()));
 }
 
 void PlayerSocket::OnSysMsgBroadcasted(const std::string &msg)
 {
-	emit SysMsgBroadcasted(QString::fromStdString(msg));
+	emit SysMsgBroadcasted(QString::fromUtf8(msg.c_str()));
 }
 
 void PlayerSocket::OnPositionningReceived(const PositionningPacket &positionning)

@@ -88,6 +88,7 @@ public:
 	void	Start(StatePtr startState)
 	{
 		m_StopFlag		= false;
+        m_EventQueue.swap(std::queue<EventCode>());
 		m_CurrentState	= startState;
 		m_CurrentState->Enter();
 	}

@@ -24,6 +24,8 @@ Game::Game()
 	CEGUI::ImageManager::getSingleton().loadImageset("PlayingCards.imageset");
 	CEGUI::AnimationManager::getSingleton().loadAnimationsFromXML("CardHovering.xml");
 
+    m_Server.Init();
+
 	LoadMenu(MR_Normal);
 }
 

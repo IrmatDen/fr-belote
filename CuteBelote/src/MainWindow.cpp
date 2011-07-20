@@ -2,6 +2,7 @@
 #include "BeloteApplication.h"
 #include "GameSettings.h"
 #include "JoinGame.h"
+#include "Card.h"
 
 #include <QtGui/QMessageBox>
 
@@ -13,6 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     mGameSettings = new GameSettings(this);
     mJoinGame = new JoinGame(this);
+
+    mGraphicsScene = new QGraphicsScene(this);
+    mGraphicsScene->setBackgroundBrush(QBrush(Qt::darkGreen));
+    mGraphicsScene->setSceneRect(0, 0, 700, 600);
+    mGraphicsScene->addItem(new Card("S1"));
+    mGraphicsView = new QGraphicsView(mGraphicsScene, this);
+    setCentralWidget(mGraphicsView);
 
 	connect(mUi.actionCreateGame,       SIGNAL(triggered()), this, SLOT(OnCreateGame()));
 	connect(mUi.actionJoinGame,	        SIGNAL(triggered()), this, SLOT(OnJoinGame()));

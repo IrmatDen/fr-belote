@@ -30,12 +30,13 @@ FORMS += src/mainwindow.ui          \
          src/Chat.ui                \
          src/Scores.ui
 
-HEADERS +=	src/MainWindow.h        \
-            src/GameSettings.h      \
-            src/JoinGame.h          \
-            src/Chat.h              \
-            src/BeloteApplication.h \
-            src/PlayerSocket.h
+HEADERS += src/MainWindow.h        \
+           src/GameSettings.h      \
+           src/JoinGame.h          \
+           src/Chat.h              \
+           src/BeloteApplication.h \
+           src/PlayerSocket.h      \
+           src/Card.h
 
 SOURCES += src/main.cpp			        \
            src/MainWindow.cpp           \
@@ -43,4 +44,5 @@ SOURCES += src/main.cpp			        \
            src/JoinGame.cpp             \
            src/Chat.cpp                 \
            src/BeloteApplication.cpp    \
-           src/PlayerSocket.cpp
+           src/PlayerSocket.cpp         \
+           src/Card.cpp

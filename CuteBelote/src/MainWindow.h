@@ -4,6 +4,9 @@
 #include "ui_mainwindow.h"
 #include "ui_scores.h"
 
+#include <QtGui/QGraphicsView>
+#include <QtGui/QGraphicsScene>
+
 #include "ClientSocket.h"
 
 class GameSettings;
@@ -28,6 +31,9 @@ private:
 
     GameSettings    *   mGameSettings;
     JoinGame        *   mJoinGame;
+
+    QGraphicsView   *   mGraphicsView;
+    QGraphicsScene  *   mGraphicsScene;
 };
 
 #endif

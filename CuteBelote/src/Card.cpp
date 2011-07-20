@@ -9,6 +9,7 @@ Card::Card(QString cardName, QGraphicsItem *parent)
     mHoveredGlowItem = new QGraphicsPixmapItem(QString("./data/hovered_glow.png"), this);
     mHoveredGlowItem->setOffset(-3, -3);
     mHoveredGlowItem->setVisible(false);
+
     setAcceptHoverEvents(true);
 }
 

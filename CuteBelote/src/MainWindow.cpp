@@ -3,7 +3,7 @@
 #include "GameSettings.h"
 #include "JoinGame.h"
 
-#include <QtGui/QGraphicsProxyWidget>
+#include <QtCore/QDebug>
 #include <QtGui/QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -25,6 +25,53 @@ MainWindow::MainWindow(QWidget *parent)
     mPotentialAsset = nullptr;
 
     // Create belote scene, including widgets
+    CreateSetupScene();
+    CreatePlayScene();
+
+    mGraphicsView->setScene(mPlayScene);
+
+    // Setting up UI connections
+	connect(mUi.actionCreateGame,       SIGNAL(triggered()), this, SLOT(OnCreateGame()));
+	connect(mUi.actionJoinGame,	        SIGNAL(triggered()), this, SLOT(OnJoinGame()));
+    connect(mUi.actionLeaveGame,	    SIGNAL(triggered()), this, SLOT(OnLeaveGame()));
+
+    // Setting up net connections
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(ConnectionStatusChanged(ClientSocket::ConnectionStatus, ClientSocket::ConnectionStatus)),
+            this,                       SLOT(OnConnectionStatusChanged(ClientSocket::ConnectionStatus, ClientSocket::ConnectionStatus)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(PositionningReceived(const QStringList &)),
+            this,                       SLOT(OnPositionningReceived(const QStringList &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(GameStarting()),
+            this,                       SLOT(OnGameStarting()));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(PlayerDealing(const QString &)),
+            this,                       SLOT(OnPlayerDealing(const QString &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(CardsDealt(const QStringList &)),
+            this,                       SLOT(OnCardsDealt(const QStringList &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(PotentialAssetReceived(const QString &)),
+            this,                       SLOT(OnPotentialAssetReceived(const QString &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(AskingRevealedAsset()),
+            this,                       SLOT(OnAskingRevealedAsset()));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(AcceptedAsset(int, const QString &, bool)),
+            this,                       SLOT(OnAcceptedAsset(int, const QString &, bool)));
+
+    OnConnectionStatusChanged(ClientSocket::CS_Disconnected, ClientSocket::CS_Disconnected);
+}
+
+MainWindow::~MainWindow()
+{
+    for (int i = 0; i != 4; i++)
+    {
+        delete mPositionButtons[i];
+        delete mUnseatButtons[i];
+    }
+    delete mStartButton;
+    
+    delete mAcceptProposedAsset;
+    delete mRefuseProposedAsset;
+}
+
+void MainWindow::CreateSetupScene()
+{
+    // Create setup widgets
     mPositionMapper = new QSignalMapper(this);
     QString posCodes[4] = { "South", "West", "North", "East" };
     for (int i = 0; i != 4; i++)
@@ -45,47 +92,6 @@ MainWindow::MainWindow(QWidget *parent)
     mStartButton->resize(75, 25);
     connect(mStartButton, SIGNAL(clicked()), &bApp->GetPlayerSocket(), SLOT(StartGame()));
 
-    CreateSetupScene();
-    CreatePlayScene();
-
-    mGraphicsView->setScene(mPlayScene);
-
-    // Setting up UI connections
-	connect(mUi.actionCreateGame,       SIGNAL(triggered()), this, SLOT(OnCreateGame()));
-	connect(mUi.actionJoinGame,	        SIGNAL(triggered()), this, SLOT(OnJoinGame()));
-    connect(mUi.actionLeaveGame,	    SIGNAL(triggered()), this, SLOT(OnLeaveGame()));
-    connect(mPositionMapper,            SIGNAL(mapped(const QString&)),
-            this,                       SLOT(OnPosButtonPressed(const QString&)));
-
-    // Setting up net connections
-	connect(&bApp->GetPlayerSocket(),   SIGNAL(ConnectionStatusChanged(ClientSocket::ConnectionStatus, ClientSocket::ConnectionStatus)),
-            this,                       SLOT(OnConnectionStatusChanged(ClientSocket::ConnectionStatus, ClientSocket::ConnectionStatus)));
-	connect(&bApp->GetPlayerSocket(),   SIGNAL(PositionningReceived(const QStringList &)),
-            this,                       SLOT(OnPositionningReceived(const QStringList &)));
-	connect(&bApp->GetPlayerSocket(),   SIGNAL(GameStarting()),
-            this,                       SLOT(OnGameStarting()));
-	connect(&bApp->GetPlayerSocket(),   SIGNAL(PlayerDealing(const QString &)),
-            this,                       SLOT(OnPlayerDealing(const QString &)));
-	connect(&bApp->GetPlayerSocket(),   SIGNAL(CardsDealt(const QStringList &)),
-            this,                       SLOT(OnCardsDealt(const QStringList &)));
-	connect(&bApp->GetPlayerSocket(),   SIGNAL(PotentialAssetReceived(const QString &)),
-            this,                       SLOT(OnPotentialAssetReceived(const QString &)));
-
-    OnConnectionStatusChanged(ClientSocket::CS_Disconnected, ClientSocket::CS_Disconnected);
-}
-
-MainWindow::~MainWindow()
-{
-    for (int i = 0; i != 4; i++)
-    {
-        delete mPositionButtons[i];
-        delete mUnseatButtons[i];
-    }
-    delete mStartButton;
-}
-
-void MainWindow::CreateSetupScene()
-{
     // Build setup scene (player positionning & start button, if host)
     mSetupScene = new QGraphicsScene(this);
     mSetupScene->setBackgroundBrush(QBrush(Qt::darkGreen));
@@ -104,6 +110,8 @@ void MainWindow::CreateSetupScene()
         unseatProxy->setPos(unseatBtnPos[i].x(), unseatBtnPos[i].y());
     }
 
+    connect(mPositionMapper, SIGNAL(mapped(const QString&)), this, SLOT(OnPosButtonPressed(const QString&)));
+
     QGraphicsProxyWidget *startProxy = mSetupScene->addWidget(mStartButton);
     startProxy->setPos(312.5, 287.5);
 
@@ -116,6 +124,23 @@ void MainWindow::CreatePlayScene()
     mPlayScene = new QGraphicsScene(this);
     mPlayScene->setBackgroundBrush(QBrush(Qt::darkGreen));
     mPlayScene->setSceneRect(0, 0, 700, 600);
+
+    // Asset proposal widgets
+    mAcceptProposedAsset = new QPushButton(tr("Accepter"));
+    mAcceptProposedAsset->resize(75, 25);
+    connect(mAcceptProposedAsset, SIGNAL(clicked()), this, SLOT(OnAcceptProposedAsset()));
+
+    mAcceptWidgetProxy = mPlayScene->addWidget(mAcceptProposedAsset);
+    mAcceptWidgetProxy->setPos(270, 355);
+    mAcceptWidgetProxy->setVisible(false);
+
+    mRefuseProposedAsset = new QPushButton(tr("Refuser"));
+    mRefuseProposedAsset->resize(75, 25);
+    connect(mRefuseProposedAsset, SIGNAL(clicked()), this, SLOT(OnRefuseProposedAsset()));
+
+    mRefuseWidgetProxy = mPlayScene->addWidget(mRefuseProposedAsset);
+    mRefuseWidgetProxy->setPos(355, 355);
+    mRefuseWidgetProxy->setVisible(false);
 }
 
 void MainWindow::OnCreateGame()
@@ -274,7 +299,7 @@ void MainWindow::OnCardsDealt(const QStringList &cardsInHand)
     // FIXME-BOOOOH hardcoding cards dimensions
     const int totalWidth    = (cardsCount - 1) * 42 + 64;
     const int halfWidth     = totalWidth / 2;
-    const int yPos          = 501; // 600 - (10px from bottom) - 89px (cards' height)
+    const int yPos          = 501; // 600 (play area height) - (10px from bottom) - 89px (cards' height)
     int xStartPos           = 350 - halfWidth;
 
     for (int cIdx = 0; cIdx != cardsCount; cIdx++, xStartPos += 42)
@@ -292,4 +317,37 @@ void MainWindow::OnPotentialAssetReceived(const QString &assetCard)
     mPotentialAsset = new Card(assetCard);
     mPotentialAsset->setPos(318, 255);
     mPlayScene->addItem(mPotentialAsset);
+
+    mAcceptWidgetProxy->setVisible(false);
+    mRefuseWidgetProxy->setVisible(false);
+}
+
+void MainWindow::OnAskingRevealedAsset()
+{
+    mAcceptWidgetProxy->setVisible(true);
+    mRefuseWidgetProxy->setVisible(true);
+}
+
+void MainWindow::OnAcceptProposedAsset()
+{
+    bApp->GetPlayerSocket().AcceptAsset(mPotentialAsset->GetCardName().toStdString());
+
+    mAcceptWidgetProxy->setVisible(false);
+    mRefuseWidgetProxy->setVisible(false);
+}
+
+void MainWindow::OnRefuseProposedAsset()
+{
+    bApp->GetPlayerSocket().RefuseAsset();
+
+    mAcceptWidgetProxy->setVisible(false);
+    mRefuseWidgetProxy->setVisible(false);
+}
+
+void MainWindow::OnAcceptedAsset(int takerPos, const QString &asset, bool acceptedByNSTeam)
+{
+    qDebug() << "Asset accepted:";
+    qDebug() << "\tTaker: " << takerPos;
+    qDebug() << "\tAsset: " << asset;
+    qDebug() << "\tAcceptedByNSTeam: " << acceptedByNSTeam;
 }

@@ -6,6 +6,7 @@
 
 #include <QtCore/QSignalMapper>
 
+#include <QtGui/QGraphicsProxyWidget>
 #include <QtGui/QGraphicsView>
 #include <QtGui/QGraphicsScene>
 #include <QtGui/QPushButton>
@@ -39,6 +40,8 @@ private slots:
     void OnLeaveGame();
 
     void OnPosButtonPressed(const QString &posID);
+    void OnAcceptProposedAsset();
+    void OnRefuseProposedAsset();
 
     // Network events
     void OnConnectionStatusChanged(ClientSocket::ConnectionStatus newStatus, ClientSocket::ConnectionStatus prevStatus);
@@ -47,6 +50,8 @@ private slots:
     void OnPlayerDealing(const QString &dealerName);
     void OnCardsDealt(const QStringList &cardsInHand);
     void OnPotentialAssetReceived(const QString &assetCard);
+    void OnAskingRevealedAsset();
+    void OnAcceptedAsset(int takerPos, const QString &asset, bool acceptedByNSTeam);
 
 private:
 	Ui::MainWindow		mUi;
@@ -69,7 +74,12 @@ private:
     QPushButton     *   mStartButton;
 
     Card            *   mPlayerHand[8];
-    Card            *   mPotentialAsset;
+
+    Card                    *   mPotentialAsset;
+    QPushButton             *   mAcceptProposedAsset;
+    QGraphicsProxyWidget    *   mAcceptWidgetProxy;
+    QPushButton             *   mRefuseProposedAsset;
+    QGraphicsProxyWidget    *   mRefuseWidgetProxy;
 };
 
 #endif

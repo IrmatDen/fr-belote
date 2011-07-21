@@ -10,6 +10,8 @@ public:
 
     void SetActive(bool active);
 
+    const QString& GetCardName() const      { return mCardName; }
+
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);

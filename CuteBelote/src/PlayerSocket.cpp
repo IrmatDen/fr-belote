@@ -53,7 +53,7 @@ void PlayerSocket::OnGameStarting()
 
 void PlayerSocket::OnPlayerDealing(const std::string &dealerName)
 {
-    emit PlayerDealing(QString::fromStdString(dealerName));
+    emit PlayerDealing(QString::fromUtf8(dealerName.c_str()));
 }
 
 void PlayerSocket::OnCardsDealt(const CardsDealtPacket &cards)

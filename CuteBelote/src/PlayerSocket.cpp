@@ -42,7 +42,7 @@ void PlayerSocket::OnPositionningReceived(const PositionningPacket &positionning
 {
 	QStringList pos;
 	for (int i = 0; i != 4; i++)
-		pos << QString::fromStdString(positionning.m_Names[i]);
+		pos << QString::fromUtf8(positionning.m_Names[i].c_str());
 	emit PositionningReceived(pos);
 }
 

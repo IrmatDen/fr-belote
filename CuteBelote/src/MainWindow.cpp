@@ -9,7 +9,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     :   QMainWindow(parent), mConnectionStatus(ClientSocket::CS_Disconnected),
-        mGraphicsScene(nullptr), mPositionMapper(nullptr)
+        mSetupScene(nullptr), mPlayScene(nullptr), mPositionMapper(nullptr)
 {
     mUi.setupUi(this);
     mScoresUi.setupUi(mUi.ScoresDockWidget);
@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(mGraphicsView);
 
     // Create belote scene, including widgets
-    CreateScene();
     mPositionMapper = new QSignalMapper(this);
 
     QString posCodes[4] = { "South", "West", "North", "East" };
@@ -43,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent)
     mStartButton->resize(75, 25);
     connect(mStartButton, SIGNAL(clicked()), &bApp->GetPlayerSocket(), SLOT(StartGame()));
 
+    CreateSetupScene();
+    CreatePlayScene();
+
+    mGraphicsView->setScene(mPlayScene);
+
     // Setting up UI connections
 	connect(mUi.actionCreateGame,       SIGNAL(triggered()), this, SLOT(OnCreateGame()));
 	connect(mUi.actionJoinGame,	        SIGNAL(triggered()), this, SLOT(OnJoinGame()));
@@ -55,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent)
             this,                       SLOT(OnConnectionStatusChanged(ClientSocket::ConnectionStatus, ClientSocket::ConnectionStatus)));
 	connect(&bApp->GetPlayerSocket(),   SIGNAL(PositionningReceived(const QStringList &)),
             this,                       SLOT(OnPositionningReceived(const QStringList &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(GameStarting()),
+            this,                       SLOT(OnGameStarting()));
 
     OnConnectionStatusChanged(ClientSocket::CS_Disconnected, ClientSocket::CS_Disconnected);
 }
@@ -125,9 +131,13 @@ void MainWindow::OnConnectionStatusChanged(ClientSocket::ConnectionStatus newSta
         break;
     }
 
-    mConnectionStatus = newStatus;
+    if (newStatus == ClientSocket::CS_Connected)
+    {
+        mGraphicsView->setScene(mSetupScene);
+        mStartButton->setVisible(bApp->m_GameVars.m_GameMode == BeloteApplication::GM_HOST);
+    }
 
-    CreateScene();
+    mConnectionStatus = newStatus;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -137,39 +147,38 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     mGraphicsView->fitInView(0, 0, 700, 600);//, Qt::KeepAspectRatio);
 }
 
-void MainWindow::CreateScene()
+void MainWindow::CreateSetupScene()
 {
-    delete mGraphicsScene;
-    mGraphicsScene = new QGraphicsScene(this);
-    mGraphicsScene->setBackgroundBrush(QBrush(Qt::darkGreen));
-    mGraphicsScene->setSceneRect(0, 0, 700, 600);
-
-    // Setup positionning widgets if we just connected
-    if (mConnectionStatus == ClientSocket::CS_Connected)
+    // Build setup scene (player positionning & start button, if host)
+    mSetupScene = new QGraphicsScene(this);
+    mSetupScene->setBackgroundBrush(QBrush(Qt::darkGreen));
+    mSetupScene->setSceneRect(0, 0, 700, 600);
+    
+    //QString posCodes[4]   = { "South",             "West",              "North",          "East" };
+    QPointF btnPos[4]       = { QPointF(300, 567.5), QPointF(20, 287.5),  QPointF(300, 20), QPointF(580, 287.5) };
+    QPointF unseatBtnPos[4] = { QPointF(405, 567.5), QPointF(125, 287.5), QPointF(405, 20), QPointF(545, 287.5) };
+    for (int i = 0; i != 4; i++)
     {
-        //QString posCodes[4]   = { "South",             "West",              "North",          "East" };
-        QPointF btnPos[4]       = { QPointF(300, 567.5), QPointF(20, 287.5),  QPointF(300, 20), QPointF(580, 287.5) };
-        QPointF unseatBtnPos[4] = { QPointF(405, 567.5), QPointF(125, 287.5), QPointF(405, 20), QPointF(545, 287.5) };
-        for (int i = 0; i != 4; i++)
-        {
-            QGraphicsProxyWidget *proxy = mGraphicsScene->addWidget(mPositionButtons[i]);
-            proxy->setPos(btnPos[i].x(), btnPos[i].y());
+        QGraphicsProxyWidget *proxy = mSetupScene->addWidget(mPositionButtons[i]);
+        proxy->setPos(btnPos[i].x(), btnPos[i].y());
             
-            QGraphicsProxyWidget *unseatProxy = mGraphicsScene->addWidget(mUnseatButtons[i]);
-            unseatProxy->resize(mUnseatButtons[i]->size());
-            unseatProxy->setPos(unseatBtnPos[i].x(), unseatBtnPos[i].y());
-        }
-
-        if (bApp->m_GameVars.m_GameMode == BeloteApplication::GM_HOST)
-        {
-            QGraphicsProxyWidget *startProxy = mGraphicsScene->addWidget(mStartButton);
-            startProxy->setPos(312.5, 287.5);
-        }
-
-        ResetPosButtonText();
+        QGraphicsProxyWidget *unseatProxy = mSetupScene->addWidget(mUnseatButtons[i]);
+        unseatProxy->resize(mUnseatButtons[i]->size());
+        unseatProxy->setPos(unseatBtnPos[i].x(), unseatBtnPos[i].y());
     }
 
-    mGraphicsView->setScene(mGraphicsScene);
+    QGraphicsProxyWidget *startProxy = mSetupScene->addWidget(mStartButton);
+    startProxy->setPos(312.5, 287.5);
+
+    ResetPosButtonText();
+}
+
+void MainWindow::CreatePlayScene()
+{
+    // Build setup scene (player positionning & start button, if host)
+    mPlayScene = new QGraphicsScene(this);
+    mPlayScene->setBackgroundBrush(QBrush(Qt::darkGreen));
+    mPlayScene->setSceneRect(0, 0, 700, 600);
 }
 
 void MainWindow::OnPosButtonPressed(const QString &posID)
@@ -182,20 +191,20 @@ void MainWindow::OnPositionningReceived(const QStringList &playersPos)
 {
     Q_ASSERT(playersPos.size() == 4);
 
-    QString pp;
+    QString playerName;
     int idx = 0;
     ResetPosButtonText();
 
-    Q_FOREACH(pp, playersPos)
+    Q_FOREACH(playerName, playersPos)
     {
-        if (pp.size() > 0)
+        if (playerName.size() > 0)
         {
             if (mPositionMapper->mapping(mMyPosition) == mPositionButtons[idx])
                 mUnseatButtons[idx]->setVisible(true);
             else
                 mUnseatButtons[idx]->setVisible(false);
 
-            mPositionButtons[idx]->setText(mPositionButtons[idx]->text() + ": " + pp);
+            mPositionButtons[idx]->setText(mPositionButtons[idx]->text() + ": " + playerName);
             mPositionButtons[idx]->setEnabled(false);
         }
         else
@@ -216,4 +225,9 @@ void MainWindow::ResetPosButtonText()
         mPositionButtons[i]->setText(posLabels[i]);
         mPositionButtons[i]->setEnabled(true);
     }
+}
+
+void MainWindow::OnGameStarting()
+{
+    mGraphicsView->setScene(mPlayScene);
 }

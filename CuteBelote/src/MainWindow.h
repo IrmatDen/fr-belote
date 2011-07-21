@@ -27,7 +27,8 @@ protected:
     virtual void resizeEvent(QResizeEvent *event);
 
 private:
-    void CreateScene();
+    void CreateSetupScene();
+    void CreatePlayScene();
     void ResetPosButtonText();
 
 private slots:
@@ -41,6 +42,7 @@ private slots:
     // Network events
     void OnConnectionStatusChanged(ClientSocket::ConnectionStatus newStatus, ClientSocket::ConnectionStatus prevStatus);
     void OnPositionningReceived(const QStringList &playersPos);
+    void OnGameStarting();
 
 private:
 	Ui::MainWindow		mUi;
@@ -50,7 +52,8 @@ private:
     JoinGame        *   mJoinGame;
 
     QGraphicsView   *   mGraphicsView;
-    QGraphicsScene  *   mGraphicsScene;
+    QGraphicsScene  *   mSetupScene;
+    QGraphicsScene  *   mPlayScene;
 
     ClientSocket::ConnectionStatus  mConnectionStatus;
     QString             mMyPosition;

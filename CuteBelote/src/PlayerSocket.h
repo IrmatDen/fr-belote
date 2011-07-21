@@ -41,6 +41,10 @@ public:
 	virtual void	OnLitige(int litigeValue);
 	virtual void	OnMatchWon(bool isWonByNSTeam);
 
+public slots:
+    void    UnseatMe()      { ClientSocket::UnseatMe(); }
+    void    StartGame()     { ClientSocket::StartGame(); }
+
 signals:
     void    ConnectionStatusChanged(ClientSocket::ConnectionStatus newStatus, ClientSocket::ConnectionStatus prevStatus);
     void    PlayerConnectionStatusChanged(const QString &playerName, bool connected);

@@ -24,15 +24,24 @@ MainWindow::MainWindow(QWidget *parent)
     CreateScene();
     mPositionMapper = new QSignalMapper(this);
 
-    QString posCodes[4]  = { "South",   "West",      "North",    "East" };
-
+    QString posCodes[4] = { "South", "West", "North", "East" };
     for (int i = 0; i != 4; i++)
     {
         mPositionButtons[i] = new QPushButton;
         mPositionButtons[i]->resize(100, 25);
         mPositionMapper->setMapping(mPositionButtons[i], posCodes[i]);
         connect(mPositionButtons[i], SIGNAL(clicked()), mPositionMapper, SLOT(map()));
+
+        mUnseatButtons[i] = new QPushButton("X");
+        mUnseatButtons[i]->resize(35, 25);
+        mUnseatButtons[i]->setVisible(false);
+
+	    connect(mUnseatButtons[i], SIGNAL(clicked()), &bApp->GetPlayerSocket(), SLOT(UnseatMe()));
     }
+
+    mStartButton = new QPushButton(tr("Jouer !"));
+    mStartButton->resize(75, 25);
+    connect(mStartButton, SIGNAL(clicked()), &bApp->GetPlayerSocket(), SLOT(StartGame()));
 
     // Setting up UI connections
 	connect(mUi.actionCreateGame,       SIGNAL(triggered()), this, SLOT(OnCreateGame()));
@@ -53,7 +62,11 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     for (int i = 0; i != 4; i++)
+    {
         delete mPositionButtons[i];
+        delete mUnseatButtons[i];
+    }
+    delete mStartButton;
 }
 
 void MainWindow::OnCreateGame()
@@ -134,12 +147,23 @@ void MainWindow::CreateScene()
     // Setup positionning widgets if we just connected
     if (mConnectionStatus == ClientSocket::CS_Connected)
     {
-        //QString posCodes[4]   = { "South",             "West",             "North",          "East" };
-        QPointF btnPos[4]       = { QPointF(300, 567.5), QPointF(20, 287.5), QPointF(300, 20), QPointF(580, 287.5) };
+        //QString posCodes[4]   = { "South",             "West",              "North",          "East" };
+        QPointF btnPos[4]       = { QPointF(300, 567.5), QPointF(20, 287.5),  QPointF(300, 20), QPointF(580, 287.5) };
+        QPointF unseatBtnPos[4] = { QPointF(405, 567.5), QPointF(125, 287.5), QPointF(405, 20), QPointF(545, 287.5) };
         for (int i = 0; i != 4; i++)
         {
             QGraphicsProxyWidget *proxy = mGraphicsScene->addWidget(mPositionButtons[i]);
             proxy->setPos(btnPos[i].x(), btnPos[i].y());
+            
+            QGraphicsProxyWidget *unseatProxy = mGraphicsScene->addWidget(mUnseatButtons[i]);
+            unseatProxy->resize(mUnseatButtons[i]->size());
+            unseatProxy->setPos(unseatBtnPos[i].x(), unseatBtnPos[i].y());
+        }
+
+        if (bApp->m_GameVars.m_GameMode == BeloteApplication::GM_HOST)
+        {
+            QGraphicsProxyWidget *startProxy = mGraphicsScene->addWidget(mStartButton);
+            startProxy->setPos(312.5, 287.5);
         }
 
         ResetPosButtonText();
@@ -150,7 +174,8 @@ void MainWindow::CreateScene()
 
 void MainWindow::OnPosButtonPressed(const QString &posID)
 {
-    bApp->GetPlayerSocket().ChoosePosition(posID.toStdString());
+    mMyPosition = posID;
+    bApp->GetPlayerSocket().ChoosePosition(mMyPosition.toStdString());
 }
 
 void MainWindow::OnPositionningReceived(const QStringList &playersPos)
@@ -165,8 +190,17 @@ void MainWindow::OnPositionningReceived(const QStringList &playersPos)
     {
         if (pp.size() > 0)
         {
+            if (mPositionMapper->mapping(mMyPosition) == mPositionButtons[idx])
+                mUnseatButtons[idx]->setVisible(true);
+            else
+                mUnseatButtons[idx]->setVisible(false);
+
             mPositionButtons[idx]->setText(mPositionButtons[idx]->text() + ": " + pp);
             mPositionButtons[idx]->setEnabled(false);
+        }
+        else
+        {
+            mUnseatButtons[idx]->setVisible(false);
         }
 
         idx++;

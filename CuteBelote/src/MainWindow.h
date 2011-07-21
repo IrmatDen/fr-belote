@@ -53,9 +53,13 @@ private:
     QGraphicsScene  *   mGraphicsScene;
 
     ClientSocket::ConnectionStatus  mConnectionStatus;
+    QString             mMyPosition;
 
     QSignalMapper   *   mPositionMapper;
     QPushButton     *   mPositionButtons[4];
+    QPushButton     *   mUnseatButtons[4];
+
+    QPushButton     *   mStartButton;
 };
 
 #endif

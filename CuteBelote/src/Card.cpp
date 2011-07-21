@@ -4,7 +4,7 @@
 
 Card::Card(QString cardName, QGraphicsItem *parent)
     :   QGraphicsPixmapItem(QString("./data/") + cardName, parent),
-        mCardName(cardName)
+        mCardName(cardName), mIsActive(false)
 {
     mHoveredGlowItem = new QGraphicsPixmapItem(QString("./data/hovered_glow.png"), this);
     mHoveredGlowItem->setOffset(-3, -3);
@@ -13,7 +13,11 @@ Card::Card(QString cardName, QGraphicsItem *parent)
     mHoveredGlowItem->setZValue(1);
 
     setTransformationMode(Qt::SmoothTransformation);
-    setAcceptHoverEvents(true);
+}
+
+void Card::SetActive(bool active)
+{
+    setAcceptHoverEvents(active);
 }
 
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

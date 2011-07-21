@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Init attributes
     memset(mPlayerHand, 0, sizeof(Card*) * 8);
+    mPotentialAsset = nullptr;
 
     // Create belote scene, including widgets
     mPositionMapper = new QSignalMapper(this);
@@ -67,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
             this,                       SLOT(OnPlayerDealing(const QString &)));
 	connect(&bApp->GetPlayerSocket(),   SIGNAL(CardsDealt(const QStringList &)),
             this,                       SLOT(OnCardsDealt(const QStringList &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(PotentialAssetReceived(const QString &)),
+            this,                       SLOT(OnPotentialAssetReceived(const QString &)));
 
     OnConnectionStatusChanged(ClientSocket::CS_Disconnected, ClientSocket::CS_Disconnected);
 }
@@ -276,4 +279,17 @@ void MainWindow::OnCardsDealt(const QStringList &cardsInHand)
 
     for (int cIdx = 0; cIdx != cardsCount; cIdx++, xStartPos += 42)
         mPlayerHand[cIdx]->setPos(xStartPos, yPos);
+}
+
+void MainWindow::OnPotentialAssetReceived(const QString &assetCard)
+{
+    if (mPotentialAsset)
+    {
+        mPlayScene->removeItem(mPotentialAsset);
+        delete mPotentialAsset;
+    }
+
+    mPotentialAsset = new Card(assetCard);
+    mPotentialAsset->setPos(318, 255);
+    mPlayScene->addItem(mPotentialAsset);
 }

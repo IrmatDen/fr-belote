@@ -8,6 +8,8 @@ class Card : public QGraphicsPixmapItem
 public:
     Card(QString cardName, QGraphicsItem *parent = nullptr);
 
+    void SetActive(bool active);
+
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
@@ -15,6 +17,7 @@ protected:
 private:
     QString                 mCardName;
     QGraphicsPixmapItem *   mHoveredGlowItem;
+    bool                    mIsActive;
 };
 
 #endif

@@ -46,6 +46,7 @@ private slots:
     void OnGameStarting();
     void OnPlayerDealing(const QString &dealerName);
     void OnCardsDealt(const QStringList &cardsInHand);
+    void OnPotentialAssetReceived(const QString &assetCard);
 
 private:
 	Ui::MainWindow		mUi;
@@ -68,6 +69,7 @@ private:
     QPushButton     *   mStartButton;
 
     Card            *   mPlayerHand[8];
+    Card            *   mPotentialAsset;
 };
 
 #endif

@@ -43,6 +43,8 @@ private slots:
     void OnConnectionStatusChanged(ClientSocket::ConnectionStatus newStatus, ClientSocket::ConnectionStatus prevStatus);
     void OnPositionningReceived(const QStringList &playersPos);
     void OnGameStarting();
+    void OnPlayerDealing(const QString &dealerName);
+    void OnCardsDealt(const QStringList &cardsInHand);
 
 private:
 	Ui::MainWindow		mUi;

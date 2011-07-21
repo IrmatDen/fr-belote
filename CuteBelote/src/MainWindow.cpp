@@ -61,6 +61,10 @@ MainWindow::MainWindow(QWidget *parent)
             this,                       SLOT(OnPositionningReceived(const QStringList &)));
 	connect(&bApp->GetPlayerSocket(),   SIGNAL(GameStarting()),
             this,                       SLOT(OnGameStarting()));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(PlayerDealing(const QString &)),
+            this,                       SLOT(OnPlayerDealing(const QString &)));
+	connect(&bApp->GetPlayerSocket(),   SIGNAL(CardsDealt(const QStringList &)),
+            this,                       SLOT(OnCardsDealt(const QStringList &)));
 
     OnConnectionStatusChanged(ClientSocket::CS_Disconnected, ClientSocket::CS_Disconnected);
 }
@@ -73,6 +77,40 @@ MainWindow::~MainWindow()
         delete mUnseatButtons[i];
     }
     delete mStartButton;
+}
+
+void MainWindow::CreateSetupScene()
+{
+    // Build setup scene (player positionning & start button, if host)
+    mSetupScene = new QGraphicsScene(this);
+    mSetupScene->setBackgroundBrush(QBrush(Qt::darkGreen));
+    mSetupScene->setSceneRect(0, 0, 700, 600);
+    
+    //QString posCodes[4]   = { "South",             "West",              "North",          "East" };
+    QPointF btnPos[4]       = { QPointF(300, 567.5), QPointF(20, 287.5),  QPointF(300, 20), QPointF(580, 287.5) };
+    QPointF unseatBtnPos[4] = { QPointF(405, 567.5), QPointF(125, 287.5), QPointF(405, 20), QPointF(545, 287.5) };
+    for (int i = 0; i != 4; i++)
+    {
+        QGraphicsProxyWidget *proxy = mSetupScene->addWidget(mPositionButtons[i]);
+        proxy->setPos(btnPos[i].x(), btnPos[i].y());
+            
+        QGraphicsProxyWidget *unseatProxy = mSetupScene->addWidget(mUnseatButtons[i]);
+        unseatProxy->resize(mUnseatButtons[i]->size());
+        unseatProxy->setPos(unseatBtnPos[i].x(), unseatBtnPos[i].y());
+    }
+
+    QGraphicsProxyWidget *startProxy = mSetupScene->addWidget(mStartButton);
+    startProxy->setPos(312.5, 287.5);
+
+    ResetPosButtonText();
+}
+
+void MainWindow::CreatePlayScene()
+{
+    // Build setup scene (player positionning & start button, if host)
+    mPlayScene = new QGraphicsScene(this);
+    mPlayScene->setBackgroundBrush(QBrush(Qt::darkGreen));
+    mPlayScene->setSceneRect(0, 0, 700, 600);
 }
 
 void MainWindow::OnCreateGame()
@@ -147,40 +185,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     mGraphicsView->fitInView(0, 0, 700, 600);//, Qt::KeepAspectRatio);
 }
 
-void MainWindow::CreateSetupScene()
-{
-    // Build setup scene (player positionning & start button, if host)
-    mSetupScene = new QGraphicsScene(this);
-    mSetupScene->setBackgroundBrush(QBrush(Qt::darkGreen));
-    mSetupScene->setSceneRect(0, 0, 700, 600);
-    
-    //QString posCodes[4]   = { "South",             "West",              "North",          "East" };
-    QPointF btnPos[4]       = { QPointF(300, 567.5), QPointF(20, 287.5),  QPointF(300, 20), QPointF(580, 287.5) };
-    QPointF unseatBtnPos[4] = { QPointF(405, 567.5), QPointF(125, 287.5), QPointF(405, 20), QPointF(545, 287.5) };
-    for (int i = 0; i != 4; i++)
-    {
-        QGraphicsProxyWidget *proxy = mSetupScene->addWidget(mPositionButtons[i]);
-        proxy->setPos(btnPos[i].x(), btnPos[i].y());
-            
-        QGraphicsProxyWidget *unseatProxy = mSetupScene->addWidget(mUnseatButtons[i]);
-        unseatProxy->resize(mUnseatButtons[i]->size());
-        unseatProxy->setPos(unseatBtnPos[i].x(), unseatBtnPos[i].y());
-    }
-
-    QGraphicsProxyWidget *startProxy = mSetupScene->addWidget(mStartButton);
-    startProxy->setPos(312.5, 287.5);
-
-    ResetPosButtonText();
-}
-
-void MainWindow::CreatePlayScene()
-{
-    // Build setup scene (player positionning & start button, if host)
-    mPlayScene = new QGraphicsScene(this);
-    mPlayScene->setBackgroundBrush(QBrush(Qt::darkGreen));
-    mPlayScene->setSceneRect(0, 0, 700, 600);
-}
-
 void MainWindow::OnPosButtonPressed(const QString &posID)
 {
     mMyPosition = posID;
@@ -230,4 +234,18 @@ void MainWindow::ResetPosButtonText()
 void MainWindow::OnGameStarting()
 {
     mGraphicsView->setScene(mPlayScene);
+}
+
+void MainWindow::OnPlayerDealing(const QString &dealerName)
+{
+    mUi.ChatWidgetContent->OnLogSysMsg(tr("<b>%1 distribue</b>").arg(dealerName));
+}
+
+void MainWindow::OnCardsDealt(const QStringList &cardsInHand)
+{
+    QString card;
+    Q_FOREACH(card, cardsInHand)
+    {
+        qDebug(card.toAscii());
+    }
 }

@@ -248,7 +248,9 @@ void MainWindow::OnCardsDealt(const QStringList &cardsInHand)
     // Clean previous hand
     for (int i = 0; i != 8; i++)
     {
-        mPlayScene->removeItem(mPlayerHand[i]);
+        if (mPlayerHand[i]) // Just to avoid Qt's warning about removing null item
+            mPlayScene->removeItem(mPlayerHand[i]);
+
         delete mPlayerHand[i];
     }
 

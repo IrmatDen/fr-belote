@@ -10,6 +10,7 @@ Card::Card(QString cardName, QGraphicsItem *parent)
     mHoveredGlowItem->setOffset(-3, -3);
     mHoveredGlowItem->setVisible(false);
     mHoveredGlowItem->setTransformationMode(Qt::SmoothTransformation);
+    mHoveredGlowItem->setZValue(1);
 
     setTransformationMode(Qt::SmoothTransformation);
     setAcceptHoverEvents(true);
@@ -18,7 +19,6 @@ Card::Card(QString cardName, QGraphicsItem *parent)
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     mHoveredGlowItem->setVisible(true);
-    mHoveredGlowItem->setPos(pos());
 
     QGraphicsPixmapItem::hoverEnterEvent(event);
 }

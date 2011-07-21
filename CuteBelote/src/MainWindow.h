@@ -11,6 +11,7 @@
 #include <QtGui/QPushButton>
 
 #include "ClientSocket.h"
+#include "Card.h"
 
 class GameSettings;
 class JoinGame;
@@ -65,6 +66,8 @@ private:
     QPushButton     *   mUnseatButtons[4];
 
     QPushButton     *   mStartButton;
+
+    Card            *   mPlayerHand[8];
 };
 
 #endif

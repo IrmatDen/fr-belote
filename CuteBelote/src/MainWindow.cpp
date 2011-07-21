@@ -2,7 +2,6 @@
 #include "BeloteApplication.h"
 #include "GameSettings.h"
 #include "JoinGame.h"
-#include "Card.h"
 
 #include <QtGui/QGraphicsProxyWidget>
 #include <QtGui/QMessageBox>
@@ -11,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     :   QMainWindow(parent), mConnectionStatus(ClientSocket::CS_Disconnected),
         mSetupScene(nullptr), mPlayScene(nullptr), mPositionMapper(nullptr)
 {
+    // Setup UI
     mUi.setupUi(this);
     mScoresUi.setupUi(mUi.ScoresDockWidget);
 
@@ -20,9 +20,11 @@ MainWindow::MainWindow(QWidget *parent)
     mGraphicsView = new QGraphicsView(this);
     setCentralWidget(mGraphicsView);
 
+    // Init attributes
+    memset(mPlayerHand, 0, sizeof(Card*) * 8);
+
     // Create belote scene, including widgets
     mPositionMapper = new QSignalMapper(this);
-
     QString posCodes[4] = { "South", "West", "North", "East" };
     for (int i = 0; i != 4; i++)
     {
@@ -243,9 +245,33 @@ void MainWindow::OnPlayerDealing(const QString &dealerName)
 
 void MainWindow::OnCardsDealt(const QStringList &cardsInHand)
 {
+    // Clean previous hand
+    for (int i = 0; i != 8; i++)
+    {
+        mPlayScene->removeItem(mPlayerHand[i]);
+        delete mPlayerHand[i];
+    }
+
+    // Create current hand
+    int cardsCount = 0;
     QString card;
     Q_FOREACH(card, cardsInHand)
     {
-        qDebug(card.toAscii());
+        if (card.size() == 0)
+            continue;
+
+        mPlayerHand[cardsCount] = new Card(card);
+        mPlayScene->addItem(mPlayerHand[cardsCount]);
+        cardsCount++;
     }
+
+    // Move each card in hand to their good position
+    // FIXME-BOOOOH hardcoding cards dimensions
+    const int totalWidth    = (cardsCount - 1) * 42 + 64;
+    const int halfWidth     = totalWidth / 2;
+    const int yPos          = 501; // 600 - (10px from bottom) - 89px (cards' height)
+    int xStartPos           = 350 - halfWidth;
+
+    for (int cIdx = 0; cIdx != cardsCount; cIdx++, xStartPos += 42)
+        mPlayerHand[cIdx]->setPos(xStartPos, yPos);
 }
